@@ -18,4 +18,9 @@ This project utilizes the following publicly available data sources:
 - **Remote Sensing Imagery:** Satellite images to assess geographical and infrastructural factors influencing energy usage.
 - **UK Building stock:** Verisk building data via Edina Digimap
 
-
+## Implementation
+In order to use this codebase, you need to download the following data sources
+- **ONS UPRN to Postcode mapping:** THe ONSUD data maps from UPRNS to postcodes
+- **UK electricity and gas postcode data**
+- **A building dataset** this code uses the Verisk building data from Edina Digimap
+- **Postcode to LSOA Mapping** The ONS data product links postcodes to regions like LSOA, MSOA and LAD
