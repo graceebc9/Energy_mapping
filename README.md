@@ -17,6 +17,7 @@ This project utilizes the following publicly available data sources:
 - **UK Census Data:** Provides detailed demographic information at the postcode level.
 - **Remote Sensing Imagery:** Satellite images to assess geographical and infrastructural factors influencing energy usage.
 - **UK Building stock:** Verisk building data via Edina Digimap
+-**ONS Postcode Shapefile, Code Point Polygons** via Edina Digimap 
 
 ## Implementation
 In order to use this codebase, you need to download the following data sources
