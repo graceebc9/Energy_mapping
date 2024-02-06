@@ -56,13 +56,13 @@ def process_uprn_df(uprn_df):
     return uprn_df 
 
 
-def create_vstreet_lookup():
+def create_vstreet_lookup(postcode_shapefile_path):
     if os.path.isfile('data/mappings/vstreet_lookup.csv'):
         print('Vstreet lookup exists')
         vstreet_lookup = pd.read_csv('data/mappings/vstreet_lookup.csv')
     else:
         fin = [] 
-        for file in glob.glob('/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291/two_letter_pc_code/*lookup.txt'): 
+        for file in glob.glob(postcode_shapefile_path):
             
             df = pd.read_csv(file, header=None)
             fin.append(df)

@@ -92,7 +92,7 @@ def main(gas_elec, raw_elec, raw_gas, pc_map, link, lk, onsud, fuel_year ):
     raw_elec = pd.read_csv(raw_elec) 
     link = pd.read_csv(link)
     pc_map = pd.read_csv(pc_map, encoding = 'latin-1')
-    lk = pd.read_csv(lk)
+    # lk = pd.read_csv(lk)
     raw_gas = pd.read_csv(raw_gas)
     os.makedirs(f'data/mappings/fuel_{fuel_year}', exist_ok=True)   
     if gas_elec =='gas':
