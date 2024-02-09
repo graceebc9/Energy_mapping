@@ -11,13 +11,10 @@ import concurrent.futures
 import argparse
 
 
-gas_elec ='gas'
-filtered = False
 
-files = glob.glob(f'/Users/gracecolverd/New_dataset/data/2_{gas_elec}_link/*.csv')
-labels = [ x.split('/')[-1].split('.')[0].split('_')[-1] for x in files]
 
-verisk_file_directory = '/Users/gracecolverd/New_dataset/data/verisk'
+
+
 
 
 def has_duplicates(df, column_name):
@@ -68,7 +65,7 @@ def calc_postcode_building_residential_volume(df, outfile = None, filter_use=Tru
     """
     Calculate the total volume of residential buildings in each postcode area.
     """
-    df = df[['Postcode', 'Unique_Building_Number','Unique_Property_Number', 'Property_Area', 'Building_Area','Mapping_Block_Number',	'Height', 	'Age', 	'Use' ]].drop_duplicates()
+    df = df[['Postcode', 'Unique_Building_Number','Unique_Property_Number', 'Property_Area', 'Building_Area','Mapping_Block_Number',	'Height', 	'Age', 	'Use', 'LSOA21CD', 'LAD22CD_y', 'RGN22CD_x' ]].drop_duplicates()
     if filter_use ==True:
         df=df[df['Use'].isin(res_use_types) ]
     else:
@@ -111,16 +108,20 @@ def process_file(file_path, elec, cols):
 
 
 
-def main(gas_elec, filtered, fuel_year):
+def main(gas_elec, filtered, fuel_year, building_file_directory):
+    
+    files = glob.glob(f'/data/fuel_{fuel_year}/2_{gas_elec}_link/*.csv')
+    labels = [ x.split('/')[-1].split('.')[0].split('_')[-1] for x in files]
+
 
     for f, label in zip(files, labels):
         print('Starting ', label)
         elec = pd.read_csv(f)
         elec = elec.drop(columns=['Unnamed: 0']).drop_duplicates()
         if filtered == True: 
-            outdir = f'data/3_processed/fuel_{fuel_year}/filtered_use/{gas_elec}'
+            outdir = f'data/fuel_{fuel_year}/3_processed/filtered_use/{gas_elec}'
         elif filtered ==False:
-            outdir = f'data/3_processed/fuel_{fuel_year}/non_filtered_use/{gas_elec}'
+            outdir = f'data/fuel_{fuel_year}/3_processed/non_filtered_use/{gas_elec}'
         os.makedirs(outdir, exist_ok=True)
         outfile = os.path.join(outdir, f'{gas_elec}_norm_{label}.csv' ) 
 
@@ -131,7 +132,7 @@ def main(gas_elec, filtered, fuel_year):
         # Initialize parameters
         cols = ['Unique_Property_Number', 'Unique_Building_Number', 'Property_Area', 'Building_Area', 'Mapping_Block_Number', 'Height', 'Age', 'Use', 'DATA_LEVEL']
         
-        file_paths = [os.path.join(verisk_file_directory, f) for f in os.listdir(verisk_file_directory) if f.endswith('.csv')]
+        file_paths = [os.path.join(building_file_directory, f) for f in os.listdir(building_file_directory) if f.endswith('.csv')]
         print('num of files to loop over ', len(file_paths))
 
         # Use ThreadPoolExecutor to process files in parallel
@@ -169,6 +170,7 @@ if __name__ == "__main__":
     parser.add_argument('--gas_elec', type=str, required=True, help='Gas or Electric')
     parser.add_argument('--filtered', type=bool, required=True, help='True or False')
     parser.add_argument('--fuel_year', type=int, required=True, help='Year of fuel data')   
+    parser.add_argument('--building_file_directory', type=str, required=True, help='Directory containing building data files')
     args = parser.parse_args()
-    main(gas_elec  =  args.gas_elec, filtered = args.filtered, fuel_year = args.fuel_year)
+    main(gas_elec  =  args.gas_elec, filtered = args.filtered, fuel_year = args.fuel_year, building_file_directory = args.building_file_directory)
 
