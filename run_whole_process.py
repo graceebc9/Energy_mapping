@@ -14,9 +14,10 @@ raw_elec = f'/Volumes/T9/Data_downloads/UKGOV_Gas_elec/Postcode_level_all_meters
 raw_gas = f'/Volumes/T9/Data_downloads/UKGOV_Gas_elec/Postcode_level_gas_{fuel_year}.csv' #gas by postcode 
 
 pc_map ='/Volumes/T9/Data_downloads/Postcode_to_LSOA_mapping/PCD_OA21_LSOA21_MSOA21_LAD_AUG23_UK_LU 2.csv' #postcode to LSOA mapping
-link = '/Volumes/T9/Data_downloads/Versik_building_data/UKBuildings_Edition_14_ABC_link_file.csv' # Link file 
-postcode_base  = '/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291/two_letter_pc_code/
-# lk = '/Volumes/T9/Data_downloads/Eng_wales_boundary_shapefiles/LSOA_(2021)_to_Built_Up_Area_to_Local_Authority_District_to_Region_(December_2022)_Lookup_in_England_and_Wales_v2.csv'
+link = '/Volumes/T9/Data_downloads/Versik_building_data/UKBuildings_Edition_14_ABC_link_file.csv' # Verisk Link file 
+postcode_base  = '/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291/two_letter_pc_code/'
+lk = '/Volumes/T9/Data_downloads/Eng_wales_boundary_shapefiles/LSOA_(2021)_to_Built_Up_Area_to_Local_Authority_District_to_Region_(December_2022)_Lookup_in_England_and_Wales_v2.csv'
+building_file_directory = '/Users/gracecolverd/New_dataset/data/verisk'
 
 ################################################################################################ 
 
@@ -39,8 +40,8 @@ def main():
     run_script('match_postcode_to_uprns.py', gas_elec= gas_elec, raw_elec=raw_elec, raw_gas=raw_gas, pc_map=pc_map, link=link, lk=lk, onsud=onsud, fuel_year=fuel_year  )
 
     # Call gen_nrom_fuel.py with kwargs
-    run_script('gen_norm_fuel.py', gas_elec= gas_elec , filtered= True, fuel_year=fuel_year )
-    run_script('gen_norm_fuel.py', gas_elec= gas_elec , filtered= False , fuel_year=fuel_year   )
+    run_script('gen_norm_fuel.py', gas_elec= gas_elec , filtered= True, fuel_year=fuel_year , building_file_directory=building_file_directory)
+    run_script('gen_norm_fuel.py', gas_elec= gas_elec , filtered= False , fuel_year=fuel_year , building_file_directory=building_file_directory  )
 
     # Call post_process_fuel.py with kwargs
     run_script('post_process_fuel.py', gas_elec= gas_elec, fuel_year=fuel_year , postcode_shapefile_path=postcode_shapefile_path, root_dir=root_dir )
