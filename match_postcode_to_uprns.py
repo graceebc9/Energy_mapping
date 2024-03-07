@@ -7,52 +7,6 @@ import os
 import argparse
 from src.utils import check_merge_files, join_pc_map_three_pc_two, join_pc_map_three_pc
 
-# def check_merge_files(df1, df2, col1, col2):
-#     # Check if the files are empty
-#     if df1.empty or df2.empty:
-#         print("Error: One or both files are empty.")
-#         return False
-    
-#     # Check if the columns to be merged on exist
-#     if col1 not in df1.columns or col2 not in df2.columns:
-#         print("Error: One or both columns to be merged on do not exist.")
-#         return False
-    
-#     return True
-
-
-# def join_pc_map_three_pc(df, df_col,  pc_map  ):
-#     # merge on any one of three columns in pc_map 
-#     final_d = [] 
-#     for col in ['pcd7', 'pcd8', 'pcds']:
-        
-#         d = pc_map.merge(df, left_on = col, right_on = df_col  )
-#         final_d.append(d)
-
-    
-#     print('starting merge') 
-#     # Concatenate the results
-#     merged_final = pd.concat(final_d ).drop_duplicates()
-    
-#     if len(df) != len(merged_final):
-#         print('Warning: some postcodes not matched')
-#     return merged_final 
-
-
-# def join_pc_map_three_pc_two(df, df_col1, dfcol2,  pc_map  ):
-#     # merge on any one of three columns in pc_map 
-#     final_d = [] 
-#     for col in ['pcd7', 'pcd8', 'pcds']:
-#         for dcol in [df_col1, dfcol2]:
-            
-#             d = pc_map.merge(df, left_on = col, right_on = dcol  )
-#             final_d.append(d)
-#     # Concatenate the results
-#     merged_final = pd.concat(final_d ).drop_duplicates()
-    
-#     if len(df) != len(merged_final):
-#         print('Warning: some postcodes not matched')
-#     return merged_final 
 
 def process_uprn_df(uprn_df):
     print('Starting to format uprn')
@@ -100,7 +54,7 @@ def process_ons_file(ons_file, link, raw_fuel_pc_lk, gas_elec, fuel_year):
     lab = ons_file.split('_')[-1].split('.')[0]
     print('Starting to process ONS file ', lab)
 
-    out_dir = f'data/fuel_{fuel_year}/{gas_elec}_link'
+    out_dir = f'data/fuel_{fuel_year}/1_{gas_elec}_link'
     try:
         os.makedirs(out_dir, exist_ok=True)
     except Exception as e:

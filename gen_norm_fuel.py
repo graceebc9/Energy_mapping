@@ -12,11 +12,6 @@ import argparse
 
 
 
-
-
-
-
-
 def has_duplicates(df, column_name):
     """
     Check if a DataFrame column has any duplicates.
@@ -93,7 +88,7 @@ def calc_normalised_elec_per_postcode(df, gas_elec, outfile = None ):
 
 
 # Function to process each file
-def process_file(file_path, elec, cols):
+def process_file(file_path, elec):
     try:
         df = pd.read_csv(file_path)
         if df.empty:
@@ -109,60 +104,68 @@ def process_file(file_path, elec, cols):
 
 
 def main(gas_elec, filtered, fuel_year, building_file_directory):
-    
-    files = glob.glob(f'/data/fuel_{fuel_year}/2_{gas_elec}_link/*.csv')
+    print('Starting to calculate normalised fuel use')
+    files = glob.glob(f'data/fuel_{fuel_year}/1_{gas_elec}_link/*.csv')
+    if len(files) == 0:
+        raise ValueError(f"No files found, check if prior step ran. ")
+
     labels = [ x.split('/')[-1].split('.')[0].split('_')[-1] for x in files]
 
-
+    
     for f, label in zip(files, labels):
-        print('Starting ', label)
-        elec = pd.read_csv(f)
-        elec = elec.drop(columns=['Unnamed: 0']).drop_duplicates()
-        if filtered == True: 
-            outdir = f'data/fuel_{fuel_year}/3_processed/filtered_use/{gas_elec}'
-        elif filtered ==False:
-            outdir = f'data/fuel_{fuel_year}/3_processed/non_filtered_use/{gas_elec}'
-        os.makedirs(outdir, exist_ok=True)
-        outfile = os.path.join(outdir, f'{gas_elec}_norm_{label}.csv' ) 
+        if label =='SC' or label == 'SW':
+            print(label)
+            print('Starting ', label)
+            fuel = pd.read_csv(f)
+            fuel = fuel.drop(columns=[col for col in fuel.columns if 'Unnamed' in col]).drop_duplicates()
+            # elec = elec.drop(columns=['Unnamed: 0']).drop_duplicates()
+            if filtered == True: 
+                outdir = f'data/fuel_{fuel_year}/2_processed/filtered_use/{gas_elec}'
+            elif filtered ==False:
+                outdir = f'data/fuel_{fuel_year}/2_processed/non_filtered_use/{gas_elec}'
+            os.makedirs(outdir, exist_ok=True)
+            outfile = os.path.join(outdir, f'{gas_elec}_norm_{label}.csv' ) 
 
-        if os.path.isfile(outfile):
-            print('file exists')
-            continue
+            if os.path.isfile(outfile):
+                print('file exists')
+                continue
 
-        # Initialize parameters
-        cols = ['Unique_Property_Number', 'Unique_Building_Number', 'Property_Area', 'Building_Area', 'Mapping_Block_Number', 'Height', 'Age', 'Use', 'DATA_LEVEL']
-        
-        file_paths = [os.path.join(building_file_directory, f) for f in os.listdir(building_file_directory) if f.endswith('.csv')]
-        print('num of files to loop over ', len(file_paths))
+            # Initialize parameters
+            cols = ['Unique_Property_Number', 'Unique_Building_Number', 'Property_Area', 'Building_Area', 'Mapping_Block_Number', 'Height', 'Age', 'Use', 'DATA_LEVEL']
+            
+            file_paths = [os.path.join(building_file_directory, f) for f in os.listdir(building_file_directory) if f.endswith('.csv')]
+            if len(file_paths) == 0:
+                raise ValueError(f"No files found in {building_file_directory}")
+            print('num of files to loop over ', len(file_paths))
 
-        # Use ThreadPoolExecutor to process files in parallel
-        processed_files_count = 0
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(process_file, file_path, elec, cols) for file_path in file_paths]
+            # Use ThreadPoolExecutor to process files in parallel
+            processed_files_count = 0
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = [executor.submit(process_file, file_path, fuel, cols) for file_path in file_paths]
 
-        # Collect results
-        print(label , ": Collecting results from processed files...")
-        merged = []
-        for future in futures:
-            result = future.result()
-            if result is not None:
-                merged.append(result)
-                processed_files_count += 1
+            # Collect results
+            print(label , ": Collecting results from processed files...")
+            merged = []
+            for future in futures:
+                result = future.result()
+                if result is not None:
+                    merged.append(result)
+                    processed_files_count += 1
 
-        print(f"Total processed files: {processed_files_count} / {len(file_paths)}")
-        
-        if not merged:
-            print(label, " No files were processed. Exiting.")
-            continue
+            print(f"Total processed files: {processed_files_count} / {len(file_paths)}")
+            
+            if not merged:
+                print(label, " No files were processed. Exiting.")
+                continue
 
-        df = pd.concat(merged)
-        print("All files processed. Merging completed.")
-        print('len of file: ', len(df))
+            df = pd.concat(merged)
+            print("All files processed. Merging completed.")
+            print('len of file: ', len(df))
 
-        df_resb = calc_postcode_building_residential_volume(df, filter_use = filtered )
-        df_elec_norm = calc_normalised_elec_per_postcode(df_resb, gas_elec)
+            df_resb = calc_postcode_building_residential_volume(df, filter_use = filtered )
+            df_elec_norm = calc_normalised_elec_per_postcode(df_resb, gas_elec)
 
-        df_elec_norm.to_csv(outfile)
+            df_elec_norm.to_csv(outfile)
 
 
 if __name__ == "__main__":
