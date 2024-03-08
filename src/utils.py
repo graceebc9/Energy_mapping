@@ -88,5 +88,9 @@ def check_merge_files(df1, df2, col1, col2):
     if col1 not in df1.columns or col2 not in df2.columns:
         print("Error: One or both columns to be merged on do not exist.")
         return False
+    # Check columns are same type 
+    if df1[col1].dtype != df2[col2].dtype:
+        print('Warning: columns not same type')
+    # If one column int, convert toher to int
     
-    return True
+    return True 
