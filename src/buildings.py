@@ -11,23 +11,20 @@ import pandas as pd
 import os
 
 
-# Function to generate a unique filename based on bbox
-def generate_filename(bbox, prefix="bbox", directory="/Volumes/T9/postcode_data/data/geo_verisk"):
-    # Create a filename from bbox coordinates rounded to 2 decimal places for brevity
-    filename = f"{prefix}_{bbox[0]:.2f}_{bbox[1]:.2f}_{bbox[2]:.2f}_{bbox[3]:.2f}.gpkg"
-    return os.path.join(directory, filename)
+# # Function to generate a unique filename based on bbox
+# def generate_filename(bbox, prefix="bbox", directory="/Volumes/T9/postcode_data/data/geo_verisk"):
+#     # Create a filename from bbox coordinates rounded to 2 decimal places for brevity
+#     filename = f"{prefix}_{bbox[0]:.2f}_{bbox[1]:.2f}_{bbox[2]:.2f}_{bbox[3]:.2f}.gpkg"
+#     return os.path.join(directory, filename)
 
 # Function to generate a unique filename based on bbox
 def generate_new_filename(bbox,directory, prefix="bbox", ):
-    # Create a filename from bbox coordinates rounded to 2 decimal places for brevity
     filename = f"{prefix}_{bbox[0]}_{bbox[1]}_{bbox[2]}_{bbox[3]}.gpkg"
     return os.path.join(directory, filename)
 
 
 
-def calculate_bounding_boxes(extent):
-    chunk_width = 100000
-    chunk_height = 100000
+def calculate_bounding_boxes(extent, chunk_width = 100000, chunk_height = 100000):
     minX, maxX, minY, maxY = extent
     bounding_boxes = []
     current_minX = minX
@@ -42,13 +39,16 @@ def calculate_bounding_boxes(extent):
     return bounding_boxes
 
 
+
+
+
 def get_bounding_boxes(input_gpk):
     ds = ogr.Open(input_gpk)
     layer = ds.GetLayer()
     extent = layer.GetExtent()
     bounding_boxes = calculate_bounding_boxes(extent)
-    if len(bounding_boxes)!=91:
-        raise ValueError('Error: incorrect number of bounding boxes')
+    # if len(bounding_boxes)!=91:
+    #     raise ValueError('Error: incorrect number of bounding boxes')
     return bounding_boxes
 
 

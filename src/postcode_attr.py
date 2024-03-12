@@ -4,6 +4,9 @@ import geopandas as gpd
 import os 
 from shapely.geometry import box 
 from src import check_merge_files
+import concurrent.futures
+from functools import partial
+
 
 def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder='/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291'):
     ee = pd.read_csv(path_to_onsud_file)
@@ -48,7 +51,9 @@ def find_data_pc(pc, data, input_gpk='/Volumes/T9/Data_downloads/Versik_building
 def calc_med_attr(df, col):
     """ Fn to calculate the median of a column for set of data and postcodes 
     """
+    
     modal = calculate_median_age_band(df, modal_ignore = 'modal')
+    
     ignore = calculate_median_age_band(df, modal_ignore = 'ignore')
     if modal != ignore:
         print('Modal and ignore are different')
@@ -102,15 +107,17 @@ def calculate_median_age_band(df, modal_ignore = 'modal'):
 
 
 def calculate_modal_age_band(df, col ):
-    if len(df[df['premise_age'] =='Unknown date'] ) / len(df) * 100  > 10:
+    perc_missing = len(df[df['premise_age'] =='Unknown date'] ) / len(df) 
+    if  perc_missing * 100  > 10:
             print('More than 10% of the data is missing premise age')
             return 'Too many unknown ages'
+    
     # alll variables pre 1919 updated to be one variable 
     df['premise_age_bucketed'] = np.where(df['premise_age'].isin(['Pre 1837', '1837-1869', '1870-1918']), 'Pre 1919', df['premise_age'])
 
     df = df[df['premise_age_bucketed']!='Unknown date']  
     mode = df['premimse_age_bucketed'].mode()[0]
-    return  mode 
+    return  mode , perc_missing
     
 
 
@@ -178,25 +185,21 @@ def calculate_modal_age_band(df, col ):
 
 #     return results_df
 
-import os
-import pandas as pd
-import concurrent.futures
-from functools import partial
 
-def process_postcode(pc, data, attr_function, attr_col, input_gpk):
-    """
-    Helper function to process a single postcode.
-    """
-    try:
-        uprn_match = find_data_pc(pc, data, input_gpk=input_gpk)
-        if uprn_match.empty:
-            return pc, 'Processed', 'Failure - No buildings found', None
+# def process_postcode(pc, data, attr_function, attr_col, input_gpk):
+#     """
+#     Helper function to process a single postcode.
+#     """
+#     try:
+#         uprn_match = find_data_pc(pc, data, input_gpk=input_gpk)
+#         if uprn_match.empty:
+#             return pc, 'Processed', 'Failure - No buildings found', None
 
-        attr_value = attr_function(uprn_match, attr_col)
-        return pc, 'Processed', 'Success', attr_value
+#         attr_value = attr_function(uprn_match, attr_col)
+#         return pc, 'Processed', 'Success', attr_value
 
-    except Exception as e:
-        return pc, 'Error', str(e), None
+#     except Exception as e:
+#         return pc, 'Error', str(e), None
 
 # def process_data_improved(data, attribute, attr_function, attr_col=None, base_dir='/Users/gracecolverd/New_dataset', input_gpk='/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg', checkpoint_interval=100, max_workers=20):
 #     """
@@ -245,12 +248,80 @@ def process_postcode(pc, data, attr_function, attr_col, input_gpk):
 #     results_df.to_csv(os.path.join(output_folder, f'{attribute}_final_results.csv'))
 #     log_df.to_csv(os.path.join(output_folder, f'{attribute}_process_log_final.csv'), index=False)
     
-import os
-import pandas as pd
-import concurrent.futures
-from functools import partial
+
 
 def process_postcode_batch(postcode_batch, data, attr_function, attr_col, input_gpk):
+    """
+    Process a batch of postcodes and return a list of results.
+    """
+    
+    batch_results = []
+    for pc in postcode_batch:
+        try:
+            uprn_match = find_data_pc(pc, data, input_gpk=input_gpk)
+            if uprn_match.empty:
+                batch_results.append((pc, 'Failure - No buildings found', None))
+            else:
+                attr_value = attr_function(uprn_match, attr_col)
+                batch_results.append((pc, 'Completed', attr_value))
+        except Exception as e:
+            batch_results.append((pc, str(e), None))
+    return batch_results
+
+
+def process_data_improved(data, attribute, attr_function,  attr_col=None, base_dir='/Users/gracecolverd/New_dataset', input_gpk='/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg', checkpoint_interval=1000, max_workers=10, batch_size=10):
+    """
+    Process data to calculate a specified attribute for each postcode using multi-threading with batch processing.
+    """
+    pc_list = data['PCDS'].unique()
+
+    output_folder = os.path.join(base_dir, f'data/postcode_attributes/{attribute}')
+    os.makedirs(output_folder, exist_ok=True)
+    # log_path = os.path.join(output_folder, f'{attribute}_process_log.csv')
+    checkpoint_path = os.path.join(output_folder, f'{attribute}_checkpoint.csv')
+
+    if os.path.exists(checkpoint_path):
+        print('Resuming process')
+        results_df = pd.read_csv(checkpoint_path)
+        processed_pc = results_df['Postcode'].tolist() 
+        
+    else:
+        print('Starting new process')
+        # log_df = pd.DataFrame(columns=['Postcode', 'Status', 'Details'])
+        results_df = pd.DataFrame(columns=['Postcode', attribute, 'status'])
+        processed_pc = set()
+
+    pc_to_process = [pc for pc in pc_list if pc not in processed_pc]
+    postcode_batches = [pc_to_process[i:i + batch_size] for i in range(0, len(pc_to_process), batch_size)]
+    print('Num of pcs to process ', len(pc_to_process)) 
+    print('Num of batches ', len(postcode_batches)) 
+    process_function = partial(process_postcode_batch, data=data, attr_function=attr_function, attr_col=attr_col, input_gpk=input_gpk)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_batch = {executor.submit(process_function, batch): batch for batch in postcode_batches}
+        for future in concurrent.futures.as_completed(future_to_batch):
+            batch_results = future.result()
+            for pc, status, attr_value in batch_results:
+                # log_df = pd.concat([log_df, pd.DataFrame([[pc, status, details]], columns=log_df.columns)], ignore_index=True)
+                results_df = pd.concat([results_df, pd.DataFrame([[pc, attr_value, status ]], columns=results_df.columns)], ignore_index=True)
+
+            print(len(results_df))
+            if len(results_df) % checkpoint_interval < batch_size:  # Adjust for batch size
+            # if len(results_df) % checkpoint_interval == 0 :  # Adjust for batch size
+                results_df.to_csv(checkpoint_path, index=False)
+                # log_df.to_csv(log_path, index=False)
+                print(f'Checkpoint saved at {len(results_df)} postcodes')
+
+    results_df.to_csv(os.path.join(output_folder, f'{attribute}_final_results.csv'), index=False )
+    # log_df.to_csv(os.path.join(output_folder, f'{attribute}_process_log_final.csv'), index=False)
+
+    return results_df
+
+
+############################################# Confidence fns #############################################
+
+
+def process_postcode_batch_confidence(postcode_batch, data, attr_function, attr_col, input_gpk):
     """
     Process a batch of postcodes and return a list of results.
     """
@@ -261,13 +332,13 @@ def process_postcode_batch(postcode_batch, data, attr_function, attr_col, input_
             if uprn_match.empty:
                 batch_results.append((pc, 'Processed', 'Failure - No buildings found', None))
             else:
-                attr_value = attr_function(uprn_match, attr_col)
-                batch_results.append((pc, 'Processed', 'Success', attr_value))
+                attr_value, confidence = attr_function(uprn_match, attr_col)
+                batch_results.append((pc, 'Processed', 'Success', attr_value, confidence))
         except Exception as e:
             batch_results.append((pc, 'Error', str(e), None))
     return batch_results
 
-def process_data_improved(data, attribute, attr_function, attr_col=None, base_dir='/Users/gracecolverd/New_dataset', input_gpk='/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg', checkpoint_interval=100, max_workers=20, batch_size=10):
+def process_data_improved_confidence(data, attribute, attr_function, conf_attr,  attr_col=None, base_dir='/Users/gracecolverd/New_dataset', input_gpk='/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg', checkpoint_interval=100, max_workers=20, batch_size=10):
     """
     Process data to calculate a specified attribute for each postcode using multi-threading with batch processing.
     """
@@ -282,25 +353,27 @@ def process_data_improved(data, attribute, attr_function, attr_col=None, base_di
         print('Resuming process')
         log_df = pd.read_csv(log_path)
         results_df = pd.read_csv(checkpoint_path)
+        processed_pc = results_df['Postcode'].tolist() 
+        
     else:
         print('Starting new process')
         log_df = pd.DataFrame(columns=['Postcode', 'Status', 'Details'])
-        results_df = pd.DataFrame(columns=['Postcode', attribute])
+        results_df = pd.DataFrame(columns=['Postcode', attribute, conf_attr])
         processed_pc = set()
 
     pc_to_process = [pc for pc in pc_list if pc not in processed_pc]
     postcode_batches = [pc_to_process[i:i + batch_size] for i in range(0, len(pc_to_process), batch_size)]
 
-    process_function = partial(process_postcode_batch, data=data, attr_function=attr_function, attr_col=attr_col, input_gpk=input_gpk)
+    process_function = partial(process_postcode_batch, data=data, attr_function=attr_function, conf_attr=conf_attr, attr_col=attr_col, input_gpk=input_gpk)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_batch = {executor.submit(process_function, batch): batch for batch in postcode_batches}
         for future in concurrent.futures.as_completed(future_to_batch):
             batch_results = future.result()
-            for pc, status, details, attr_value in batch_results:
+            for pc, status, details, attr_value, conf_value in batch_results:
                 log_df = pd.concat([log_df, pd.DataFrame([[pc, status, details]], columns=log_df.columns)], ignore_index=True)
                 if attr_value is not None:
-                    results_df = pd.concat([results_df, pd.DataFrame([[pc, attr_value]], columns=results_df.columns)], ignore_index=True)
+                    results_df = pd.concat([results_df, pd.DataFrame([[pc, attr_value, conf_value]], columns=results_df.columns)], ignore_index=True)
                 
             if len(log_df) % checkpoint_interval < batch_size:  # Adjust for batch size
                 results_df.to_csv(checkpoint_path, index=False)
