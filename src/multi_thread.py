@@ -28,36 +28,43 @@ def generate_batch_list(full_list, log, col_name ):
     return batch_list 
 
 
-
-def run_batching(whole_batch_list, batch_fn, data, result_cols, log_file, pc_area=None, batch_size = 5, max_workers=6):
-    if pc_area is not None:
+def run_batching(whole_batch_list, batch_fn, data, result_cols, log_file, batch_size, max_workers, pc_area_bool=False, merge_fuel = None ):
+    if pc_area_bool ==True:
         whole_batch_list , pc_area_list = zip(*whole_batch_list)
     with concurrent.futures.ThreadPoolExecutor(max_workers = max_workers ) as executor:
         # Store futures if you need to wait for them or check for exceptions
         futures = []
         for i in range(0, len(whole_batch_list), batch_size):
             batch = whole_batch_list[i:i+batch_size]
-            if pc_area is not None:
+            if pc_area_bool is True:
                 pc_area = pc_area_list[i:i+batch_size]
-                future = executor.submit(process_batch, batch, batch_fn, data,  result_cols, log_file, pc_area)
+                future = executor.submit(process_batch, batch, batch_fn, data,  result_cols, log_file, pc_area, merge_fuel)
             else:
-                future= executor.submit(process_batch, batch, batch_fn, data,  result_cols, log_file, pc_area)
+                print('starting execute')
+                future= executor.submit(process_batch, batch, batch_fn, data,  result_cols, log_file, None , merge_fuel)
             futures.append(future)
-        # Optionally wait for all futures if needed
+        # Optionaly wailt for alutures if needel fd
         concurrent.futures.wait(futures)
 
-def process_batch(batch_list, batch_fn, data, results_cols, log_file, pc_area):
-    print('Starting batch')
+def process_batch(batch_list, batch_fn, data, results_cols, log_file, pc_area, merge_fuel ):
     results = []
-    if pc_area is not None:
+    if pc_area is not None :
+        print('area')
         for item , area in zip(batch_list, pc_area):
             item_results = batch_fn(item, data, area)
+            results.append(item_results)
+    elif merge_fuel is not None:
+        for item in batch_list:
+            item_results = batch_fn(item, data, merge_fuel)
     else:
+        print('other')
         for item in batch_list:
             item_results = batch_fn(item, data)
-    results.append(item_results)
+            results.append(item_results)
+    print('len results ' , len(results))
+    if len(results) != len(batch_list):
+        raise ValueError('Results length does not match batch length')
     df = pd.DataFrame(results, columns=results_cols )
-    print('Results done, starting save')
     # Get the temp file path and whether it's the first write operation
     temp_file_path, is_first_write = get_thread_temp_file(log_file)
     print('temp file path is ' , temp_file_path )

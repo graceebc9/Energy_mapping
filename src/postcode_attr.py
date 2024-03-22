@@ -7,7 +7,7 @@ from src import check_merge_files
 import concurrent.futures
 from functools import partial
 
-def process_postcode(pc, attr_function, data, input_gpk= '/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg', postcode_area=None ): 
+def process_postcode(pc, attr_function, data, input_gpk= '/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg', postcode_area=None  ): 
     # data is hte output from the find postcode for ONSUD file fn 
     
     try:
@@ -16,6 +16,7 @@ def process_postcode(pc, attr_function, data, input_gpk= '/Volumes/T9/Data_downl
             return pc, 'Completed', 'No buildings found'  
         else:
             if postcode_area is not None:
+                print('stassrting pc area') 
                 attr_value = attr_function(df= uprn_match, pc_area=postcode_area)
             else:
                 attr_value = attr_function(df= uprn_match)
@@ -189,8 +190,11 @@ def postcode_modal_batch_fn(pc, data):
 
 ########################### Area functions ########################################
 
-def fill_premise_floor_types(uprn):
+
+
+def fill_premise_floor_types_old(uprn):
     # Ensure 'premise_floor_count' is numeric with NaN for non-numeric values
+    orig_len = len(uprn)
     uprn['premise_floor_count'] = pd.to_numeric(uprn['premise_floor_count'], errors='coerce')
     
     # Compute 'av_storey_height' only for non-NaN 'premise_floor_count'
@@ -200,11 +204,13 @@ def fill_premise_floor_types(uprn):
     # Calculate mean storey height from valid entries
     mean_storey_height = valid_data['av_storey_height'].mean()
     
-    # Fill NaN 'premise_floor_count' by dividing 'height' by mean storey height and rounding
+    # Fill NaN 'premise_floor_count' by dividing 'height' by mean storey height and TAKING FLOOR to ensure never higher that heated vol 
     uprn['premise_floor_count'].fillna(uprn['height'] / mean_storey_height, inplace=True)
-    uprn['premise_floor_count'] = np.round(uprn['premise_floor_count']).astype('Int64')
-    
+    uprn['premise_floor_count'] = np.floor(uprn['premise_floor_count']).astype('Int64')
+    if len(uprn)!= orig_len:
+        raise Exception('Fill_premise_floor_types has dropped or increased rows, orig_len: ', orig_len, 'new len: ', len(uprn))
     return uprn
+
 
 
 def calc_area_vars(df, pc_area):
@@ -215,20 +221,20 @@ def calc_area_vars(df, pc_area):
     total_floor_area = df['premise_area'].sum()
     build_floor_area_per_pc_area = total_floor_area / pc_area
     num_buildings_per_m2_pc_area = num_buildings / pc_area
-
+    
     prob_cols = df.columns[df.isna().mean() > 0.15].tolist()
-    for col in prob_cols:
-        print(f'Warning: {col} has more than 15% missing values')
+    # for col in prob_cols:
+        # print(f'Warning: {col} has more than 15% missing values')
 
     df = fill_premise_floor_types(df)
-
+    
     perc_missing_premise_floor_count = df['premise_floor_count'].isna().mean()
     perc_residential, residential_floor_area = -999, -999
     if 'premise_use' not in prob_cols:
-        residential_data = df[df['premise_use'] == 'Residential']
+        residential_data = df[df['premise_use'] == 'Residential'].copy()
         perc_residential = len(residential_data) / num_buildings
         residential_floor_area = residential_data['premise_area'].sum()
-
+    
     vars_out = calc_vars(df, prob_cols)
     res_vars_out = calc_vars(df[df['premise_use'] == 'Residential'], prob_cols) if perc_residential != 1 else vars_out
 
@@ -237,7 +243,7 @@ def calc_area_vars(df, pc_area):
 
     return [perc_residential, total_floor_area, residential_floor_area, perc_missing_premise_floor_count] + \
            list(vars_out) + [build_floor_area_per_pc_area, num_buildings_per_m2_pc_area, perc_listed_buildings] + \
-           list(res_vars_out[1:])
+           list(res_vars_out)
 
 
 def calc_vars(df, prob_cols):
