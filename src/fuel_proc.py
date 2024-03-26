@@ -9,7 +9,7 @@ import geopandas as gpd
 thread_local = threading.local()
 
 from src.multi_thread import merge_temp_logs_to_main, generate_batch_list
-from src import check_merge_files 
+from src.utils  import check_merge_files 
 
 
 def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
