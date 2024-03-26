@@ -48,7 +48,7 @@ def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
 
 
 def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir):
-    print('starting batch es running')
+    print('starting batch is running')
     log_file = os.path.join(temp_dir, 'log_file.csv' )
     # Collect results from processing each postcode into a list
     results = []
@@ -56,6 +56,7 @@ def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir):
         print('starting pc')
         pc_result = process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK)
         results.append(pc_result)
+        print(len(results))
     print('len of batch results ', len(results))
     # Only proceed if we have results
     if results:
@@ -93,30 +94,32 @@ def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_work
     # # Split pcs_list into batches for parallel processing
     # pcs_batches = [pcs_list[i:i+batch_size] for i in range(0, len(pcs_list), batch_size)]
 
-
+    for i in range(0, len(pcs_list) , batch_size):
+        batch = pcs_list[i:i+batch_size]
+        process_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir)
     # with concurrent.futures.ThreadPoolExecutor(max_workers = max_workers) as executor:
     #     futures = [executor.submit(process_batch, batch, data, gas_df, elec_df, temp_dir) for batch in pcs_batches]
     #     for future in concurrent.futures.as_completed(futures):
     #         temp_file_path = future.result()
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers = max_workers ) as executor:
-        # Store futures if you need to wait for them or check for exceptions
-        futures = []
-        for i in range(0, len(pcs_list), batch_size):
-            batch = pcs_list[i:i+batch_size]
+    # with concurrent.futures.ThreadPoolExecutor(max_workers = max_workers ) as executor:
+    #     # Store futures if you need to wait for them or check for exceptions
+    #     futures = []
+    #     for i in range(0, len(pcs_list), batch_size):
+    #         batch = pcs_list[i:i+batch_size]
     
-            future= executor.submit(process_batch, batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir )
-            futures.append(future)
-        concurrent.futures.wait(futures)
+    #         future= executor.submit(process_batch, batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir )
+    #         futures.append(future)
+    #     concurrent.futures.wait(futures)
 
-        # Check for exceptions in the completed futures
-        for future in futures:
-            if future.exception() is not None:
-                # Handle the exception
-                print(f"Exception occurred in thread: {future.exception()}")
-            else:
-                # Process result if needed (or acknowledge successful completion)
-                None 
+    #     # Check for exceptions in the completed futures
+    #     for future in futures:
+    #         if future.exception() is not None:
+    #             # Handle the exception
+    #             print(f"Exception occurred in thread: {future.exception()}")
+    #         else:
+    #             # Process result if needed (or acknowledge successful completion)
+    #             None 
 
 
 
