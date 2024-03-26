@@ -4,9 +4,7 @@ import sys
 from src.postcode_attr import find_data_pc
 from src.pre_process_buildings import pre_process_building_data 
 
-INPUT_GPK= '/Volumes/T9/Data_downloads/Versik_building_data/2024_03_22_updated_data/UKBuildings_Edition_15_new_format_upn.gpkg' 
-
-
+# INPUT_GPK= '/Volumes/T9/Data_downloads/Versik_building_data/2024_03_22_updated_data/UKBuildings_Edition_15_new_format_upn.gpkg' 
 
 
 import numpy as np
@@ -22,6 +20,8 @@ def calc_df_sum_attribute(df, cols, prefix=''):
     return attr_dict
 
 def calculate_postcode_attr(df):
+    print(len(df))
+
     df = df.reset_index(drop=True)  # Reset index to ensure alignment
 
     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
@@ -46,7 +46,7 @@ def calculate_postcode_attr(df):
 
 import numpy as np
 
-def generate_null_attributes(prefix, cols):
+def generate_null_attributes(prefix,cols):
     """
     Generate a dictionary with all column names prefixed as specified, 
     with np.nan values, for the case where there's no data.
@@ -58,17 +58,44 @@ def generate_null_attributes(prefix, cols):
     Returns:
     - A dictionary with keys as the prefixed column names and np.nan as all values.
     """
-    # Initialize the dictionary with the total_buildings count set to np.nan
-    null_attributes = {f'{prefix}total_buildings': np.nan}
-    
+
+    null_attributes= {f'{prefix}total_buildings': np.nan}
+
     # Add entries for each column in cols, prefixed and set to np.nan
     for col in cols:
         null_attributes[f'{prefix}{col}_total'] = np.nan
     
     return null_attributes
 
+
+def generate_null_attributes_full(pc):
+    """
+    Generate a dictionary with all column names prefixed as specified, 
+    with np.nan values, for the case where there's no data.
+    
+    Parameters:
+    - prefix: The prefix to be applied to each column name ('all_types_', 'res_', 'mixed_', or 'comm_').
+    - cols: The list of column names that are expected in the non-null case.
+
+    Returns:
+    - A dictionary with keys as the prefixed column names and np.nan as all values.
+    """
+    cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
+        'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool']
+    
+    prefix = ['res_', 'mixed_', 'comm_']
+    null_attributes={'postcode':pc}
+
+    for p in prefix:
+        # Initialize the dictionary with the total_buildings count set to np.nan
+        null_attributes[f'{p}total_buildings']=  np.nan 
+        # Add entries for each column in cols, prefixed and set to np.nan
+        for col in cols:
+            null_attributes[f'{p}{col}_total'] = np.nan
+        
+    return null_attributes
+
 def calculate_postcode_attr_with_null_case(df):
-    df = df.reset_index(drop=True)  # Reset index to ensure alignment
     
     # Define the columns to summarize
     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
@@ -152,12 +179,17 @@ import numpy as np  # Import at the beginning of your script
 
 def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
     """Process one postcode, deriving building attributes and electricity and fuel info."""
+    print(pc)
     dc_full = {'postcode': pc}
     
     uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
     
     # Generate building metrics, clean and test
     df = pre_process_building_data(uprn_match)
+    if df is None: 
+        # Handle case with null df by returning a "null case" dictionary
+        dc_null_case = generate_null_attributes_full(pc)
+        return dc_null_case
 
     dc = calculate_postcode_attr_with_null_case(df)
     

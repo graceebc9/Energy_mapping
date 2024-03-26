@@ -55,7 +55,8 @@ def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir):
     for pc in pc_batch:
         print('starting pc')
         pc_result = process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK)
-        results.append(pc_result)
+        if pc_result is not None:
+            results.append(pc_result)
         print(len(results))
     print('len of batch results ', len(results))
     # Only proceed if we have results
