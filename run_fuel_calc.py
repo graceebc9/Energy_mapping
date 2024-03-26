@@ -22,7 +22,7 @@ def main(data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT
 
 
 
-if __name__=="main":
+if __name__ == "__main__":
     print('loading varibles')
     data_dir = os.environ.get('DATA_DIR')
     gas_path = os.environ.get('GAS_PATH')
