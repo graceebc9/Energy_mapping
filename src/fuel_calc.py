@@ -156,7 +156,7 @@ def check_duplicate_primary_key(df, primary_key_column):
 
 import numpy as np  # Import at the beginning of your script
 
-def process_postcode_fuel(pc, data, gas_df, elec_df):
+def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
     """Process one postcode, deriving building attributes and electricity and fuel info."""
     dc_full = {'postcode': pc}
     

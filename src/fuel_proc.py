@@ -12,7 +12,7 @@ from src.multi_thread import merge_temp_logs_to_main, generate_batch_list
 from src import check_merge_files 
 
 
-def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder='/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291'):
+def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
     """ Join ONSUD UPRN TO postcode mapping to postcode geofiles with shapefiles
     """
     ee = pd.read_csv(path_to_onsud_file)
@@ -46,14 +46,14 @@ def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder='/Vol
     return pc_df , data 
 
 
-def process_batch(pc_batch, data, gas_df, elec_df, temp_dir):
+def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir):
 
     log_file = os.path.join(temp_dir, 'log_file.csv' )
     # Collect results from processing each postcode into a list
     results = []
     for pc in pc_batch:
         
-        pc_result = process_postcode_fuel(pc, data, gas_df, elec_df)
+        pc_result = process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK)
         results.append(pc_result)
     
     # Only proceed if we have results
@@ -84,7 +84,7 @@ def get_thread_temp_file(log_file):
 
 
 
-def run_fuel_calc(pcs_list, data, gas_df, elec_df, temp_dir, max_workers, batch_size):
+def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_workers, batch_size):
     # Ensure temporary directory exists
     os.makedirs(temp_dir, exist_ok=True)
     
@@ -103,7 +103,7 @@ def run_fuel_calc(pcs_list, data, gas_df, elec_df, temp_dir, max_workers, batch_
         for i in range(0, len(pcs_list), batch_size):
             batch = pcs_list[i:i+batch_size]
     
-            future= executor.submit(process_batch, batch, data, gas_df, elec_df, temp_dir )
+            future= executor.submit(process_batch, batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir )
             futures.append(future)
         concurrent.futures.wait(futures)
 
@@ -146,30 +146,4 @@ def get_pcs_to_process(onsud_data, log):
     return pc_list 
     
 
-def main(data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, max_workers=8, batch_size = 50):
-    proc_dir = os.path.join(data_dir, 'proc_dir')
-    os.makedirs(proc_dir, exist_ok=True )
 
-    log = os.path.join(proc_dir, 'log_file.csv')
-
-    gas_df, elec_df = load_fuel_data(gas_path, elec_path )
-
-    onsud_data = load_onsud_data(path_to_onsud_file, path_to_pcshp)
-
-    pc_list = get_pcs_to_process(onsud_data, log)
-
-    run_fuel_calc(pc_list, onsud_data, gas_df, elec_df, proc_dir,  max_workers=max_workers, batch_size=batch_size)
-
-    merge_temp_logs_to_main(log)    
-    print('Run complete for ONSUD file')
-
-
-if __name__=="main":
-    data_dir = os.environ.get('DATA_DIR')
-    gas_path = os.environ.get('GAS_PATH')
-    elec_path = os.environ.get('ELEC_PATH')
-    path_to_onsud_file= os.environ.get('ONSUD_PATH')
-    path_to_pcshp= os.environ.get('PC_SHP_PATH')
-    max_workers=os.environ.get('MAX_WORKERS')
-    batch_size =os.environ.get('BATCH_SIZE')
-    main(data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, max_workers, batch_size ) 
