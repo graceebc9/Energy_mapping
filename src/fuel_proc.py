@@ -48,12 +48,12 @@ def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
 
 
 def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir):
-
+    print('starting batch es running')
     log_file = os.path.join(temp_dir, 'log_file.csv' )
     # Collect results from processing each postcode into a list
     results = []
     for pc in pc_batch:
-        
+        print('starting pc')
         pc_result = process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK)
         results.append(pc_result)
     print('len of batch results ', len(results))
