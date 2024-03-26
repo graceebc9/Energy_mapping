@@ -127,17 +127,16 @@ def pre_process_buildings(df):
 def produce_clean_building_data(df):
     """Filter and test building data."""
     # print("Filtering non-commercial derelict premises...")
+    print('len df ', len(df))
     if len(df)==0:
         print('No data to process')
-        return None
+        return None, None 
     filtered_df = df[df['premise_use'] != 'Commercial - derelict'].copy()
     filtered_df = filtered_df[~filtered_df['build_vol_FGA'].isna()].copy()
-
-    if 1 - (len(filtered_df) / len(df)) > BUILD_PERC_VAL:
-        raise Exception('Too many rows filtered out by test')
+    invalid = len(df) - len(filtered_df)
 
     test_building_metrics(filtered_df)
-    return filtered_df
+    return filtered_df,  invalid
 
 # ============================================================
 # Validation and Testing Functions
@@ -224,6 +223,6 @@ def pre_process_building_data(build):
     processed_df = calculate_volume_metrics(processed_df)
 
     # print("Producing clean building data...")
-    clean_df = produce_clean_building_data(processed_df)
+    clean_df , num_invalid = produce_clean_building_data(processed_df)
     # print('Pre process of building data complete')
-    return clean_df
+    return clean_df, num_invalid
