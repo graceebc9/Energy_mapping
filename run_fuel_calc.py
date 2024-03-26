@@ -29,7 +29,7 @@ if __name__ == "__main__":
     elec_path = os.environ.get('ELEC_PATH')
     path_to_onsud_file= os.environ.get('ONSUD_PATH')
     path_to_pcshp= os.environ.get('PC_SHP_PATH')
-    input_gpk_building = os.environ('BUILDING_PATH')
+    input_gpk_building = os.environ.get('BUILDING_PATH')
     max_workers=os.environ.get('MAX_WORKERS')
     batch_size =os.environ.get('BATCH_SIZE')
     print(data_dir)
