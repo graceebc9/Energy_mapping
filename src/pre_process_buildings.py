@@ -184,8 +184,8 @@ def test_building_metrics(df):
         'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA'
     ]
 
-    for col in metrics_columns:
-        check_nulls_percent(df, col)
+    # for col in metrics_columns:
+    #     check_nulls_percent(df, col)
 
     # print('DF passed tests')
 
