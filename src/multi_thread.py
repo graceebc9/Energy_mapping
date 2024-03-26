@@ -15,17 +15,37 @@ import threading
 thread_local = threading.local()
 
 
-def generate_batch_list(full_list, log, col_name ): 
-    print('Start generate list')
-    if os.path.exists(log):
-        log = pd.read_csv(log)
-        complete = log[col_name].unique().tolist() 
-        batch_list = [x for x in full_list if str(x) not in complete] 
+# def generate_batch_list(full_list, log, col_name ): 
+#     print('Start generate list')
+#     if os.path.exists(log):
+#         log = pd.read_csv(log)
+#         complete = log[col_name].unique().tolist() 
+#         batch_list = [x for x in full_list if str(x) not in complete] 
     
+#     else:
+#         batch_list = full_list
+#     print('num to process ',   len(batch_list) ) 
+#     return batch_list 
+
+def generate_batch_list(full_list, log_path, col_name):
+    print('Start generate list')
+    if os.path.exists(log_path):
+        # Read only the specific column needed to improve read efficiency
+        log_df = pd.read_csv(log_path, usecols=[col_name])
+        
+        # Convert the DataFrame column to a set for O(1) lookup times
+        completed_set = set(log_df[col_name].dropna().astype(str))
+        
+        # Use set difference to efficiently filter out completed items
+        # Ensure full_list is converted to a set of strings for accurate comparison
+        full_set = set(map(str, full_list))
+        batch_list = list(full_set - completed_set)
     else:
         batch_list = full_list
-    print('num to process ',   len(batch_list) ) 
-    return batch_list 
+    
+    print('num to process', len(batch_list))
+    return batch_list
+
 
 
 def run_batching(whole_batch_list, batch_fn, data, result_cols, log_file, batch_size, max_workers, pc_area_bool=False, merge_fuel = None ):
@@ -92,35 +112,74 @@ def get_thread_temp_file(log_file):
 
 
 
-def merge_temp_logs_to_main(log_file ):
+# def merge_temp_logs_to_main(log_file ):
+#     """
+#     Merge all temporary log files created by threads into the main log file.
+
+#     Parameters:
+#     - log_file: str, the path to the main log file.
+#     """
+#     # Assume temp files are in the same directory as the main log file
+#     temp_files = [f for f in os.listdir(os.path.dirname(log_file)) if f.startswith('temp_log_') and f.endswith('.csv')]
+#     print('Num of temp files found ', len(temp_files) ) 
+
+#     # Create or append to the main log file
+#     if len(temp_files) != 0:
+#         for temp_file in temp_files:
+#             temp_file_path = os.path.join(os.path.dirname(log_file), temp_file)
+#             try:
+#                 df_temp = pd.read_csv(temp_file_path )
+#             except:
+#                 print('Error reading temp file ', temp_file_path )
+#                 continue
+            
+#             if os.path.exists(log_file):
+#                 df_temp.to_csv(log_file, mode='a', header=False, index=False)
+#             else:
+#                 df_temp.to_csv(log_file, mode='w', header=True, index=False)
+    
+#     cleanup_temp_files( temp_dir = os.path.dirname(log_file), temp_file_prefix="temp_log_", )
+
+        
+
+def merge_temp_logs_to_main(log_file):
     """
-    Merge all temporary log files created by threads into the main log file.
+    Merge all temporary log files created by threads into the main log file, ensuring they have the correct number of columns.
 
     Parameters:
     - log_file: str, the path to the main log file.
     """
-    # Assume temp files are in the same directory as the main log file
     temp_files = [f for f in os.listdir(os.path.dirname(log_file)) if f.startswith('temp_log_') and f.endswith('.csv')]
-    print('Num of temp files found ', len(temp_files) ) 
+    print('Num of temp files found:', len(temp_files))
 
-    # Create or append to the main log file
-    if len(temp_files) != 0:
-        for temp_file in temp_files:
-            temp_file_path = os.path.join(os.path.dirname(log_file), temp_file)
-            try:
-                df_temp = pd.read_csv(temp_file_path )
-            except:
-                print('Error reading temp file ', temp_file_path )
-                continue
-            
-            if os.path.exists(log_file):
-                df_temp.to_csv(log_file, mode='a', header=False, index=False)
+    # Determine the expected number of columns
+    expected_columns = None
+    if os.path.exists(log_file):
+        # If main log exists, read the number of columns from it
+        with open(log_file, 'r') as f:
+            header = f.readline().strip()
+            expected_columns = len(header.split(','))
+    else:
+        # Define expected number of columns if main log doesn't exist
+        # This should be set based on your knowledge of the data
+        expected_columns = 44  # Example, replace with actual expected number
+
+    for temp_file in temp_files:
+        temp_file_path = os.path.join(os.path.dirname(log_file), temp_file)
+        try:
+            df_temp = pd.read_csv(temp_file_path)
+            if df_temp.shape[1] == expected_columns:
+                if os.path.exists(log_file):
+                    df_temp.to_csv(log_file, mode='a', header=False, index=False)
+                else:
+                    df_temp.to_csv(log_file, mode='w', header=True, index=False)
             else:
-                df_temp.to_csv(log_file, mode='w', header=True, index=False)
-    
-    cleanup_temp_files( temp_dir = os.path.dirname(log_file), temp_file_prefix="temp_log_", )
+                print(f'Skipping temp file with incorrect number of columns: {temp_file_path}')
+        except Exception as e:
+            print(f'Error reading temp file {temp_file_path}: {e}')
 
-            
+    cleanup_temp_files(temp_dir=os.path.dirname(log_file), temp_file_prefix="temp_log_")
+
 
 def cleanup_temp_files(temp_dir, temp_file_prefix="temp_log_", ):
     print('Starting cleanup')

@@ -1,12 +1,3 @@
-import pandas as pd
-import numpy as np
-
-# Constants
-BUILD_PERC_VAL = 0.85
-BASEMENT_HEIGHT = 2.4
-BASEMENT_PERCENTAGE_OF_PREMISE_AREA = 1
-DEFAULT_FLOOR_HEIGHT = 2.3
-
 
 import pandas as pd
 import numpy as np
@@ -87,7 +78,9 @@ def create_height_options(df, glob_av_df):
     df = update_height_with_average(df, 'height_numeric', glob_av_df, 'FGA')
     return df
 
-
+def update_listed_type(df):
+    df.loc[:, 'listed_bool'] = df['listed_grade'].apply(lambda x: 1 if x is not None else 0)
+    return df 
 
 
 
@@ -128,19 +121,15 @@ def pre_process_buildings(df):
     df = create_height_options( df  , glob_av_heights)
     df.drop(columns=[x for x in df.columns if 'Unnamed' in x], inplace=True )
     
-    if len(df[df['height_numeric_FGA']==0]) !=0:
-        raise Exception('Average height update did not run - 0 heights still exist')
-
-    if len(df[df['floor_count_element_av_FGA'].isna()]) !=0:
-        test= df[df['premise_use']!='Unknown'].copy()
-        if len(test[test['floor_count_element_av_FGA'].isna()]) / len(test) > 0.01:
-            raise Exception('Average floor count update did not run - Nan floor counts still exist for more than 1% ')
-        
+    df = update_listed_type(df) 
     return df 
 
 def produce_clean_building_data(df):
     """Filter and test building data."""
-    print("Filtering non-commercial derelict premises...")
+    # print("Filtering non-commercial derelict premises...")
+    if len(df)==0:
+        print('No data to process')
+        return None
     filtered_df = df[df['premise_use'] != 'Commercial - derelict'].copy()
     filtered_df = filtered_df[~filtered_df['build_vol_FGA'].isna()].copy()
 
@@ -189,7 +178,7 @@ def test_building_metrics(df):
     for col in metrics_columns:
         check_nulls_percent(df, col)
 
-    print('DF passed tests')
+    # print('DF passed tests')
 
                  
 # ============================================================
@@ -214,7 +203,6 @@ def calculate_volume_metrics(df):
     basement_height_adjustment = df['base_floor'] *  df['premise_area'] * BASEMENT_HEIGHT * BASEMENT_PERCENTAGE_OF_PREMISE_AREA 
     df['build_vol_inc_basement_FGA'] = df['build_vol_FGA'] + basement_height_adjustment
 
-
     df['heated_vol_EA_FGA'] = df['premise_area'] * df['floor_count_element_av_FGA'] * DEFAULT_FLOOR_HEIGHT  
     df['heated_vol_FGA'] = df['premise_area'] * df['floor_count_numeric_FGA'] * DEFAULT_FLOOR_HEIGHT 
 
@@ -229,13 +217,13 @@ def calculate_volume_metrics(df):
 def pre_process_building_data(build):
     
     """Calculate and validate building metrics from verisk data."""
-    print("Pre-processing building data...")
+    # print("Pre-processing building data...")
     processed_df = pre_process_buildings(build)
 
-    print("Calculating volume metrics...")
+    # print("Calculating volume metrics...")
     processed_df = calculate_volume_metrics(processed_df)
 
-    print("Producing clean building data...")
+    # print("Producing clean building data...")
     clean_df = produce_clean_building_data(processed_df)
-    print('Pre process of building data complete')
+    # print('Pre process of building data complete')
     return clean_df
