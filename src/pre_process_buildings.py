@@ -15,12 +15,12 @@ DEFAULT_FLOOR_HEIGHT = 2.3
 # ============================================================
 def load_avg_floor_count():
     """Load the average floor count data from a CSV file."""
-    path = '/Users/gracecolverd/New_dataset/data/mappings/avg_floor_counts_whole_verisk_file.csv'
+    path = 'src/mapping/avg_floor_counts_whole_uk.csv'
     return pd.read_csv(path)
 
 def get_average_heights_table():
     """Load a CSV file containing average heights grouped by criteria."""
-    path = '/Users/gracecolverd/New_dataset/data/mappings/abg_heights_whole_uk.csv'
+    path = 'src/mapping/avg_heights_whole_uk.csv'
     return pd.read_csv(path)
 
 
