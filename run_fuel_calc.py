@@ -34,4 +34,4 @@ if __name__ == "__main__":
     batch_size =os.environ.get('BATCH_SIZE')
     print(data_dir)
     print('starting main')
-    main(data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, input_gpk_building,  max_workers, batch_size ) 
+    main(data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, input_gpk_building,  int(max_workers), batch_size ) 
