@@ -3,7 +3,7 @@ import pandas as pd
 import geopandas as gpd 
 import os 
 from shapely.geometry import box 
-from src import check_merge_files
+from src.utils import check_merge_files
 import concurrent.futures
 from functools import partial
 
@@ -192,85 +192,85 @@ def postcode_modal_batch_fn(pc, data):
 
 
 
-def fill_premise_floor_types_old(uprn):
-    # Ensure 'premise_floor_count' is numeric with NaN for non-numeric values
-    orig_len = len(uprn)
-    uprn['premise_floor_count'] = pd.to_numeric(uprn['premise_floor_count'], errors='coerce')
+# def fill_premise_floor_types_old(uprn):
+#     # Ensure 'premise_floor_count' is numeric with NaN for non-numeric values
+#     orig_len = len(uprn)
+#     uprn['premise_floor_count'] = pd.to_numeric(uprn['premise_floor_count'], errors='coerce')
     
-    # Compute 'av_storey_height' only for non-NaN 'premise_floor_count'
-    valid_data = uprn.dropna(subset=['premise_floor_count'])
-    valid_data['av_storey_height'] = valid_data['height'] / valid_data['premise_floor_count'].astype(int)
+#     # Compute 'av_storey_height' only for non-NaN 'premise_floor_count'
+#     valid_data = uprn.dropna(subset=['premise_floor_count'])
+#     valid_data['av_storey_height'] = valid_data['height'] / valid_data['premise_floor_count'].astype(int)
     
-    # Calculate mean storey height from valid entries
-    mean_storey_height = valid_data['av_storey_height'].mean()
+#     # Calculate mean storey height from valid entries
+#     mean_storey_height = valid_data['av_storey_height'].mean()
     
-    # Fill NaN 'premise_floor_count' by dividing 'height' by mean storey height and TAKING FLOOR to ensure never higher that heated vol 
-    uprn['premise_floor_count'].fillna(uprn['height'] / mean_storey_height, inplace=True)
-    uprn['premise_floor_count'] = np.floor(uprn['premise_floor_count']).astype('Int64')
-    if len(uprn)!= orig_len:
-        raise Exception('Fill_premise_floor_types has dropped or increased rows, orig_len: ', orig_len, 'new len: ', len(uprn))
-    return uprn
+#     # Fill NaN 'premise_floor_count' by dividing 'height' by mean storey height and TAKING FLOOR to ensure never higher that heated vol 
+#     uprn['premise_floor_count'].fillna(uprn['height'] / mean_storey_height, inplace=True)
+#     uprn['premise_floor_count'] = np.floor(uprn['premise_floor_count']).astype('Int64')
+#     if len(uprn)!= orig_len:
+#         raise Exception('Fill_premise_floor_types has dropped or increased rows, orig_len: ', orig_len, 'new len: ', len(uprn))
+#     return uprn
 
 
 
-def calc_area_vars(df, pc_area):
-    num_buildings = len(df)
-    if num_buildings < 2:
-        return [-999] * 15
+# def calc_area_vars(df, pc_area):
+#     num_buildings = len(df)
+#     if num_buildings < 2:
+#         return [-999] * 15
 
-    total_floor_area = df['premise_area'].sum()
-    build_floor_area_per_pc_area = total_floor_area / pc_area
-    num_buildings_per_m2_pc_area = num_buildings / pc_area
+#     total_floor_area = df['premise_area'].sum()
+#     build_floor_area_per_pc_area = total_floor_area / pc_area
+#     num_buildings_per_m2_pc_area = num_buildings / pc_area
     
-    prob_cols = df.columns[df.isna().mean() > 0.15].tolist()
-    # for col in prob_cols:
-        # print(f'Warning: {col} has more than 15% missing values')
+#     prob_cols = df.columns[df.isna().mean() > 0.15].tolist()
+#     # for col in prob_cols:
+#         # print(f'Warning: {col} has more than 15% missing values')
 
-    df = fill_premise_floor_types(df)
+#     df = fill_premise_floor_types(df)
     
-    perc_missing_premise_floor_count = df['premise_floor_count'].isna().mean()
-    perc_residential, residential_floor_area = -999, -999
-    if 'premise_use' not in prob_cols:
-        residential_data = df[df['premise_use'] == 'Residential'].copy()
-        perc_residential = len(residential_data) / num_buildings
-        residential_floor_area = residential_data['premise_area'].sum()
+#     perc_missing_premise_floor_count = df['premise_floor_count'].isna().mean()
+#     perc_residential, residential_floor_area = -999, -999
+#     if 'premise_use' not in prob_cols:
+#         residential_data = df[df['premise_use'] == 'Residential'].copy()
+#         perc_residential = len(residential_data) / num_buildings
+#         residential_floor_area = residential_data['premise_area'].sum()
     
-    vars_out = calc_vars(df, prob_cols)
-    res_vars_out = calc_vars(df[df['premise_use'] == 'Residential'], prob_cols) if perc_residential != 1 else vars_out
+#     vars_out = calc_vars(df, prob_cols)
+#     res_vars_out = calc_vars(df[df['premise_use'] == 'Residential'], prob_cols) if perc_residential != 1 else vars_out
 
-    df.loc[:, 'listed'] = df['listed_grade'].apply(lambda x: 1 if x is not None else 0)
-    perc_listed_buildings = df['listed'].mean()
+#     df.loc[:, 'listed'] = df['listed_grade'].apply(lambda x: 1 if x is not None else 0)
+#     perc_listed_buildings = df['listed'].mean()
 
-    return [perc_residential, total_floor_area, residential_floor_area, perc_missing_premise_floor_count] + \
-           list(vars_out) + [build_floor_area_per_pc_area, num_buildings_per_m2_pc_area, perc_listed_buildings] + \
-           list(res_vars_out)
+#     return [perc_residential, total_floor_area, residential_floor_area, perc_missing_premise_floor_count] + \
+#            list(vars_out) + [build_floor_area_per_pc_area, num_buildings_per_m2_pc_area, perc_listed_buildings] + \
+#            list(res_vars_out)
 
 
-def calc_vars(df, prob_cols):
-    if 'premise_area' in prob_cols or 'height' in prob_cols:
-        return [-999, -999, -999, -999]
-    df['build_vol'] = df['premise_area'] * df['height']
-    total_build_volume = df['build_vol'].sum()
+# def calc_vars(df, prob_cols):
+#     if 'premise_area' in prob_cols or 'height' in prob_cols:
+#         return [-999, -999, -999, -999]
+#     df['build_vol'] = df['premise_area'] * df['height']
+#     total_build_volume = df['build_vol'].sum()
     
-    df['base_floor'] = df['basement'].apply(lambda x: 1 if x in ['Basement confirmed', 'Basement likely'] else 0)
-    total_build_volume_inc_basement = (df['build_vol'] + 2.3 * df['base_floor'] * df['premise_area']).sum()
+#     df['base_floor'] = df['basement'].apply(lambda x: 1 if x in ['Basement confirmed', 'Basement likely'] else 0)
+#     total_build_volume_inc_basement = (df['build_vol'] + 2.3 * df['base_floor'] * df['premise_area']).sum()
     
-    if 'premise_floor_count' not in prob_cols and 'basement' not in prob_cols:
-        df['heated_vol'] = df['premise_area'] * df['premise_floor_count'].astype(int) * 2.3
-        df['heated_vol_inc_basement'] = df['heated_vol'] + 2.3 * df['base_floor'] * df['premise_area']
-        total_heated_volume = df['heated_vol'].sum()
-        total_heated_volume_inc_basement = df['heated_vol_inc_basement'].sum()
-    else:
-        return [total_build_volume, total_build_volume_inc_basement, -999, -999]
+#     if 'premise_floor_count' not in prob_cols and 'basement' not in prob_cols:
+#         df['heated_vol'] = df['premise_area'] * df['premise_floor_count'].astype(int) * 2.3
+#         df['heated_vol_inc_basement'] = df['heated_vol'] + 2.3 * df['base_floor'] * df['premise_area']
+#         total_heated_volume = df['heated_vol'].sum()
+#         total_heated_volume_inc_basement = df['heated_vol_inc_basement'].sum()
+#     else:
+#         return [total_build_volume, total_build_volume_inc_basement, -999, -999]
 
-    return [total_build_volume, total_build_volume_inc_basement, total_heated_volume, total_heated_volume_inc_basement]
-
-
+#     return [total_build_volume, total_build_volume_inc_basement, total_heated_volume, total_heated_volume_inc_basement]
 
 
-def postcode_area_vars_batch_fn(pc, data, area):
-    results = process_postcode(pc= pc, attr_function = calc_area_vars , data = data, postcode_area = area )
-    return results   
+
+
+# def postcode_area_vars_batch_fn(pc, data, area):
+#     results = process_postcode(pc= pc, attr_function = calc_area_vars , data = data, postcode_area = area )
+#     return results   
 
 
 
@@ -549,66 +549,66 @@ def postcode_area_vars_batch_fn(pc, data, area):
 ############################################# Confidence fns #############################################
 
 
-def process_postcode_batch_confidence(postcode_batch, data, attr_function, attr_col, input_gpk):
-    """
-    Process a batch of postcodes and return a list of results.
-    """
-    batch_results = []
-    for pc in postcode_batch:
-        try:
-            uprn_match = find_data_pc(pc, data, input_gpk=input_gpk)
-            if uprn_match.empty:
-                batch_results.append((pc, 'Processed', 'Failure - No buildings found', None))
-            else:
-                attr_value, confidence = attr_function(uprn_match, attr_col)
-                batch_results.append((pc, 'Processed', 'Success', attr_value, confidence))
-        except Exception as e:
-            batch_results.append((pc, 'Error', str(e), None))
-    return batch_results
+# def process_postcode_batch_confidence(postcode_batch, data, attr_function, attr_col, input_gpk):
+#     """
+#     Process a batch of postcodes and return a list of results.
+#     """
+#     batch_results = []
+#     for pc in postcode_batch:
+#         try:
+#             uprn_match = find_data_pc(pc, data, input_gpk=input_gpk)
+#             if uprn_match.empty:
+#                 batch_results.append((pc, 'Processed', 'Failure - No buildings found', None))
+#             else:
+#                 attr_value, confidence = attr_function(uprn_match, attr_col)
+#                 batch_results.append((pc, 'Processed', 'Success', attr_value, confidence))
+#         except Exception as e:
+#             batch_results.append((pc, 'Error', str(e), None))
+#     return batch_results
 
-def process_data_improved_confidence(data, attribute, attr_function, conf_attr,  attr_col=None, base_dir='/Users/gracecolverd/New_dataset', input_gpk='/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg', checkpoint_interval=100, max_workers=20, batch_size=10):
-    """
-    Process data to calculate a specified attribute for each postcode using multi-threading with batch processing.
-    """
-    pc_list = data['PCDS'].unique()
+# def process_data_improved_confidence(data, attribute, attr_function, conf_attr,  attr_col=None, base_dir='/Users/gracecolverd/New_dataset', input_gpk='/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg', checkpoint_interval=100, max_workers=20, batch_size=10):
+#     """
+#     Process data to calculate a specified attribute for each postcode using multi-threading with batch processing.
+#     """
+#     pc_list = data['PCDS'].unique()
 
-    output_folder = os.path.join(base_dir, f'data/postcode_attributes/{attribute}')
-    os.makedirs(output_folder, exist_ok=True)
-    log_path = os.path.join(output_folder, f'{attribute}_process_log.csv')
-    checkpoint_path = os.path.join(output_folder, f'{attribute}_checkpoint.csv')
+#     output_folder = os.path.join(base_dir, f'data/postcode_attributes/{attribute}')
+#     os.makedirs(output_folder, exist_ok=True)
+#     log_path = os.path.join(output_folder, f'{attribute}_process_log.csv')
+#     checkpoint_path = os.path.join(output_folder, f'{attribute}_checkpoint.csv')
 
-    if os.path.exists(log_path):
-        print('Resuming process')
-        log_df = pd.read_csv(log_path)
-        results_df = pd.read_csv(checkpoint_path)
-        processed_pc = results_df['Postcode'].tolist() 
+#     if os.path.exists(log_path):
+#         print('Resuming process')
+#         log_df = pd.read_csv(log_path)
+#         results_df = pd.read_csv(checkpoint_path)
+#         processed_pc = results_df['Postcode'].tolist() 
         
-    else:
-        print('Starting new process')
-        log_df = pd.DataFrame(columns=['Postcode', 'Status', 'Details'])
-        results_df = pd.DataFrame(columns=['Postcode', attribute, conf_attr])
-        processed_pc = set()
+#     else:
+#         print('Starting new process')
+#         log_df = pd.DataFrame(columns=['Postcode', 'Status', 'Details'])
+#         results_df = pd.DataFrame(columns=['Postcode', attribute, conf_attr])
+#         processed_pc = set()
 
-    pc_to_process = [pc for pc in pc_list if pc not in processed_pc]
-    postcode_batches = [pc_to_process[i:i + batch_size] for i in range(0, len(pc_to_process), batch_size)]
+#     pc_to_process = [pc for pc in pc_list if pc not in processed_pc]
+#     postcode_batches = [pc_to_process[i:i + batch_size] for i in range(0, len(pc_to_process), batch_size)]
 
-    process_function = partial(process_postcode_batch, data=data, attr_function=attr_function, conf_attr=conf_attr, attr_col=attr_col, input_gpk=input_gpk)
+#     process_function = partial(process_postcode_batch, data=data, attr_function=attr_function, conf_attr=conf_attr, attr_col=attr_col, input_gpk=input_gpk)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_batch = {executor.submit(process_function, batch): batch for batch in postcode_batches}
-        for future in concurrent.futures.as_completed(future_to_batch):
-            batch_results = future.result()
-            for pc, status, details, attr_value, conf_value in batch_results:
-                log_df = pd.concat([log_df, pd.DataFrame([[pc, status, details]], columns=log_df.columns)], ignore_index=True)
-                if attr_value is not None:
-                    results_df = pd.concat([results_df, pd.DataFrame([[pc, attr_value, conf_value]], columns=results_df.columns)], ignore_index=True)
+#     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+#         future_to_batch = {executor.submit(process_function, batch): batch for batch in postcode_batches}
+#         for future in concurrent.futures.as_completed(future_to_batch):
+#             batch_results = future.result()
+#             for pc, status, details, attr_value, conf_value in batch_results:
+#                 log_df = pd.concat([log_df, pd.DataFrame([[pc, status, details]], columns=log_df.columns)], ignore_index=True)
+#                 if attr_value is not None:
+#                     results_df = pd.concat([results_df, pd.DataFrame([[pc, attr_value, conf_value]], columns=results_df.columns)], ignore_index=True)
                 
-            if len(log_df) % checkpoint_interval < batch_size:  # Adjust for batch size
-                results_df.to_csv(checkpoint_path, index=False)
-                log_df.to_csv(log_path, index=False)
-                print(f'Checkpoint saved at {len(log_df)} postcodes')
+#             if len(log_df) % checkpoint_interval < batch_size:  # Adjust for batch size
+#                 results_df.to_csv(checkpoint_path, index=False)
+#                 log_df.to_csv(log_path, index=False)
+#                 print(f'Checkpoint saved at {len(log_df)} postcodes')
 
-    results_df.to_csv(os.path.join(output_folder, f'{attribute}_final_results.csv'), index=False)
-    log_df.to_csv(os.path.join(output_folder, f'{attribute}_process_log_final.csv'), index=False)
+#     results_df.to_csv(os.path.join(output_folder, f'{attribute}_final_results.csv'), index=False)
+#     log_df.to_csv(os.path.join(output_folder, f'{attribute}_process_log_final.csv'), index=False)
 
-    return results_df
+#     return results_df

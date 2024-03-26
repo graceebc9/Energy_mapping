@@ -1,19 +1,13 @@
 import pandas as pd
 import sys 
-from src import find_data_pc
+
+from src.postcode_attr import find_data_pc
 from src.pre_process_buildings import pre_process_building_data 
 
 INPUT_GPK= '/Volumes/T9/Data_downloads/Versik_building_data/2024_03_22_updated_data/UKBuildings_Edition_15_new_format_upn.gpkg' 
 
-# def calc_df_sum_attribute(df, cols, prefix=''):
-#     """ takes input df with only one postcode and calcs attributes based on summing the building columns
-#     """
-#     print('calc df sum ')
-#     attr_dict= {} 
-#     attr_dict[prefix+ 'total_buildings'] = len(df)
-#     for col in cols:
-#         attr_dict[prefix+ col + '_total'] = df[col].sum()
-#     return attr_dict
+
+
 
 import numpy as np
 
