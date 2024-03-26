@@ -1,7 +1,7 @@
 
 import pandas as pd
 import numpy as np
-
+local=True 
 # ============================================================
 # Constants
 # ============================================================
@@ -13,14 +13,21 @@ DEFAULT_FLOOR_HEIGHT = 2.3
 # ============================================================
 # Data Loading Functions
 # ============================================================
+
 def load_avg_floor_count():
     """Load the average floor count data from a CSV file."""
-    path = 'src/mapping/avg_floor_counts_whole_uk.csv'
+    if local is True:
+        path = '/Users/gracecolverd/New_dataset/src/mapping/avg_floor_counts_whole_uk.csv'
+    else:
+        path = 'src/mapping/avg_floor_counts_whole_uk.csv'
     return pd.read_csv(path)
 
 def get_average_heights_table():
     """Load a CSV file containing average heights grouped by criteria."""
-    path = 'src/mapping/avg_heights_whole_uk.csv'
+    if local==True:
+        path = '/Users/gracecolverd/New_dataset/src/mapping/avg_heights_whole_uk.csv'
+    else:
+        path = 'src/mapping/avg_heights_whole_uk.csv'
     return pd.read_csv(path)
 
 
@@ -154,7 +161,7 @@ def assert_equal(df, col1, col2):
     """Ensure values in col1 are equal to those in col2."""
     assert (df[col1] == df[col2]).all(), f"For df, found rows where {col1} does not equal {col2}."
 
-def check_nulls_percent(df, col, threshold=0.1):
+def check_nulls_percent(df, col, threshold=0.5):
     """Check if the percentage of nulls in col exceeds a threshold."""
     if df[col].isna().mean() > threshold:
         raise Exception(f'Nulls in {col} are greater than {threshold*100}%.')

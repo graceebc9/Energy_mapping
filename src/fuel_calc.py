@@ -83,7 +83,7 @@ def generate_null_attributes_full(pc):
     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
         'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool']
     
-    prefix = ['res_', 'mixed_', 'comm_']
+    prefix = ['all_types_', 'res_', 'mixed_', 'comm_']
     null_attributes={'postcode':pc, 'num_invalid_builds': np.nan }
 
     for p in prefix:
@@ -188,21 +188,21 @@ def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
     df , num_invalid = pre_process_building_data(uprn_match)
     if df is None: 
         # Handle case with null df by returning a "null case" dictionary
-        dc_null_case = generate_null_attributes_full(pc)
-        return dc_null_case
+        dc_full = generate_null_attributes_full(pc)
+        # return dc_null_case
     
-    dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }
-    dc = calculate_postcode_attr_with_null_case(df)
+    else:
+        dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }
+        dc = calculate_postcode_attr_with_null_case(df)
+        dc_full.update(dc)
     
-    if check_duplicate_primary_key(df, 'upn'):
-        print('Duplicate primary key found for upn')
-        sys.exit()
+        if check_duplicate_primary_key(df, 'upn'):
+            print('Duplicate primary key found for upn')
+            sys.exit()
  
 
     dc_gas = get_fuel_vars(pc, 'gas', gas_df)
     dc_elec = get_fuel_vars(pc, 'elec', elec_df)
-    
-    dc_full.update(dc)
     dc_full.update(dc_gas)
     dc_full.update(dc_elec)
 
