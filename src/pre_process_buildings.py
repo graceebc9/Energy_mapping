@@ -107,7 +107,7 @@ def pre_process_buildings(df):
     Input df is the GPKG verisk building data with verisk_premise_id set as upn
     """
 
-    excluded = df[df['height'].isna() ][df['premise_floor_count'].isna()][df['premise_use']=='Unknown']
+    excluded = df[(df['height'].isna())  &  ( df['premise_floor_count'].isna() ) & ( df['premise_use']=='Unknown') ]
     df = df[~df['upn'].isin(excluded.upn.unique().tolist() ) ].copy() 
     floor_av = load_avg_floor_count()
     df['height_numeric'] = pd.to_numeric(df['height'], errors='coerce').fillna(0) 
@@ -144,7 +144,7 @@ def produce_clean_building_data(df):
 # ============================================================
 def assert_larger(df, col1, col2):
     """Ensure values in col1 are larger than those in col2 where columns are not null."""
-    df = df[~df[col1].isna()][~df[col2].isna()].copy()
+    df = df[~df[col1].isna() & ~df[col2].isna()].copy()
     assert (df[col1] >= df[col2]).all(), f"Found rows where {col1} is not larger than {col2}."
 
 def assert_perc(df, col):
