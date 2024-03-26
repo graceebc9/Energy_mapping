@@ -22,6 +22,7 @@ def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
     
     whole_pc = [] 
     for pc in ee['leading_letter'].unique():
+        pc= pc.lower()
         if len(pc)==1:
             pc_path =os.path.join(path_to_pc_shp_folder,  f'one_letter_pc_code/{pc}/{pc}.shp'  )
             pc_shp = gpd.read_file(pc_path)    
