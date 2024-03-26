@@ -56,12 +56,13 @@ def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir):
         
         pc_result = process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK)
         results.append(pc_result)
-    
+    print('len of batch results ', len(results))
     # Only proceed if we have results
     if results:
         df = pd.DataFrame(results)
-        
+        print('starting temp save')
         temp_file_path, is_first_write = get_thread_temp_file(log_file)
+        print('temp file paht is ', temp_file_path)
         # print('temp file path is ' , temp_file_path )
         # Open the file with 'a' mode to append and ensure headers are written correctly
         with open(temp_file_path, 'a') as f:
@@ -71,7 +72,7 @@ def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir):
         if is_first_write:
             thread_local.temp_file_first_write = False
 
-        # print('temp file saved for batch')
+        print('temp file saved for batch')
 
 def get_thread_temp_file(log_file):
     if not hasattr(thread_local, 'temp_file'):
