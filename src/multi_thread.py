@@ -162,19 +162,18 @@ def merge_temp_logs_to_main(log_file):
     else:
         # Define expected number of columns if main log doesn't exist
         # This should be set based on your knowledge of the data
-        expected_columns = 44  # Example, replace with actual expected number
+        expected_columns = 45  # Example, replace with actual expected number
 
     for temp_file in temp_files:
         temp_file_path = os.path.join(os.path.dirname(log_file), temp_file)
         try:
             df_temp = pd.read_csv(temp_file_path)
-            if df_temp.shape[1] == expected_columns:
-                if os.path.exists(log_file):
-                    df_temp.to_csv(log_file, mode='a', header=False, index=False)
-                else:
-                    df_temp.to_csv(log_file, mode='w', header=True, index=False)
+            
+            if os.path.exists(log_file):
+                df_temp.to_csv(log_file, mode='a', header=False, index=False)
             else:
-                print(f'Skipping temp file with incorrect number of columns: {temp_file_path}')
+                df_temp.to_csv(log_file, mode='w', header=True, index=False)
+            
         except Exception as e:
             print(f'Error reading temp file {temp_file_path}: {e}')
 
