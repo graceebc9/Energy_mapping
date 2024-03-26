@@ -23,6 +23,7 @@ def main(data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT
 
 
 if __name__=="main":
+    print('loading varibles')
     data_dir = os.environ.get('DATA_DIR')
     gas_path = os.environ.get('GAS_PATH')
     elec_path = os.environ.get('ELEC_PATH')
@@ -31,5 +32,6 @@ if __name__=="main":
     input_gpk_building = os.environ('BUILDING_PATH')
     max_workers=os.environ.get('MAX_WORKERS')
     batch_size =os.environ.get('BATCH_SIZE')
-
+    print(data_dir)
+    print('starting main')
     main(data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, input_gpk_building,  max_workers, batch_size ) 
