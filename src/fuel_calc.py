@@ -81,7 +81,7 @@ def generate_null_attributes_full(pc):
     - A dictionary with keys as the prefixed column names and np.nan as all values.
     """
     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
-        'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool']
+        'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count']
     
     prefix = ['all_types_', 'res_', 'mixed_', 'comm_']
     null_attributes={'postcode':pc, 'num_invalid_builds': np.nan }
@@ -99,7 +99,7 @@ def calculate_postcode_attr_with_null_case(df):
     
     # Define the columns to summarize
     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
-            'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool']
+            'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' ]
     
     # Generate attributes for all types
     dc = calc_df_sum_attribute(df, cols, 'all_types_')
@@ -129,10 +129,10 @@ def get_fuel_vars(pc, f , fuel_df):
     pc_fuel = fuel_df[fuel_df['Postcode']==pc].copy()
     if len(pc_fuel)==0: 
         # print(f'No fuel data found for postcode {pc}')
-        dc_fuel = {f'total_{f}':np.nan, f'avg_{f}':np.nan, f'median_{f}':np.nan, 'num_meters':np.nan}
+        dc_fuel = {f'total_{f}':np.nan, f'avg_{f}':np.nan, f'median_{f}':np.nan, f'num_meters_{f}':np.nan}
         return dc_fuel
     else:
-        dc_fuel['num_meters'] = pc_fuel['Num_meters'].values[0]  
+        dc_fuel[f'num_meters_{f}'] = pc_fuel['Num_meters'].values[0]  
         dc_fuel[f'total_{f}'] = pc_fuel['Total_cons_kwh'].values[0]
         dc_fuel[f'avg_{f}'] = pc_fuel['Mean_cons_kwh'].values[0]
         dc_fuel[f'median_{f}'] = pc_fuel['Median_cons_kwh'].values[0] 
@@ -180,16 +180,12 @@ import numpy as np  # Import at the beginning of your script
 def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
     """Process one postcode, deriving building attributes and electricity and fuel info."""
     print(pc)
-    
-    
     uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
     
     # Generate building metrics, clean and test
     df , num_invalid = pre_process_building_data(uprn_match)
     if df is None: 
-        # Handle case with null df by returning a "null case" dictionary
         dc_full = generate_null_attributes_full(pc)
-        # return dc_null_case
     
     else:
         dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }

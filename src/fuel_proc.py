@@ -130,8 +130,8 @@ def load_fuel_data(gas_path, elec_path):
 
 
 def load_onsud_data(path_to_onsud_file, path_to_pcshp, ):
-    
-    print(f'Finding data for ONSUD file')
+    label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
+    print(f'Finding data for ONSUD file ', label )
     
     _  , onsud_data = find_postcode_for_ONSUD_file(path_to_onsud_file= path_to_onsud_file, path_to_pc_shp_folder= path_to_pcshp)
 

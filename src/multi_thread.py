@@ -174,10 +174,13 @@ def merge_temp_logs_to_main(log_file):
             else:
                 df_temp.to_csv(log_file, mode='w', header=True, index=False)
             
+            
         except Exception as e:
             print(f'Error reading temp file {temp_file_path}: {e}')
-
+        
     cleanup_temp_files(temp_dir=os.path.dirname(log_file), temp_file_prefix="temp_log_")
+
+    
 
 
 def cleanup_temp_files(temp_dir, temp_file_prefix="temp_log_", ):
