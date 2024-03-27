@@ -26,3 +26,7 @@ for FILENAME in "${FILENAMES[@]}"; do
   sbatch --export=ONSUD_PATH submit_script.sh
 done
 
+
+## to run in termianl to submit
+# chmod +x submit_jobs.sh
+# ./submit_jobs.sh
