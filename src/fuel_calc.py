@@ -68,7 +68,7 @@ def generate_null_attributes(prefix,cols):
     return null_attributes
 
 
-def generate_null_attributes_full(pc):
+def generate_null_attributes_full(pc, prefix, cols ):
     """
     Generate a dictionary with all column names prefixed as specified, 
     with np.nan values, for the case where there's no data.
@@ -80,11 +80,8 @@ def generate_null_attributes_full(pc):
     Returns:
     - A dictionary with keys as the prefixed column names and np.nan as all values.
     """
-    cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
-        'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count']
-    
-    prefix = ['all_types_', 'res_', 'mixed_', 'comm_']
-    null_attributes={'postcode':pc, 'num_invalid_builds': np.nan }
+    # null_attributes={'postcode':pc, 'num_invalid_builds': np.nan }
+    null_attributes= {} 
 
     for p in prefix:
         # Initialize the dictionary with the total_buildings count set to np.nan
@@ -95,11 +92,16 @@ def generate_null_attributes_full(pc):
         
     return null_attributes
 
-def calculate_postcode_attr_with_null_case(df):
+def calculate_postcode_attr_with_null_case(df ):
     
     # Define the columns to summarize
     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
             'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' ]
+    
+    prefix = ['all_types_', 'res_', 'mixed_', 'comm_']
+
+    if df is None:
+        return generate_null_attributes_full( prefix, cols )
     
     # Generate attributes for all types
     dc = calc_df_sum_attribute(df, cols, 'all_types_')
@@ -183,15 +185,12 @@ def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
     uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
     
     # Generate building metrics, clean and test
-    df , num_invalid = pre_process_building_data(uprn_match)
-    if df is None: 
-        dc_full = generate_null_attributes_full(pc)
-    
-    else:
-        dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }
-        dc = calculate_postcode_attr_with_null_case(df)
-        dc_full.update(dc)
-    
+    df , num_invalid = pre_process_building_data(uprn_match)    
+
+    dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }
+    dc = calculate_postcode_attr_with_null_case(df)
+    dc_full.update(dc)
+    if df is not None:
         if check_duplicate_primary_key(df, 'upn'):
             print('Duplicate primary key found for upn')
             sys.exit()
