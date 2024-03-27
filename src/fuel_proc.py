@@ -95,7 +95,7 @@ def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_work
     # for i in range(0, len(pcs_list) , batch_size):
     #     batch = pcs_list[i:i+batch_size]
     #     process_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir)
-
+    print('starting fuel calc, bout to run batches')
     with concurrent.futures.ThreadPoolExecutor(max_workers = max_workers ) as executor:
         # Store futures if you need to wait for them or check for exceptions
         futures = []
@@ -119,13 +119,9 @@ def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_work
 
 
 def load_fuel_data(gas_path, elec_path):
-    # gas_path =  f'/Volumes/T9/Data_downloads/UKGOV_Gas_elec/Postcode_level_gas_{fuel_year}.csv' #gas by postcode 
     gas_df = pd.read_csv(gas_path) 
 
-    # elec_path = f'/Volumes/T9/Data_downloads/UKGOV_Gas_elec/Postcode_level_all_meters_electricity_{fuel_year}.csv'
     elec_df = pd.read_csv(elec_path) 
-
-    # log = '/Users/gracecolverd/New_dataset/postcode_attrs/temp_files/log_file.csv' 
     return  gas_df, elec_df
 
 

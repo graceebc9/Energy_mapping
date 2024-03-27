@@ -6,7 +6,6 @@ from src.multi_thread import merge_temp_logs_to_main
 def main(data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK, max_workers=8, batch_size = 50):
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     print('starting Label ', label)
-    
     proc_dir = os.path.join(data_dir, 'proc_dir', label)
     os.makedirs(proc_dir, exist_ok=True )
 

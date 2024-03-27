@@ -1,11 +1,8 @@
 import pandas as pd
 import sys 
-
+import numpy as np  
 from src.postcode_attr import find_data_pc
 from src.pre_process_buildings import pre_process_building_data 
-
-# INPUT_GPK= '/Volumes/T9/Data_downloads/Versik_building_data/2024_03_22_updated_data/UKBuildings_Edition_15_new_format_upn.gpkg' 
-
 
 import numpy as np
 
@@ -43,8 +40,6 @@ def calculate_postcode_attr(df):
     dc.update(dc_comm)
     return dc
 
-
-import numpy as np
 
 def generate_null_attributes(prefix,cols):
     """
@@ -149,35 +144,8 @@ def check_duplicate_primary_key(df, primary_key_column):
 
 
 
-# def process_postcode_fuel(pc, data, gas_df, elec_df):
-#     """ Process one postcode, deriving building attributes and electricity and fuel info 
-#     """
-#     dc_full = {'postcode':pc}
-    
-#     uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
-    
-#     # Generate building metrics, clean and test
-#     df = pre_process_building_data(uprn_match)
-#     if df is None:
-#         print(f'No data found for postcode {pc}')
-#         dc = {'res_total_buildings':-999, 'mixed_total_buildings':-999, 'comm_total_buildings':-999}
-#     else:
-#         dc= calculate_postcode_attr(df)
-#         if check_duplicate_primary_key(df, 'upn'):
-#             print('Duplicate primary key found for upn')
-#             sys.exit()
-#     print('len', len(df) )
 
-#     dc_gas = get_fuel_vars(pc, f= 'gas', fuel_df = gas_df)
-#     dc_elec = get_fuel_vars(pc, f= 'elec', fuel_df = elec_df)
-    
-#     dc_full.update(dc)
-#     dc_full.update(dc_gas)
-#     dc_full.update(dc_elec)
 
-#     return dc_full
-
-import numpy as np  # Import at the beginning of your script
 
 def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
     """Process one postcode, deriving building attributes and electricity and fuel info."""
