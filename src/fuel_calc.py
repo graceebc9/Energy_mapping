@@ -41,7 +41,7 @@ def calculate_postcode_attr(df):
     return dc
 
 
-def generate_null_attributes(prefix,cols):
+def generate_null_attributes(prefix, cols):
     """
     Generate a dictionary with all column names prefixed as specified, 
     with np.nan values, for the case where there's no data.
@@ -63,7 +63,7 @@ def generate_null_attributes(prefix,cols):
     return null_attributes
 
 
-def generate_null_attributes_full(pc, prefix, cols ):
+def generate_null_attributes_full( prefix, cols ):
     """
     Generate a dictionary with all column names prefixed as specified, 
     with np.nan values, for the case where there's no data.
