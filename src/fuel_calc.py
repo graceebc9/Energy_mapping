@@ -16,29 +16,46 @@ def calc_df_sum_attribute(df, cols, prefix=''):
         attr_dict[prefix + col + '_total'] = df[col].sum(min_count=1)
     return attr_dict
 
-def calculate_postcode_attr(df):
-    print(len(df))
+# def calculate_postcode_attr(df):
+#     print(len(df))
 
-    df = df.reset_index(drop=True)  # Reset index to ensure alignment
+#     df = df.reset_index(drop=True)  # Reset index to ensure alignment
 
-    cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
-            'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool']
+#     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
+#             'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool'
+#             'premusetype_2 storeys terraces with t rear extension',
+#  'premusetype_3-4 storey and smaller flats',
+#  'premusetype_Domestic outbuilding',
+#  'premusetype_Large detached',
+#  'premusetype_Large semi detached',
+#  'premusetype_Linked and step linked premises',
+#  'premusetype_Medium height flats 5-6 storeys',
+#  'premusetype_Planned balanced mixed estates',
+#  'premusetype_Semi type house in multiples',
+#  'premusetype_Small low terraces',
+#  'premusetype_Standard size detached',
+#  'premusetype_Standard size semi detached',
+#  'premusetype_Tall flats 6-15 storeys',
+#  'premusetype_Tall terraces 3-4 storeys',
+#  'premusetype_Very large detached',
+#  'premusetype_Very tall point block flats']
+    
 
-    dc = calc_df_sum_attribute(df, cols, 'all_types_')
+#     dc = calc_df_sum_attribute(df, cols, 'all_types_')
 
-    res_df = df[df['map_simple_use'] == 'Residential'].copy()
-    dc_res = calc_df_sum_attribute(res_df, cols, 'res_') if not res_df.empty else {prefix + 'total_buildings': np.nan for prefix in ['res_'] + [f'res_{col}_total' for col in cols]}
+#     res_df = df[df['map_simple_use'] == 'Residential'].copy()
+#     dc_res = calc_df_sum_attribute(res_df, cols, 'res_') if not res_df.empty else {prefix + 'total_buildings': np.nan for prefix in ['res_'] + [f'res_{col}_total' for col in cols]}
 
-    mixed_use_df = df[df['map_simple_use'] == 'Mixed Use'].copy()
-    dc_mixed = calc_df_sum_attribute(mixed_use_df, cols, 'mixed_') if not mixed_use_df.empty else {prefix + 'total_buildings': np.nan for prefix in ['mixed_'] + [f'mixed_{col}_total' for col in cols]}
+#     mixed_use_df = df[df['map_simple_use'] == 'Mixed Use'].copy()
+#     dc_mixed = calc_df_sum_attribute(mixed_use_df, cols, 'mixed_') if not mixed_use_df.empty else {prefix + 'total_buildings': np.nan for prefix in ['mixed_'] + [f'mixed_{col}_total' for col in cols]}
 
-    comm_use = df[df['map_simple_use'] == 'Commercial'].copy()
-    dc_comm = calc_df_sum_attribute(comm_use, cols, 'comm_') if not comm_use.empty else {prefix + 'total_buildings': np.nan for prefix in ['comm_'] + [f'comm_{col}_total' for col in cols]}
+#     comm_use = df[df['map_simple_use'] == 'Commercial'].copy()
+#     dc_comm = calc_df_sum_attribute(comm_use, cols, 'comm_') if not comm_use.empty else {prefix + 'total_buildings': np.nan for prefix in ['comm_'] + [f'comm_{col}_total' for col in cols]}
 
-    dc.update(dc_res)
-    dc.update(dc_mixed)
-    dc.update(dc_comm)
-    return dc
+#     dc.update(dc_res)
+#     dc.update(dc_mixed)
+#     dc.update(dc_comm)
+#     return dc
 
 
 def generate_null_attributes(prefix, cols):
@@ -91,7 +108,8 @@ def calculate_postcode_attr_with_null_case(df ):
     
     # Define the columns to summarize
     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
-            'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' ]
+            'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' 
+            ]
     
     prefix = ['all_types_', 'res_', 'mixed_', 'comm_']
 

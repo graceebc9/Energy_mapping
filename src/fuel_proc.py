@@ -92,28 +92,28 @@ def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_work
     # Ensure temporary directory exists
     os.makedirs(temp_dir, exist_ok=True)
     
-    # for i in range(0, len(pcs_list) , batch_size):
-    #     batch = pcs_list[i:i+batch_size]
-    #     process_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir)
-    print('starting fuel calc, bout to run batches')
-    with concurrent.futures.ThreadPoolExecutor(max_workers = max_workers ) as executor:
-        # Store futures if you need to wait for them or check for exceptions
-        futures = []
-        for i in range(0, len(pcs_list), batch_size):
-            batch = pcs_list[i:i+batch_size]
+    for i in range(0, len(pcs_list) , batch_size):
+        batch = pcs_list[i:i+batch_size]
+        process_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir)
+    # print('starting fuel calc, bout to run batches')
+    # with concurrent.futures.ThreadPoolExecutor(max_workers = max_workers ) as executor:
+    #     # Store futures if you need to wait for them or check for exceptions
+    #     futures = []
+    #     for i in range(0, len(pcs_list), batch_size):
+    #         batch = pcs_list[i:i+batch_size]
     
-            future= executor.submit(process_batch, batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir )
-            futures.append(future)
-        concurrent.futures.wait(futures)
+    #         future= executor.submit(process_batch, batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir )
+    #         futures.append(future)
+    #     concurrent.futures.wait(futures)
 
-        # Check for exceptions in the completed futures
-        for future in futures:
-            if future.exception() is not None:
-                # Handle the exception
-                print(f"Exception occurred in thread: {future.exception()}")
-            else:
-                # Process result if needed (or acknowledge successful completion)
-                None 
+    #     # Check for exceptions in the completed futures
+    #     for future in futures:
+    #         if future.exception() is not None:
+    #             # Handle the exception
+    #             print(f"Exception occurred in thread: {future.exception()}")
+    #         else:
+    #             # Process result if needed (or acknowledge successful completion)
+    #             None 
 
 
 
