@@ -49,7 +49,7 @@ def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to
     print('Starting batch process')
     
     run_fuel_calc(batch_ids, onsud_data, gas_df, elec_df, INPUT_GPK,  proc_dir, batch_size=10, batch_label= batch_label)
-
+    print('Batch complete')
 if __name__ == "__main__":
     # update this if needed 
     onsud_data = 'DEC_2022'
@@ -62,6 +62,7 @@ if __name__ == "__main__":
     path_to_pcshp= os.environ.get('PC_SHP_PATH')
     input_gpk_building = os.environ.get('BUILDING_PATH')
     batch_path = os.environ.get('BATCH_PATH') 
+    print(batch_path)
     label = batch_path.split('/')[-2]
     batch_id = batch_path.split('/')[-1].split('.')[0].split('_')[-1]
     path_to_onsud_file = get_onsud_path( onsud_dir, onsud_data, label )
