@@ -14,7 +14,7 @@ def get_onsud_path(onsud_dir, onsud_data  ,label ):
     filepath = os.path.join(onsud_dir, f'Data/ONSUD_{onsud_data}_{label}.csv' ) 
     return filepath
 
-def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK  ):
+def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK  , batch_label):
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     print('Starting Label ', label)
     proc_dir = os.path.join(data_dir, 'proc_dir', label)
@@ -28,7 +28,7 @@ def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to
     print('Len of batch is ', len(batch_ids))
     print('Starting batch process')
     
-    run_fuel_calc(batch_ids, onsud_data, gas_df, elec_df, INPUT_GPK,  proc_dir, batch_size=10)
+    run_fuel_calc(batch_ids, onsud_data, gas_df, elec_df, INPUT_GPK,  proc_dir, batch_size=10, batch_label= batch_label)
 
 if __name__ == "__main__":
     # update this if needed 
@@ -43,11 +43,11 @@ if __name__ == "__main__":
     input_gpk_building = os.environ.get('BUILDING_PATH')
     batch_path = os.environ.get('BATCH_PATH') 
     label = batch_path.split('/')[-2]
-    
+    batch_id = batch_path.split('/')[-1].split('.')[0].split('_')[-1]
     path_to_onsud_file = get_onsud_path( onsud_dir, onsud_data, label )
     
     print('starting main')
-    main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK = input_gpk_building  ) 
+    main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK = input_gpk_building, batch_label=batch_id  ) 
 
 
 # export  BATCH_PATH='/Users/gracecolverd/New_dataset/test/batches/NE/batch_0.txt'

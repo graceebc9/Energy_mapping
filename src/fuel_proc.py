@@ -47,54 +47,55 @@ def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
     return pc_df , data 
 
 
-def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir):
-    print('starting batch is running')
-    log_file = os.path.join(temp_dir, 'log_file.csv' )
-    # Collect results from processing each postcode into a list
+def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir, process_batch_name):
+    print('Starting batch processing...')
+    log_file = os.path.join(temp_dir, f'{process_batch_name}_log_file.csv')
+    
+    # Initialize an empty list to collect results
     results = []
     for pc in pc_batch:
-        print('starting pc')
-        pc_result = process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK)
+        print('Processing postcode:', pc)
+        pc_result = process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK)  # Assuming this function is defined elsewhere
         if pc_result is not None:
             results.append(pc_result)
-        print(len(results))
-    print('len of batch results ', len(results))
+    
+    print(f'Number of processed results: {len(results)}')
+    
     # Only proceed if we have results
     if results:
         df = pd.DataFrame(results)
-        print('starting temp save')
-        temp_file_path, is_first_write = get_thread_temp_file(log_file)
-        print('temp file paht is ', temp_file_path)
-        # print('temp file path is ' , temp_file_path )
-        # Open the file with 'a' mode to append and ensure headers are written correctly
-        with open(temp_file_path, 'a') as f:
-            df.to_csv(f, header=is_first_write, index=False)
+        print('Saving results to log file...')
         
-        # Update the flag to indicate the header should not be written next time
-        if is_first_write:
-            thread_local.temp_file_first_write = False
+        # Check if the log file already exists
+        if not os.path.exists(log_file):
+            # If the file does not exist, write with header
+            df.to_csv(log_file, index=False)
+        else:
+            # If the file exists, append without writing the header
+            df.to_csv(log_file, mode='a', header=False, index=False)
 
-        print('temp file saved for batch')
-
-def get_thread_temp_file(log_file):
-    if not hasattr(thread_local, 'temp_file'):
-        temp_dir = os.path.dirname(log_file)
-
-        temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w+', suffix='.csv', prefix='temp_log_', dir=temp_dir)        
-
-        thread_local.temp_file = temp_file.name
-        thread_local.temp_file_first_write = True
-    return thread_local.temp_file, thread_local.temp_file_first_write
+        print(f'Log file saved for batch: {process_batch_name}')
 
 
+# def get_thread_temp_file(log_file):
+#     if not hasattr(thread_local, 'temp_file'):
+#         temp_dir = os.path.dirname(log_file)
 
-def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, batch_size):
+#         temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w+', suffix='.csv', prefix='temp_log_', dir=temp_dir)        
+
+#         thread_local.temp_file = temp_file.name
+#         thread_local.temp_file_first_write = True
+#     return thread_local.temp_file, thread_local.temp_file_first_write
+
+
+
+def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, batch_size, batch_label):
     # Ensure temporary directory exists
     os.makedirs(temp_dir, exist_ok=True)
     
     for i in range(0, len(pcs_list) , batch_size):
         batch = pcs_list[i:i+batch_size]
-        process_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir)
+        process_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir, batch_label)
 
 
 def run_fuel_calc_multi_thread(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_workers, batch_size):
