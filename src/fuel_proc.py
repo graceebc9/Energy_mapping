@@ -68,10 +68,12 @@ def process_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir, process_
         
         # Check if the log file already exists
         if not os.path.exists(log_file):
+            print('Creating Log file')
             # If the file does not exist, write with header
             df.to_csv(log_file, index=False)
         else:
             # If the file exists, append without writing the header
+            print('File already exists - append')
             df.to_csv(log_file, mode='a', header=False, index=False)
 
         print(f'Log file saved for batch: {process_batch_name}')

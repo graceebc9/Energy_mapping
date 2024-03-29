@@ -1,5 +1,6 @@
 import os 
 from src.fuel_proc import load_fuel_data , run_fuel_calc, load_onsud_data
+import pandas as pd 
 
 
 def load_ids_from_file(file_path):
@@ -14,7 +15,25 @@ def get_onsud_path(onsud_dir, onsud_data  ,label ):
     filepath = os.path.join(onsud_dir, f'Data/ONSUD_{onsud_data}_{label}.csv' ) 
     return filepath
 
+
+
+
 def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK  , batch_label):
+    
+    def gen_batch_ids(batch_ids):
+        log_file =  os.path.join(proc_dir, f'{batch_label}_log_file.csv')
+        if os.path.exists(log_file):
+            print('Removing already proc id')
+            print('Old len is ', len(batch_ids))
+            log = pd.read_csv(log_file)
+            proc_id = log.postcode.unique().tolist()
+            batch_ids = [ x for x in batch_ids if x not in proc_id]
+            print('new len is ', len(batch_ids))
+            return batch_ids
+        else:
+            print('No ids proccessed yet')
+            return batch_ids
+
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     print('Starting Label ', label)
     proc_dir = os.path.join(data_dir, 'proc_dir', label)
@@ -25,6 +44,7 @@ def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to
     
     # load txt file 
     batch_ids = load_ids_from_file(batch_path)
+    batch_ids= gen_batch_ids(batch_ids)
     print('Len of batch is ', len(batch_ids))
     print('Starting batch process')
     
