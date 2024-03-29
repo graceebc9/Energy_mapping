@@ -7,11 +7,11 @@ def load_ids_from_file(file_path):
         ids = file.read().splitlines()
     return ids
 
-def get_onsud_path(onsud_dir, label ):
+def get_onsud_path(onsud_dir, onsud_data  ,label ):
 
     # DATA_DIR='/Volumes/T9/Data_downloads/ONS_UPRN_database/ONSUD_DEC_2022'
     date = onsud_dir.split('/')[-1].split('ONSUD_')[-1]
-    filepath = os.path.join(onsud_dir, f'Data/ONSUD_{date}_{label}.csv' ) 
+    filepath = os.path.join(onsud_dir, f'Data/ONSUD_{onsud_data}_{label}.csv' ) 
     return filepath
 
 def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK  ):
@@ -31,6 +31,9 @@ def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to
     run_fuel_calc(batch_ids, onsud_data, gas_df, elec_df, INPUT_GPK,  proc_dir, batch_size=10)
 
 if __name__ == "__main__":
+    # update this if needed 
+    onsud_data = 'DEC_2022'
+    
     print('loading varibles')
     data_dir = os.environ.get('DATA_DIR')
     gas_path = os.environ.get('GAS_PATH')
@@ -40,7 +43,8 @@ if __name__ == "__main__":
     input_gpk_building = os.environ.get('BUILDING_PATH')
     batch_path = os.environ.get('BATCH_PATH') 
     label = batch_path.split('/')[-2]
-    path_to_onsud_file = get_onsud_path( onsud_dir, label )
+    
+    path_to_onsud_file = get_onsud_path( onsud_dir, onsud_data, label )
     
     print('starting main')
     main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK = input_gpk_building  ) 
