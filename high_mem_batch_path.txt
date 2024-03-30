@@ -1,0 +1,9 @@
+/rds/user/gb669/hpc-work/energy_map/data/batches/LN/batch_0.txt
+/rds/user/gb669/hpc-work/energy_map/data/batches/LN/batch_1.txt
+/rds/user/gb669/hpc-work/energy_map/data/batches/LN/batch_2.txt
+/rds/user/gb669/hpc-work/energy_map/data/batches/LN/batch_3.txt
+/rds/user/gb669/hpc-work/energy_map/data/batches/SE/batch_0.txt
+/rds/user/gb669/hpc-work/energy_map/data/batches/SE/batch_1.txt
+/rds/user/gb669/hpc-work/energy_map/data/batches/SE/batch_2.txt
+/rds/user/gb669/hpc-work/energy_map/data/batches/SE/batch_3.txt
+/rds/user/gb669/hpc-work/energy_map/data/batches/SE/batch_4.txt
