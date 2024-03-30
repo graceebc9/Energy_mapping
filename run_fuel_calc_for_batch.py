@@ -67,6 +67,7 @@ if __name__ == "__main__":
     batch_id = batch_path.split('/')[-1].split('.')[0].split('_')[-1]
     path_to_onsud_file = get_onsud_path( onsud_dir, onsud_data, label )
     
+    
     print('starting main')
     main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK = input_gpk_building, batch_label=batch_id  ) 
 
