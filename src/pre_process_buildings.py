@@ -92,6 +92,18 @@ def update_listed_type(df):
     df.loc[:, 'listed_bool'] = df['listed_grade'].apply(lambda x: 1 if x is not None else 0)
     return df 
 
+# ============================================================
+# Premise Use Fns 
+# ============================================================
+
+def one_hot_encode_premise_type(df):
+    pre_cols = df.columns.tolist()
+    one_hot = pd.get_dummies(df['premise_type'], 'premusetype')
+    df = pd.concat([df, one_hot], axis=1)
+    post_cols = df.columns.tolist()
+    new_cols = [col for col in post_cols if col not in pre_cols]
+    return df, new_cols 
+
 
 
 # ============================================================
@@ -232,6 +244,10 @@ def pre_process_building_data(build):
     # print("Calculating volume metrics...")
     processed_df = calculate_volume_metrics(processed_df)
 
+    # processed_df, prem_use_cols = one_hot_encode_premise_type(processed_df)
+    # if len(prem_use_cols)>16:
+    #     print('premise use cols greater than expected')
+    #     raise ValueError('Too many premise use cols')   
     # print("Producing clean building data...")
     clean_df , num_invalid = produce_clean_building_data(processed_df)
     # print('Pre process of building data complete')
