@@ -80,8 +80,16 @@ def calculate_median_age_band(df):
 
     df['premise_age_bucketed'] = df['premise_age_bucketed'].replace('Unknown date', df['premise_age_bucketed'].mode()[0])    
 
-    ignore_median = calc_med(df_ignore)
-    modal_median = calc_med(df)
+    if len(df_ignore) == 0:
+        print('No data for ignore')
+        ignore_median = np.nan 
+    else:
+        ignore_median = calc_med(df_ignore)
+
+    if len(df) == 0:
+        modal_median = np.nan
+    else:
+        modal_median = calc_med(df)
 
     ignore_iqr = calc_iqr(df_ignore)
     modal_iqr = calc_iqr(df)
@@ -117,26 +125,40 @@ def calc_age_attributes(df):
 
 
 
-def process_postcode_age(pc, data, INPUT_GPK):
-    """Process one postcode, deriving building attributes and electricity and fuel info."""
-   
-    uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
-    
-    # Generate building metrics, clean and test
-    df  = pre_process_buildings(uprn_match)    
-    if df is not None:
-        if check_duplicate_primary_key(df, 'upn'):
-            raise Exception('Duplicate primary key found for upn')
-    
-    df = bucket_age(df)
-    count_unknown = df[df['premise_age_bucketed']=='Unknown date'].shape[0]
+def generate_nulls(cols, pc):
+    dc = {'postcode': pc, 'count_unknown_age': np.nan  }
+    for col in cols:
+        dc[col] = np.nan 
+    return dc
 
-
-    dc_full = {'postcode': pc, 'count_unknown_age': count_unknown  } 
+def process_postcode_age_residential(pc, data, INPUT_GPK):
+    """Process one postcode, """
     cols = [ 'ignorefill_median_age', 'modalfill_median_age', 'modal_age', 'min_age', 'max_age', 'range_age', 'distinct_ages', 'ignorefill_iqr_age', 'modalfill_iqr_age']
     
+    uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
+    
+    if uprn_match is None or len(uprn_match) == 0:
+        dc= generate_nulls(cols, pc)
+        return dc 
+       
+    # Generate building metrics, clean and test
+    df  = pre_process_buildings(uprn_match)    
+    res= df[df['map_simple_use'] == 'Residential'].copy()
+
+    if res is None or len(res)==0:
+        dc= generate_nulls(cols, pc)
+        return dc
+    
+    if check_duplicate_primary_key(res, 'upn'):
+        raise Exception('Duplicate primary key found for upn')
+
+    res = bucket_age(res)
+    count_unknown = res[res['premise_age_bucketed']=='Unknown date'].shape[0]
+
+    dc_full = {'postcode': pc, 'count_unknown_age': count_unknown  }     
+    
     dicc= {} 
-    dc = calc_age_attributes(df)
+    dc = calc_age_attributes(res)
     for i, col in enumerate(cols ) :
         dicc[col] = dc[i]
 

@@ -1,8 +1,8 @@
 import pandas as pd 
 import os 
-from src.age_calc import process_postcode_age
+from src.age_calc import process_postcode_age_residential
 
-def process_fuel_batch(pc_batch, data, INPUT_GPK, temp_dir, process_batch_name):
+def process_age_batch(pc_batch, data, INPUT_GPK, temp_dir, process_batch_name):
     print('Starting batch processing...')
     log_file = os.path.join(temp_dir, f'{process_batch_name}_log_file.csv')
     
@@ -10,7 +10,7 @@ def process_fuel_batch(pc_batch, data, INPUT_GPK, temp_dir, process_batch_name):
     results = []
     for pc in pc_batch:
         print('Processing postcode:', pc)
-        pc_result = process_postcode_age(pc, data, INPUT_GPK)  # Assuming this function is defined elsewhere
+        pc_result = process_postcode_age_residential(pc, data, INPUT_GPK)  # Assuming this function is defined elsewhere
         if pc_result is not None:
             results.append(pc_result)
     
@@ -34,14 +34,11 @@ def process_fuel_batch(pc_batch, data, INPUT_GPK, temp_dir, process_batch_name):
         print(f'Log file saved for batch: {process_batch_name}')
 
 
-
-
 def run_age_calc(pcs_list, data, INPUT_GPK, temp_dir, batch_size, batch_label):
     # Ensure temporary directory exists
-    temp_dir = os.path.join(temp_dir, 'age')
     os.makedirs(temp_dir, exist_ok=True)
     print('proc dir is ', temp_dir)
     
     for i in range(0, len(pcs_list) , batch_size):
         batch = pcs_list[i:i+batch_size]
-        process_fuel_batch(batch, data, INPUT_GPK,  temp_dir, batch_label)
+        process_age_batch(batch, data, INPUT_GPK,  temp_dir, batch_label)
