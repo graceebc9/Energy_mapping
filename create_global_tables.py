@@ -24,10 +24,10 @@ def main():
     layer = ds.GetLayer()
     extent = layer.GetExtent()
     bounding_boxes = calculate_bounding_boxes(extent, chunk_height=10000, chunk_width=10000)
-    bbox_test = bounding_boxes[0:1000]
+    
     
     print('boxes to process: ', len(bounding_boxes  ))
-    compute_global_modal_age(bbox_test, input_gpk, output_path) 
+    compute_global_modal_age(bounding_boxes, input_gpk, output_path) 
     print('Complete')
 
 
