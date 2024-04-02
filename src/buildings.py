@@ -40,8 +40,6 @@ def calculate_bounding_boxes(extent, chunk_width = 100000, chunk_height = 100000
 
 
 
-
-
 def get_bounding_boxes(input_gpk):
     ds = ogr.Open(input_gpk)
     layer = ds.GetLayer()
