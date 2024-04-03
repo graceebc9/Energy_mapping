@@ -1,9 +1,9 @@
 
 import pandas as pd
 import numpy as np
+import os 
 
 
-local=True 
 
 # ============================================================
 # Constants
@@ -19,19 +19,18 @@ DEFAULT_FLOOR_HEIGHT = 2.3
 
 def load_avg_floor_count():
     """Load the average floor count data from a CSV file."""
-    if local is True:
-        path = '/Users/gracecolverd/New_dataset/src/mapping/avg_floor_counts_whole_uk.csv'
-    else:
-        path = 'src/mapping/avg_floor_counts_whole_uk.csv'
-    return pd.read_csv(path)
+    current_dir = os.path.dirname(__file__)
+    csv_path = os.path.join(current_dir, 'mapping' , 'avg_floor_counts_whole_uk.csv')
+    
+
+    return pd.read_csv(csv_path)
 
 def get_average_heights_table():
     """Load a CSV file containing average heights grouped by criteria."""
-    if local==True:
-        path = '/Users/gracecolverd/New_dataset/src/mapping/avg_heights_whole_uk.csv'
-    else:
-        path = 'src/mapping/avg_heights_whole_uk.csv'
-    return pd.read_csv(path)
+    current_dir = os.path.dirname(__file__)
+    csv_path = os.path.join(current_dir, 'mapping' , 'avg_heights_whole_uk.csv')
+   
+    return pd.read_csv(csv_path)
 
 
 

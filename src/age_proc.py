@@ -41,6 +41,9 @@ def process_age_batch(pc_batch, data, INPUT_GPK, temp_dir, process_batch_name):
     if results:
         df = pd.DataFrame(results)
         print('Saving results to log file...')
+        if df.groupby('postcode').size().max() > 1:
+            print('Duplicate postcodes found in the batch')
+            raise ValueError('Duplicate postcodes found in the batch')
         
         # Check if the log file already exists
         if not os.path.exists(log_file):
