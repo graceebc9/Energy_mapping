@@ -117,11 +117,11 @@ def process_postcode_age_residential(pc, data, INPUT_GPK, premise_dict):
             df['global_fill_age'] = np.where(df['premise_age_bucketed'] == 'Unknown date', df['premise_type'].map(premise_dict), df['premise_age_bucketed'])
             df['global_ordinal'] = df['global_fill_age'].map(category_to_ordinal)   
             dc = calc_age_attributes(df, 'globalfill')
+            print(dc)
             for i, col in enumerate(cols ) :
                 dicc[f'globalfill_{col}'] = dc[i]
             dc_local = generate_nulls(cols, pc, ['localfill'])
-            for i , col in enumerate(cols):
-                dicc[f'localfill_{col}'] = dc_local[i]
+            dicc.update(dc_local)
             return dicc
     
     def normal_df(df):
