@@ -35,6 +35,11 @@ def process_fuel_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir, pro
     # Only proceed if we have results
     if results:
         df = pd.DataFrame(results)
+        # check dups in postcode 
+        if df.groupby('postcode').size().max() > 1:
+            print('Duplicate postcodes found in the batch')
+            raise ValueError('Duplicate postcodes found in the batch')
+
         print('Saving results to log file...')
         
         # Check if the log file already exists
