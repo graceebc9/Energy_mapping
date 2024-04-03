@@ -1,6 +1,23 @@
 import pandas as pd
 import glob 
 import os  
+import geopandas as gpd 
+
+
+
+def load_pc_shp(pcs_to_load):
+
+    ll = []
+    for pc in pcs_to_load:
+        if len(pc)==1:
+            path = f'/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291/one_letter_pc_code/{pc}/{pc}.shp'
+        else:
+            path = f'/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291/two_letter_pc_code/{pc}.shp'
+        sd = gpd.read_file(path)    
+        ll.append(sd) 
+    pc_shp = pd.concat(ll)
+    return pc_shp 
+
 
 def join_pc_map_three_pc(df, df_col,  pc_map  ):
     # merge on any one of three columns in pc_map 

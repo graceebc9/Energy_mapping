@@ -143,22 +143,23 @@ def process_postcode_age_residential(pc, data, INPUT_GPK):
        
     # Generate building metrics, clean and test
     df  = pre_process_buildings(uprn_match)    
-    res= df[df['map_simple_use'] == 'Residential'].copy()
-
-    if res is None or len(res)==0:
+    # only calc for wholly residential 
+    if len(df[df['premise_use']=='Residential']) != len(df):
+        print('Not wholly residential')
         dc= generate_nulls(cols, pc)
         return dc
+
     
-    if check_duplicate_primary_key(res, 'upn'):
+    if check_duplicate_primary_key(df, 'upn'):
         raise Exception('Duplicate primary key found for upn')
 
-    res = bucket_age(res)
-    count_unknown = res[res['premise_age_bucketed']=='Unknown date'].shape[0]
+    df = bucket_age(df)
+    count_unknown = df[df['premise_age_bucketed']=='Unknown date'].shape[0]
 
     dc_full = {'postcode': pc, 'count_unknown_age': count_unknown  }     
     
     dicc= {} 
-    dc = calc_age_attributes(res)
+    dc = calc_age_attributes(df)
     for i, col in enumerate(cols ) :
         dicc[col] = dc[i]
 
@@ -168,3 +169,11 @@ def process_postcode_age_residential(pc, data, INPUT_GPK):
 
 
  
+def load_global_average_mode():
+    """ Load global average data """
+    global_av = pd.read_csv('/Users/gracecolverd/New_dataset/global_averages/global_Average_age_df_mode.csv')
+    return  bucket_age(global_av)    
+    
+
+
+
