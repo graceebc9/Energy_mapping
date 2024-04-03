@@ -107,7 +107,7 @@ def process_postcode_age_residential(pc, data, INPUT_GPK, premise_dict):
     """Process one postcode, """
     
     def all_unknowns(df):   
-        if len(df[df['premise_type']==None])==len(df):
+        if len(df[df['premise_type'].isnull()])==len(df):
             print('All unknowns')
             dc = generate_nulls(cols, pc, prefixes)
             return dc
