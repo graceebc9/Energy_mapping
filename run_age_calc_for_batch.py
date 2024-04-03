@@ -24,7 +24,7 @@ def main( batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK  , 
 
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     print('Starting Label ', label)
-    proc_dir = os.path.join(data_dir, 'proc_dir', label, attr_lab)
+    proc_dir = os.path.join(data_dir, 'proc_dir', attr_lab, label )
     os.makedirs(proc_dir, exist_ok=True )
 
     onsud_data = load_onsud_data(path_to_onsud_file, path_to_pcshp)

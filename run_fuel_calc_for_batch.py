@@ -1,24 +1,12 @@
 import os 
-from src.fuel_proc import load_fuel_data , run_fuel_calc, load_onsud_data
+from src.fuel_proc import load_fuel_data , run_fuel_calc
+from src.postcode_utils import load_onsud_data, load_ids_from_file, get_onsud_path 
 import pandas as pd 
 
 
-def load_ids_from_file(file_path):
-    with open(file_path, 'r') as file:
-        ids = file.read().splitlines()
-    return ids
-
-def get_onsud_path(onsud_dir, onsud_data  ,label ):
-
-    # DATA_DIR='/Volumes/T9/Data_downloads/ONS_UPRN_database/ONSUD_DEC_2022'
-    date = onsud_dir.split('/')[-1].split('ONSUD_')[-1]
-    filepath = os.path.join(onsud_dir, f'Data/ONSUD_{onsud_data}_{label}.csv' ) 
-    return filepath
 
 
-
-
-def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK  , batch_label):
+def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK  , batch_label, attr_lab='fuel'):
     
     def gen_batch_ids(batch_ids):
         log_file =  os.path.join(proc_dir, f'{batch_label}_log_file.csv')
@@ -36,7 +24,7 @@ def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to
 
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     print('Starting Label ', label)
-    proc_dir = os.path.join(data_dir, 'proc_dir', label)
+    proc_dir = os.path.join(data_dir, 'proc_dir', attr_lab, label )
     os.makedirs(proc_dir, exist_ok=True )
 
     gas_df, elec_df = load_fuel_data(gas_path, elec_path )
@@ -50,6 +38,8 @@ def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to
     
     run_fuel_calc(batch_ids, onsud_data, gas_df, elec_df, INPUT_GPK,  proc_dir, batch_size=10, batch_label= batch_label)
     print('Batch complete')
+
+
 if __name__ == "__main__":
     # update this if needed 
     onsud_data = 'DEC_2022'
