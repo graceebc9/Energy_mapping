@@ -88,11 +88,10 @@ def calc_age_attributes(df, prefix):
         age_col = 'global_fill_age'
         ord_col = 'global_ordinal'
 
-    median,  iqr  = calculate_median_age_band(df , age_col, ord_col)
+    median,  iqr  = calculate_median_age_band(df , age_col= age_col, ord_col= ord_col)
     modal_age  = calculate_modal_age_band(df, age_col)
 
-    min_age, max_age, distinct_ages   = calc_range_age(df, age_col)
-    print(min_age)
+    min_age, max_age, distinct_ages   = calc_range_age(df, ord_col=ord_col)
     range_age = max_age - min_age
 
     _, ord_to_cat, _  = age_mapping() 
@@ -101,6 +100,97 @@ def calc_age_attributes(df, prefix):
     max_age = ord_to_cat[max_age]
     
     return  median, modal_age , min_age, max_age, range_age,  distinct_ages,  iqr
+
+
+
+def process_postcode_age_residential(pc, data, INPUT_GPK, premise_dict):
+    """Process one postcode, """
+    
+    def all_unknowns(df):   
+        if len(df[df['premise_type']==None])==len(df):
+            print('All unknowns')
+            dc = generate_nulls(cols, pc, prefixes)
+            return dc
+        else:
+            dicc= {} 
+            print('All unknowns but some type')    
+            df['global_fill_age'] = np.where(df['premise_age_bucketed'] == 'Unknown date', df['premise_type'].map(premise_dict), df['premise_age_bucketed'])
+            df['global_ordinal'] = df['global_fill_age'].map(category_to_ordinal)   
+            dc = calc_age_attributes(df, 'globalfill')
+            for i, col in enumerate(cols ) :
+                dicc[f'globalfill_{col}'] = dc[i]
+            dc_local = generate_nulls(cols, pc, ['localfill_'])
+            for i , col in enumerate(cols):
+                dicc[f'localfill_{col}'] = dc_local[i]
+            return dicc
+    
+    def normal_df(df):
+        df['loc_fill_age'] = np.where(df['premise_age_bucketed'] == 'Unknown date', df['premise_age_bucketed'].mode()[0], df['premise_age_bucketed'])
+        df['loc_ordinal'] = df['loc_fill_age'].map(category_to_ordinal)
+        df['global_fill_age'] = np.where(df['premise_age_bucketed'] == 'Unknown date', df['premise_type'].map(premise_dict), df['premise_age_bucketed'])
+        df['global_ordinal'] = df['global_fill_age'].map(category_to_ordinal)   
+        dicc= {} 
+        for prefix in prefixes:
+            dc = calc_age_attributes(df, prefix)
+            for i, col in enumerate(cols ) :
+                dicc[f'{prefix}_{col}'] = dc[i]
+        return dicc
+    
+    cols = [ 'median_age', 'modal_age', 'min_age', 'max_age', 'range_age', 'distinct_ages', 'iqr_age' ]
+    prefixes = ['localfill', 'globalfill']
+    
+
+    category_to_ordinal, _, _  = age_mapping()
+    
+    uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
+    
+    if uprn_match is None or uprn_match.empty:
+        dc= generate_nulls(cols, pc, prefixes)
+        return dc 
+       
+    # Generate building metrics, clean and test
+    df  = pre_process_buildings(uprn_match)    
+    # only calc for wholly residential 
+    if len(df[df['premise_use']=='Residential']) != len(df):
+        print('Not wholly residential')
+        return generate_nulls(cols, pc, prefixes)
+
+    if check_duplicate_primary_key(df, 'upn'):
+        raise Exception('Duplicate primary key found for upn')
+    
+    if df.empty or len(df)==1:
+        dc= generate_nulls(cols, pc, prefixes)
+        return dc
+    
+    df = bucket_age(df)
+    count_unknown = df[df['premise_age_bucketed']=='Unknown date'].shape[0]
+    dc_full = {'postcode': pc, 'count_unknown_age': count_unknown  }     
+
+    if df['premise_age_bucketed'].isnull().all():
+        print('Starting all unknown postcode')
+        dicc = all_unknowns(df)
+    else:
+        dicc= normal_df(df)
+        
+
+    dc_full.update(dicc )
+   
+    return dc_full 
+
+
+def generate_nulls(cols, pc, prefixes):
+    dc = {'postcode': pc, 'count_unknown_age': np.nan  }
+    for prefix in prefixes:
+        for col in cols:
+            dc[f'{prefix}_{col}'] = np.nan 
+    return dc
+
+ 
+
+
+        
+
+
 
 # def calc_age_attributes(df, global_df):
 #     """ Fn to calculate the median age band of a column for a df 
@@ -133,96 +223,6 @@ def calc_age_attributes(df, prefix):
 
 
 #     return  ignore_median, modal_median, modal_age , min_age, max_age, range_age,  distinct_ages,  ignore_iqr, modal_iqr
-
-
-
-
-def process_postcode_age_residential(pc, data, INPUT_GPK, premise_dict):
-    """Process one postcode, """
-    
-    def all_unknowns(df):   
-        if len(df[df['premise_type']==None])==len(df):
-            print('All unknowns')
-            dc = generate_nulls(cols, pc, prefixes)
-            return dc
-        else:
-            dicc= {} 
-            print('All unknowns but some type')    
-            df['global_fill_age'] = np.where(df['premise_age_bucketed'] == 'Unknown date', df['premise_type'].map(premise_dict), df['premise_age_bucketed'])
-            df['global_ordinal'] = df['global_fill_age'].map(category_to_ordinal)   
-            dc = calc_age_attributes(df, 'globalfill')
-            for i, col in enumerate(cols ) :
-                dicc[f'globalfill_{col}'] = dc[i]
-            dc_local = generate_nulls(cols, pc, ['localfill_'])
-            for i , col in enumerate(cols):
-                dicc[f'localfill_{col}'] = dc_local[i]
-            return dicc
-    
-    def normal_df(df):
-        df['loc_fill_age'] = np.where(df['premise_age_bucketed'] == 'Unknown date', df['premise_age_bucketed'].mode()[0], df['premise_age_bucketed'])
-        df['loc_ordinal'] = df['loc_fill_age'].map(category_to_ordinal)
-        df['global_fill_age'] = np.where(df['premise_age_bucketed'] == 'Unknown date', df['premise_type'].map(premise_dict), df['premise_age_bucketed'])
-        df['global_ordinal'] = df['global_fill_age'].map(category_to_ordinal)   
-        
-        dicc= {} 
-        for prefix in prefixes:
-            dc = calc_age_attributes(df, prefix)
-            for i, col in enumerate(cols ) :
-                dicc[f'{prefix}_{col}'] = dc[i]
-    
-    cols = [ 'median_age', 'modal_age', 'min_age', 'max_age', 'range_age', 'distinct_ages', 'iqr_age' ]
-    prefixes = ['localfill', 'globalfill']
-    
-
-    category_to_ordinal, _, _  = age_mapping()
-    
-    uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
-    
-    if uprn_match is None or len(uprn_match) == 0:
-        dc= generate_nulls(cols, pc, prefixes)
-        return dc 
-       
-    # Generate building metrics, clean and test
-    df  = pre_process_buildings(uprn_match)    
-    # only calc for wholly residential 
-    if len(df[df['premise_use']=='Residential']) != len(df):
-        print('Not wholly residential')
-        dc= generate_nulls(cols, pc, prefixes)
-        return dc
-
-    if check_duplicate_primary_key(df, 'upn'):
-        raise Exception('Duplicate primary key found for upn')
-    
-    if len(df)==1:
-        dc= generate_nulls(cols, pc, prefixes)
-        return dc
-    
-    df = bucket_age(df)
-    count_unknown = df[df['premise_age_bucketed']=='Unknown date'].shape[0]
-    dc_full = {'postcode': pc, 'count_unknown_age': count_unknown  }     
-
-    if len(df[df['premise_age']=='Unknown date']) ==len(df):
-        print('Starting all unknown postcode')
-        dicc = all_unknowns(df)
-    else:
-        dicc= normal_df(df)
-
-    dc_full.update(dicc )
-   
-    return dc_full 
-
-
-def generate_nulls(cols, pc, prefixes):
-    dc = {'postcode': pc, 'count_unknown_age': np.nan  }
-    for prefix in prefixes:
-        for col in cols:
-            dc[f'{prefix}_{col}'] = np.nan 
-    return dc
-
- 
-
-
-        
 
 
 

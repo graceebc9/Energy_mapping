@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 
-local=False 
+local=True 
 
 # ============================================================
 # Constants
