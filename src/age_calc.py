@@ -119,7 +119,7 @@ def process_postcode_age_residential(pc, data, INPUT_GPK, premise_dict):
             dc = calc_age_attributes(df, 'globalfill')
             for i, col in enumerate(cols ) :
                 dicc[f'globalfill_{col}'] = dc[i]
-            dc_local = generate_nulls(cols, pc, ['localfill_'])
+            dc_local = generate_nulls(cols, pc, ['localfill'])
             for i , col in enumerate(cols):
                 dicc[f'localfill_{col}'] = dc_local[i]
             return dicc
