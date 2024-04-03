@@ -166,7 +166,7 @@ def process_postcode_age_residential(pc, data, INPUT_GPK, premise_dict):
     count_unknown = df[df['premise_age_bucketed']=='Unknown date'].shape[0]
     dc_full = {'postcode': pc, 'count_unknown_age': count_unknown  }     
 
-    if df['premise_age_bucketed'].isnull().all():
+    if len(df[df['premise_age_bucketed']=='Unknown date']) == len(df):
         print('Starting all unknown postcode')
         dicc = all_unknowns(df)
     else:
