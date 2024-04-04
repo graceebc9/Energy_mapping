@@ -13,8 +13,8 @@ def find_batches(pc, batch_dir ):
             if pc in file.read():
                 files_paths.append(f)
     print(files_paths)
-    if len(files_paths)!=2:
-        raise Exception('no matches found for pcs ', pc)
+    if len(files_paths)< 2:
+        return None
     return files_paths 
 
 def convert_batch_fp_to_onsud(path):
@@ -25,9 +25,12 @@ def convert_batch_fp_to_onsud(path):
 
 
 def custom_load_onsud(pc , batch_dir  ):
-    f1, f2 = find_batches(pc, batch_dir)    
-    f1, f2 = convert_batch_fp_to_onsud(f1), convert_batch_fp_to_onsud(f2)
-    df1 = pd.read_csv(f1)
-    df2 = pd.read_csv(f2)
-    df = pd.concat([df1,df2])
+    paths = find_batches(pc, batch_dir)    
+    df_list = [] 
+    for p in paths:
+        p2  = convert_batch_fp_to_onsud(p)
+        df1 = pd.read_csv(p2)
+        df1 = df1[df1['PCDS'].str.strip() ==pc ]
+        df_list.append(df1)
+    df = pd.concat(df_list )
     return df 
