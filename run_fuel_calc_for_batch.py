@@ -8,8 +8,8 @@ import pandas as pd
 
 def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK  , batch_label, attr_lab='fuel'):
     
-    def gen_batch_ids(batch_ids):
-        log_file =  os.path.join(proc_dir, f'{batch_label}_log_file.csv')
+    def gen_batch_ids(batch_ids, log_file):
+        
         if os.path.exists(log_file):
             print('Removing already proc id')
             print('Old len is ', len(batch_ids))
@@ -26,17 +26,19 @@ def main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to
     print('Starting Label ', label)
     proc_dir = os.path.join(data_dir, 'proc_dir', attr_lab, label )
     os.makedirs(proc_dir, exist_ok=True )
+    log_file =  os.path.join(proc_dir, attr_lab,  f'{batch_label}_log_file.csv')
+    print('log file is ', log_file)
 
     gas_df, elec_df = load_fuel_data(gas_path, elec_path )
     onsud_data = load_onsud_data(path_to_onsud_file, path_to_pcshp)
     
     # load txt file 
     batch_ids = load_ids_from_file(batch_path)
-    batch_ids= gen_batch_ids(batch_ids)
+    batch_ids= gen_batch_ids(batch_ids, log_file)
     print('Len of batch is ', len(batch_ids))
     print('Starting batch process')
     
-    run_fuel_calc(batch_ids, onsud_data, gas_df, elec_df, INPUT_GPK,  proc_dir, batch_size=10, batch_label= batch_label)
+    run_fuel_calc(batch_ids, onsud_data, gas_df, elec_df, INPUT_GPK, batch_size=10, batch_label= batch_label, log_file=log_file)
     print('Batch complete')
 
 
@@ -62,7 +64,7 @@ if __name__ == "__main__":
     main( batch_path, data_dir, gas_path, elec_path, path_to_onsud_file, path_to_pcshp, INPUT_GPK = input_gpk_building, batch_label=batch_id  ) 
 
 
-# export  BATCH_PATH='/Users/gracecolverd/New_dataset/test/batches/NE/batch_0.txt'
+# export  BATCH_PATH='/Users/gracecolverd/New_dataset/test/batches/EM/batch_0.txt'
 # export DATA_DIR='/Users/gracecolverd/New_dataset/test'
 # export ONSUD_DIR='/Volumes/T9/Data_downloads/ONS_UPRN_database/ONSUD_DEC_2022'
 # export PC_SHP_PATH='/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291'
