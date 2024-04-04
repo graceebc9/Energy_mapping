@@ -1,10 +1,10 @@
 import os 
-from src.fuel_proc import load_fuel_data , run_fuel_calc
-from src.postcode_utils import load_ids_from_file, get_onsud_path 
+# from src.fuel_proc import load_fuel_data 
+# from src.postcode_utils import load_ids_from_file, get_onsud_path 
 import pandas as pd 
 
 
-from src.pc_main import main , run_fuel_process
+from src.pc_main import main , run_fuel_process_overlap
 
 
 if __name__ == "__main__":
@@ -17,18 +17,22 @@ if __name__ == "__main__":
     path_to_pcshp= os.environ.get('PC_SHP_PATH')
     input_gpk_building = os.environ.get('BUILDING_PATH')
     batch_path = os.environ.get('BATCH_PATH') 
+    batch_dir = os.environ.get('BATCH_DIR')
     
-    label = batch_path.split('/')[-2]
-    batch_id = batch_path.split('/')[-1].split('.')[0].split('_')[-1]
+    
+    label ='overlap'
+    
     # path_to_onsud_file = get_onsud_path( onsud_dir, onsud_data, label )
-    onsud_path = os.path.join(os.path.dirname(batch_path), f'onsud_{batch_id}.csv') 
-    print(onsud_path)
-    main(batch_path, data_dir, onsud_path, path_to_pcshp, INPUT_GPK=input_gpk_building, region_label=label,  batch_label=batch_id, attr_lab='fuel', process_function=run_fuel_process, gas_path=gas_path, elec_path=elec_path)
+    onsud_path = None 
+    batch_id = 'overlap'
+    
+    main(batch_path = batch_path, data_dir = data_dir, path_to_onsud_file = onsud_path, path_to_pcshp =path_to_pcshp,
+          INPUT_GPK=input_gpk_building, region_label=label, batch_label=batch_id, attr_lab='fuel', process_function=run_fuel_process_overlap, gas_path=gas_path, elec_path=elec_path, overlap=True, batch_dir = batch_dir)
 
 
 
-
-# export  BATCH_PATH='/Users/gracecolverd/New_dataset/test/batches/EM/batch_0.txt'
+# export BATCH_DIR='/Users/gracecolverd/New_dataset/test/batches'
+# export  BATCH_PATH='/Users/gracecolverd/New_dataset/postcode_attrs/overlapping_pcs.txt'
 # export DATA_DIR='/Users/gracecolverd/New_dataset/test'
 # export ONSUD_DIR='/Volumes/T9/Data_downloads/ONS_UPRN_database/ONSUD_DEC_2022'
 # export PC_SHP_PATH='/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291'
