@@ -3,8 +3,10 @@ import sys
 import numpy as np  
 
 from src.pre_process_buildings import pre_process_building_data 
-from src.postcode_utils import check_duplicate_primary_key , find_data_pc
+from src.postcode_utils import check_duplicate_primary_key , find_data_pc, find_postcode_for_ONSUD_file
 import numpy as np
+from src.overlap_pc import custom_load_onsud 
+
 
 def calc_df_sum_attribute(df, cols, prefix=''):
     """Takes input df with only one postcode and calcs attributes based on summing the building columns."""
@@ -118,10 +120,44 @@ def get_fuel_vars(pc, f , fuel_df):
 
 
 
-def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
+# def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
+#     """Process one postcode, deriving building attributes and electricity and fuel info."""
+
+#     print('len data is ', len(data))
+#     uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
+    
+#     # Generate building metrics, clean and test
+#     df , num_invalid = pre_process_building_data(uprn_match)    
+
+#     dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }
+#     dc = calculate_postcode_attr_with_null_case(df)
+#     dc_full.update(dc)
+#     if df is not None:
+#         if check_duplicate_primary_key(df, 'upn'):
+#             print('Duplicate primary key found for upn')
+#             sys.exit()
+ 
+
+#     dc_gas = get_fuel_vars(pc, 'gas', gas_df)
+#     dc_elec = get_fuel_vars(pc, 'elec', elec_df)
+#     dc_full.update(dc_gas)
+#     dc_full.update(dc_elec)
+
+#     return dc_full
+
+
+def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = False, batch_dir=None, path_to_pcshp=None  ):
     """Process one postcode, deriving building attributes and electricity and fuel info."""
-    print(pc)
-    uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
+    pc = pc.strip() 
+
+    if overlap ==True: 
+        print('starting overlap pc')
+        onsud_data = custom_load_onsud(pc, batch_dir)
+        _, onsud_data = find_postcode_for_ONSUD_file(onsud_data, path_to_pcshp )
+        
+    
+    uprn_match= find_data_pc(pc, onsud_data, input_gpk=INPUT_GPK)
+
     
     # Generate building metrics, clean and test
     df , num_invalid = pre_process_building_data(uprn_match)    

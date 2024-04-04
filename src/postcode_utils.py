@@ -6,11 +6,12 @@ from src.multi_thread import merge_temp_logs_to_main, generate_batch_list
 from src.utils  import check_merge_files 
 
 
-def find_data_pc(pc, data, input_gpk='/Volumes/T9/Data_downloads/Versik_building_data/2024_03_full_building_data/6101/Data/new_verisk_2022.gpkg'):
+def find_data_pc(pc, data, input_gpk):
     """
     Find buildings based on UPRN match to the postcodes 
     """
     gd = gpd.GeoDataFrame(data[data['PCDS'] == pc].copy(), geometry='geometry')
+    
     bbox = box(*gd.total_bounds)
     buildings = gpd.read_file(input_gpk, bbox=bbox)
     uprn_match = buildings[buildings['uprn'].isin(gd['UPRN'])].copy()
@@ -48,10 +49,12 @@ def get_onsud_path_batches(onsud_dir, onsud_data  ,label ):
 
 
 def load_onsud_data(path_to_onsud_file, path_to_pcshp, ):
+    if path_to_onsud_file is None: 
+        return None 
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     print(f'Finding data for ONSUD file ', label )
-    
-    _  , onsud_data = find_postcode_for_ONSUD_file(path_to_onsud_file= path_to_onsud_file, path_to_pc_shp_folder= path_to_pcshp)
+    onsud_df = pd.read_csv(path_to_onsud_file)
+    _  , onsud_data = find_postcode_for_ONSUD_file(onsud_file= onsud_df, path_to_pc_shp_folder= path_to_pcshp)
 
     return onsud_data 
 
@@ -62,16 +65,16 @@ def get_pcs_to_process(onsud_data, log):
     return pc_list 
     
 
-def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
+def find_postcode_for_ONSUD_file(onsud_file, path_to_pc_shp_folder):
     """ Join ONSUD UPRN TO postcode mapping to postcode geofiles with shapefiles
+    onsud file is raw onsud file
     """
-    ee = pd.read_csv(path_to_onsud_file)
-    ee['leading_letter'] = ee['PCDS'].str.extract(r'^([A-Za-z]{1,2})\d')
-    ee= ee[~ee['PCDS'].isna() ] 
-    ee['PCDS'] = ee['PCDS'].str.strip()
+    onsud_file['leading_letter'] = onsud_file['PCDS'].str.extract(r'^([A-Za-z]{1,2})\d')
+    onsud_file= onsud_file[~onsud_file['PCDS'].isna() ] 
+    onsud_file['PCDS'] = onsud_file['PCDS'].str.strip()
     
     whole_pc = [] 
-    for pc in ee['leading_letter'].unique():
+    for pc in onsud_file['leading_letter'].unique():
         pc= pc.lower()
         if len(pc)==1:
             pc_path =os.path.join(path_to_pc_shp_folder,  f'one_letter_pc_code/{pc}/{pc}.shp'  )
@@ -83,15 +86,17 @@ def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
 
     pc_df = pd.concat(whole_pc)
     pc_df['POSTCODE'] = pc_df['POSTCODE'].str.strip() 
-    print('pc_df columsn ' , pc_df.columns )    
-    if len(pc_df.PC_AREA.unique().tolist()) != len(ee['leading_letter'].unique().tolist()):
+      
+    if len(pc_df.PC_AREA.unique().tolist()) != len(onsud_file['leading_letter'].unique().tolist()):
         raise ValueError('Not all postcodes are present in the shapefile') 
-    print('ee cols ' , ee.columns)
-    check_merge_files(pc_df, ee, 'POSTCODE', 'PCDS') 
-    data = ee.merge(pc_df, left_on='PCDS', right_on='POSTCODE', how='inner')
-    print(data.columns )
+
+    check_merge_files(pc_df, onsud_file, 'POSTCODE', 'PCDS') 
+
+    data = onsud_file.merge(pc_df, left_on='PCDS', right_on='POSTCODE', how='inner')
+    print(len(data))
     print('Len of missing rows ', len(data[data['PC_AREA'].isna()] ) ) 
     
     if len(data[data['PC_AREA'].isna()] ) > 0.1*len(data):
         raise ValueError('More than 10% of the data is missing')    
+    
     return pc_df , data 
