@@ -4,45 +4,10 @@ from src.postcode_utils import load_onsud_data, load_ids_from_file, get_onsud_pa
 import pandas as pd 
 
 
-
-
-def main( batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK  , batch_label, attr_lab ='age'):
-    
-    def gen_batch_ids(batch_ids, log_file):
-        
-        if os.path.exists(log_file):
-            print('Removing already proc id')
-            print('Old len is ', len(batch_ids))
-            log = pd.read_csv(log_file)
-            proc_id = log.postcode.unique().tolist()
-            batch_ids = [ x for x in batch_ids if x not in proc_id]
-            print('new len is ', len(batch_ids))
-            return batch_ids
-        else:
-            print('No ids proccessed yet')
-            return batch_ids
-
-    label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
-    print('Starting Label ', label)
-    proc_dir = os.path.join(data_dir, 'proc_dir', attr_lab, label )
-    os.makedirs(proc_dir, exist_ok=True )
-    log_file =  os.path.join(proc_dir, f'{batch_label}_log_file.csv')
-    print('log file is ', log_file)
-
-    onsud_data = load_onsud_data(path_to_onsud_file, path_to_pcshp)
-    
-    # load txt file 
-    batch_ids = load_ids_from_file(batch_path, log_file)
-    batch_ids= gen_batch_ids(batch_ids)
-    print('Len of batch is ', len(batch_ids))
-    print('Starting batch process')
-    
-    run_age_calc(batch_ids, onsud_data, INPUT_GPK,  proc_dir, batch_size=10, batch_label= batch_label, log_file=log_file)
-    print('Batch complete')
-
+from src.pc_main import main , run_age_process
+# Other necessary imports...
 
 if __name__ == "__main__":
-    # update this if needed 
     onsud_data = 'DEC_2022'
     
     print('loading varibles')
@@ -58,8 +23,16 @@ if __name__ == "__main__":
     path_to_onsud_file = get_onsud_path( onsud_dir, onsud_data, label )
     
     
-    print('starting main')
-    main( batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK = input_gpk_building, batch_label=batch_id  ) 
+    # Call main with run_age_process as the process function
+    main(batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK=input_gpk_building, batch_label=batch_id, attr_lab='age', process_function=run_age_process)
+
+
+# if __name__ == "__main__":
+#     # update this if needed 
+    
+    
+#     print('starting main')
+#     main( batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK = input_gpk_building, batch_label=batch_id  ) 
 
 
 # export  BATCH_PATH='/Users/gracecolverd/New_dataset/test/batches/NE/batch_0.txt'
@@ -71,3 +44,39 @@ if __name__ == "__main__":
 # export BUILDING_PATH='/Volumes/T9/Data_downloads/Versik_building_data/2024_03_22_updated_data/UKBuildings_Edition_15_new_format_upn.gpkg'
     
     
+
+
+
+# def main( batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK  , batch_label, attr_lab ='age'):
+    
+#     def gen_batch_ids(batch_ids, log_file):
+        
+#         if os.path.exists(log_file):
+#             print('Removing already proc id')
+#             print('Old len is ', len(batch_ids))
+#             log = pd.read_csv(log_file)
+#             proc_id = log.postcode.unique().tolist()
+#             batch_ids = [ x for x in batch_ids if x not in proc_id]
+#             print('new len is ', len(batch_ids))
+#             return batch_ids
+#         else:
+#             print('No ids proccessed yet')
+#             return batch_ids
+
+#     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
+#     print('Starting Label ', label)
+#     proc_dir = os.path.join(data_dir, 'proc_dir', attr_lab, label )
+#     os.makedirs(proc_dir, exist_ok=True )
+#     log_file =  os.path.join(proc_dir, f'{batch_label}_log_file.csv')
+#     print('log file is ', log_file)
+
+#     onsud_data = load_onsud_data(path_to_onsud_file, path_to_pcshp)
+    
+#     # load txt file 
+#     batch_ids = load_ids_from_file(batch_path, log_file)
+#     batch_ids= gen_batch_ids(batch_ids)
+#     print('Len of batch is ', len(batch_ids))
+#     print('Starting batch process')
+    
+#     run_age_calc(batch_ids, onsud_data, INPUT_GPK,  proc_dir, batch_size=10, batch_label= batch_label, log_file=log_file)
+#     print('Batch complete')
