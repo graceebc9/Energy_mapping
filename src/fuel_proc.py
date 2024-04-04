@@ -57,14 +57,13 @@ def process_fuel_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, process_batch
 
 
 
-def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, batch_size, batch_label, log_file):
+def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, batch_size, batch_label, log_file):
     # Ensure temporary directory exists
-    temp_dir = os.path.join(temp_dir, 'fuel')
-    os.makedirs(temp_dir, exist_ok=True)
+
     
     for i in range(0, len(pcs_list) , batch_size):
         batch = pcs_list[i:i+batch_size]
-        process_fuel_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir, batch_label, log_file)
+        process_fuel_batch(batch, data, gas_df, elec_df, INPUT_GPK, batch_label, log_file)
 
 
 # def run_fuel_calc_multi_thread(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_workers, batch_size):

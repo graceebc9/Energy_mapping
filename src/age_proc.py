@@ -22,9 +22,9 @@ def load_global_average_mode():
     return premise_dict 
 
 
-def process_age_batch(pc_batch, data, INPUT_GPK, temp_dir, process_batch_name):
+def process_age_batch(pc_batch, data, INPUT_GPK, process_batch_name, log_file):
     print('Starting batch processing...')
-    log_file = os.path.join(temp_dir, f'{process_batch_name}_log_file.csv')
+    
     print('Loading global average data...')
     premise_dict = load_global_average_mode()
     # Initialize an empty list to collect results
@@ -58,11 +58,11 @@ def process_age_batch(pc_batch, data, INPUT_GPK, temp_dir, process_batch_name):
         print(f'Log file saved for batch: {process_batch_name}')
 
 
-def run_age_calc(pcs_list, data, INPUT_GPK, temp_dir, batch_size, batch_label):
+def run_age_calc(pcs_list, data, INPUT_GPK, temp_dir, batch_size, batch_label, log_file):
     # Ensure temporary directory exists
     os.makedirs(temp_dir, exist_ok=True)
     print('proc dir is ', temp_dir)
     
     for i in range(0, len(pcs_list) , batch_size):
         batch = pcs_list[i:i+batch_size]
-        process_age_batch(batch, data, INPUT_GPK,  temp_dir, batch_label)
+        process_age_batch(batch, data, INPUT_GPK, batch_label, log_file)
