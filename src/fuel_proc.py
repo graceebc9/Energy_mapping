@@ -57,9 +57,7 @@ def process_fuel_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, process_batch
 
 
 
-def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, batch_size, batch_label, log_file):
-    # Ensure temporary directory exists
-
+def run_fuel_calc(pcs_list, data,  INPUT_GPK, batch_size, batch_label, log_file, gas_df, elec_df):
     
     for i in range(0, len(pcs_list) , batch_size):
         batch = pcs_list[i:i+batch_size]

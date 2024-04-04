@@ -38,6 +38,13 @@ def get_onsud_path(onsud_dir, onsud_data  ,label ):
     filepath = os.path.join(onsud_dir, f'Data/ONSUD_{onsud_data}_{label}.csv' ) 
     return filepath
 
+def get_onsud_path_batches(onsud_dir, onsud_data  ,label ):
+
+    
+    
+    filepath = os.path.join(onsud_dir, f'Data/ONSUD_{onsud_data}_{label}.csv' ) 
+    return filepath
+
 
 
 def load_onsud_data(path_to_onsud_file, path_to_pcshp, ):
@@ -76,13 +83,13 @@ def find_postcode_for_ONSUD_file(path_to_onsud_file, path_to_pc_shp_folder):
 
     pc_df = pd.concat(whole_pc)
     pc_df['POSTCODE'] = pc_df['POSTCODE'].str.strip() 
-
+    print('pc_df columsn ' , pc_df.columns )    
     if len(pc_df.PC_AREA.unique().tolist()) != len(ee['leading_letter'].unique().tolist()):
         raise ValueError('Not all postcodes are present in the shapefile') 
-    
+    print('ee cols ' , ee.columns)
     check_merge_files(pc_df, ee, 'POSTCODE', 'PCDS') 
     data = ee.merge(pc_df, left_on='PCDS', right_on='POSTCODE', how='inner')
-
+    print(data.columns )
     print('Len of missing rows ', len(data[data['PC_AREA'].isna()] ) ) 
     
     if len(data[data['PC_AREA'].isna()] ) > 0.1*len(data):
