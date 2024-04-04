@@ -18,9 +18,9 @@ def load_fuel_data(gas_path, elec_path):
     elec_df = pd.read_csv(elec_path) 
     return  gas_df, elec_df
 
-def process_fuel_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir, process_batch_name):
+def process_fuel_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, process_batch_name, log_file):
     print('Starting batch processing...')
-    log_file = os.path.join(temp_dir, f'{process_batch_name}_log_file.csv')
+    # log_file = os.path.join(temp_dir, f'{process_batch_name}_log_file.csv')
     
     # Initialize an empty list to collect results
     results = []
@@ -57,14 +57,14 @@ def process_fuel_batch(pc_batch, data, gas_df, elec_df, INPUT_GPK, temp_dir, pro
 
 
 
-def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, batch_size, batch_label):
+def run_fuel_calc(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, batch_size, batch_label, log_file):
     # Ensure temporary directory exists
     temp_dir = os.path.join(temp_dir, 'fuel')
     os.makedirs(temp_dir, exist_ok=True)
     
     for i in range(0, len(pcs_list) , batch_size):
         batch = pcs_list[i:i+batch_size]
-        process_fuel_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir, batch_label)
+        process_fuel_batch(batch, data, gas_df, elec_df, INPUT_GPK,  temp_dir, batch_label, log_file)
 
 
 # def run_fuel_calc_multi_thread(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_workers, batch_size):

@@ -158,9 +158,15 @@ def process_postcode_age_residential(pc, data, INPUT_GPK, premise_dict):
     if check_duplicate_primary_key(df, 'upn'):
         raise Exception('Duplicate primary key found for upn')
     
-    if df.empty or len(df)==1:
+    if df.empty:
         dc= generate_nulls(cols, pc, prefixes)
         return dc
+    df = bucket_age(df)
+
+    count_unknown = df[df['premise_age_bucketed']=='Unknown date'].shape[0]
+    
+    if len(df)==1:
+        dc = generate_nulls(cols, pc, prefixes, count_unknown )
     
     df = bucket_age(df)
     count_unknown = df[df['premise_age_bucketed']=='Unknown date'].shape[0]
@@ -171,15 +177,16 @@ def process_postcode_age_residential(pc, data, INPUT_GPK, premise_dict):
         dicc = all_unknowns(df)
     else:
         dicc= normal_df(df)
-        
-
     dc_full.update(dicc )
    
     return dc_full 
 
 
-def generate_nulls(cols, pc, prefixes):
-    dc = {'postcode': pc, 'count_unknown_age': np.nan  }
+def generate_nulls(cols, pc, prefixes, count_unknown= False  ):
+    if count_unknown is False:
+        dc = {'postcode': pc, 'count_unknown_age': np.nan  }
+    else:
+        dc = {'postcode': pc, 'count_unknown_age': count_unknown  }
     for prefix in prefixes:
         for col in cols:
             dc[f'{prefix}_{col}'] = np.nan 
