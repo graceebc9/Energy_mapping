@@ -3,11 +3,11 @@ import os
 from src.postcode_utils import  load_onsud_data
 
 
-def split_onsud_file(path_to_onsud_file, output_directory, logfile, label  ):
+def split_onsud_file(path_to_onsud_file, path_to_pcshp, output_directory, logfile, label  ):
 
-    # onsud_data = load_onsud_data(path_to_onsud_file, path_to_pcshp)
-    onsud_data = pd.read_csv(path_to_onsud_file)
-  
+    onsud_data = load_onsud_data(path_to_onsud_file, path_to_pcshp)
+    raw_data = pd.read_csv(path_to_onsud_file)
+    
     print('Starting split for ', label )
     pcs_list = onsud_data.PCDS.unique().tolist()
 
@@ -33,9 +33,11 @@ def split_onsud_file(path_to_onsud_file, output_directory, logfile, label  ):
         with open(batch_filename, 'a') as f:
             for pc in batchs:
                 f.write(f"{pc}\n")
-
+        
+        
         # export subst of onsud file 
-        subsetdata = onsud_data[onsud_data['PCDS'].isin(batchs)].copy()
+       
+        subsetdata = raw_data[raw_data['PCDS'].str.strip().isin(batchs)].copy()
         subsetdata.to_csv(f'{batch_dir}/onsud_{i//batch_size}.csv', index=False)
 
     print('Batches saved')
@@ -44,13 +46,13 @@ def split_onsud_file(path_to_onsud_file, output_directory, logfile, label  ):
 if __name__ == "__main__":
     print('Loading files')
     path_to_onsud_file= os.environ.get('ONSUD_PATH')
-    # path_to_pcshp= os.environ.get('PC_SHP_PATH')
+    path_to_pcshp= os.environ.get('PC_SHP_PATH')
     output_directory = os.environ.get('OUTPUT_DIR')
     
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     log = os.path.join(output_directory, label,  'log_file.csv')
     
-    split_onsud_file(path_to_onsud_file, output_directory, logfile =  log , label =  label)
+    split_onsud_file(path_to_onsud_file,  path_to_pcshp, output_directory, logfile =  log , label =  label)
     
     print('Batches saved to ')
 
