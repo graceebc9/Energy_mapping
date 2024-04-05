@@ -24,7 +24,7 @@ if __name__ == "__main__":
     
     
     # Call main with run_age_process as the process function
-    main(batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK=input_gpk_building, batch_label=batch_id, attr_lab='age', process_function=run_age_process)
+    main(batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK=input_gpk_building, region_label=label, batch_label=batch_id, attr_lab='age', process_function=run_age_process)
 
 
 # if __name__ == "__main__":

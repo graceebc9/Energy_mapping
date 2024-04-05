@@ -1,5 +1,5 @@
 import os 
-from src.fuel_proc import load_fuel_data , run_fuel_calc
+from src.fuel_proc import load_fuel_data 
 from src.postcode_utils import load_ids_from_file, get_onsud_path 
 import pandas as pd 
 

@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
 
 # export BATCH_DIR='/Users/gracecolverd/New_dataset/test/batches'
-# export  BATCH_PATH='/Users/gracecolverd/New_dataset/postcode_attrs/overlapping_pcs.txt'
+# export  BATCH_PATH='/Users/gracecolverd/New_dataset/overlapping_pcs.txt'
 # export DATA_DIR='/Users/gracecolverd/New_dataset/test'
 # export ONSUD_DIR='/Volumes/T9/Data_downloads/ONS_UPRN_database/ONSUD_DEC_2022'
 # export PC_SHP_PATH='/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291'
