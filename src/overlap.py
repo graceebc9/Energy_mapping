@@ -26,6 +26,8 @@ def convert_batch_fp_to_onsud(path):
 
 def custom_load_onsud(pc , batch_dir  ):
     paths = find_batches(pc, batch_dir)    
+    if paths is None:
+        return None 
     df_list = [] 
     for p in paths:
         p2  = convert_batch_fp_to_onsud(p)
