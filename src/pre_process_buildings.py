@@ -54,6 +54,20 @@ def fill_premise_floor_types(df, glob_av_df):
     df = update_avg_floor_count(df, 'floor_count_element_av', glob_av_df, 'FGA')
     return df
 
+
+def update_height_with_average_flexifc(df, input_col, fc_col, avg_table, suffix):
+    """Update the height column with averages based on age, floor count, and use."""
+    # Merge with the average table
+    df = pd.merge(df, avg_table, left_on=['premise_age', fc_col, 'map_simple_use'], right_on=['premise_age', 'premise_floor_count', 'map_simple_use'], how='left')
+    
+    # Update heights with averages where applicable
+    update_col_name = f'{input_col}_{suffix}'
+    df[update_col_name] = np.where(df[input_col] == 0, df['weighted_average_height'], df[input_col])
+    
+    # Drop the temporary column
+    df.drop('weighted_average_height', axis=1, inplace=True)
+    return df
+
 def create_height_bucket_col(df):
     """Bucket height into predefined categories."""
     height_bins = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 18, 20, 30, 40, 50, 100, 200]
@@ -64,6 +78,22 @@ def create_height_bucket_col(df):
 def update_height_with_average(df, input_col, avg_table, suffix):
     """Update the height column with averages based on age, floor count, and use."""
     # Merge with the average table
+    df = pd.merge(df, avg_table, on=['premise_age', 'premise_floor_count', 'map_simple_use'], how='left')
+    
+    # Update heights with averages where applicable
+    update_col_name = f'{input_col}_{suffix}'
+    df[update_col_name] = np.where(df[input_col] == 0, df['weighted_average_height'], df[input_col])
+    
+    # Drop the temporary column
+    df.drop('weighted_average_height', axis=1, inplace=True)
+    return df
+
+
+def update_height_with_average_flexifc(df, input_col, fc_col, avg_table, suffix):
+    """Update the height column with averages based on age, floor count, and use."""
+    # Merge with the average table
+    df.drop(columns='premise_floor_count', inplace=True)
+    df.rename({fc_col: 'premise_floor_count'}, inplace=True)
     df = pd.merge(df, avg_table, on=['premise_age', 'premise_floor_count', 'map_simple_use'], how='left')
     
     # Update heights with averages where applicable

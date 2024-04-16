@@ -3,9 +3,9 @@ import sys
 import numpy as np  
 
 from src.pre_process_buildings import pre_process_building_data 
-from src.postcode_utils import check_duplicate_primary_key , find_data_pc, find_postcode_for_ONSUD_file
+from src.postcode_utils import check_duplicate_primary_key , find_data_pc_joint, find_data_pc, find_postcode_for_ONSUD_file
 import numpy as np
-from src.overlap_pc import custom_load_onsud 
+from src.overlap import custom_load_onsud 
 
 
 def calc_df_sum_attribute(df, cols, prefix=''):
@@ -66,7 +66,26 @@ def generate_null_attributes_full( prefix, cols ):
     return null_attributes
 
 def calculate_postcode_attr_with_null_case(df ):
+    res_use_types = ['Medium height flats 5-6 storeys',
+    'Small low terraces',
+    '3-4 storey and smaller flats',
+    'Tall terraces 3-4 storeys',
+    'Large semi detached',
+    'Standard size detached',
+    'Standard size semi detached',
+    '2 storeys terraces with t rear extension',
+    'Semi type house in multiples',
+    'Tall flats 6-15 storeys',
+    'Large detached',
+    'Very tall point block flats',
+    'Very large detached',
+    'Planned balanced mixed estates',
+    'Linked and step linked premises']
+
+    excl_res_types = [ 'Domestic outbuilding', None]
     
+
+
     # Define the columns to summarize
     cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
             'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' 
@@ -82,7 +101,17 @@ def calculate_postcode_attr_with_null_case(df ):
 
     # Generate attributes for Residential, Mixed Use, and Commercial or set to null if no data
     res_df = df[df['map_simple_use'] == 'Residential'].copy()
-    dc_res = calc_df_sum_attribute(res_df, cols, 'res_') if not res_df.empty else generate_null_attributes('res_', cols)
+    dc_res = calc_df_sum_attribute(res_df, cols, 'all_res_') if not res_df.empty else generate_null_attributes('all_res_', cols)
+
+    if not res_df[~res_df['premise_type'].isin(excl_res_types+res_use_types )].empty:
+        print(f'Other residential use type found')
+        print(res_df['premise_type'].unique()    )  
+        raise ValueError(f'Other residential type found')
+    
+    # Generate attributes for Residential, Mixed Use, and Commercial or set to null if no data
+    res_df = res_df[res_df['premise_type'].isin(res_use_types)].copy()
+    dc_res_clean = calc_df_sum_attribute(res_df, cols, 'clean_res_') if not res_df.empty else generate_null_attributes('clean_res_', cols)
+
 
     mixed_use_df = df[df['map_simple_use'] == 'Mixed Use'].copy()
     dc_mixed = calc_df_sum_attribute(mixed_use_df, cols, 'mixed_') if not mixed_use_df.empty else generate_null_attributes('mixed_', cols)
@@ -92,6 +121,7 @@ def calculate_postcode_attr_with_null_case(df ):
 
     # Merge the dictionaries
     dc.update(dc_res)
+    dc.update(dc_res_clean)
     dc.update(dc_mixed)
     dc.update(dc_comm)
 
@@ -156,7 +186,7 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
         _, onsud_data = find_postcode_for_ONSUD_file(onsud_data, path_to_pcshp )
         
     
-    uprn_match= find_data_pc(pc, onsud_data, input_gpk=INPUT_GPK)
+    uprn_match= find_data_pc_joint(pc, onsud_data, input_gpk=INPUT_GPK)
 
     
     # Generate building metrics, clean and test

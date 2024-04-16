@@ -1,20 +1,94 @@
 import os 
 import pandas as pd
+import re 
 import geopandas as gpd
 from shapely.geometry import box 
 from src.multi_thread import merge_temp_logs_to_main, generate_batch_list
 from src.utils  import check_merge_files 
+import glob 
+
+
+def find_batch_from_pc(pc):
+    """ find the batch file (txt) based on the postcode"""
+    for file in glob.glob('/Volumes/T9/postcode_data/data/batches/*/*txt'):
+        ids = load_ids_from_file(file)  
+        if pc in ids:
+            return file 
+        
+def load_onsud_from_batch(file):
+    """ from batxh file name (txt) load the onsud chunk"""
+    reg = file.split('/')[-2]
+    id = file.split('/')[-1].split('.')[0].split('_')[-1]
+    onsud = f'/Volumes/T9/postcode_data/data/batches/{reg}/onsud_{id}.csv'
+    return pd.read_csv(onsud)
+
+
+def get_postcode_shapefile(pc, path_to_pc_shp_folder= '/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291'):
+    """ find pc shapfile based on the postcode"""
+    # Regex pattern to extract 1 or 2 letters at the beginning of the string followed by a digit
+    pattern = r'^([A-Za-z]{1,2})\d'
+    
+    # Using re.search() or re.match() to find the pattern
+    match = re.match(pattern, pc)
+
+    # Checking if a match was found and extracting the group
+    if match:
+        pc_test= match.group(1)  
+    pc_test= pc_test.lower()
+    if len(pc_test)==1:
+        pc_path =os.path.join(path_to_pc_shp_folder,  f'one_letter_pc_code/{pc_test}/{pc_test}.shp'  )
+        pc_shp = gpd.read_file(pc_path)    
+    else:
+        pc_path =os.path.join(path_to_pc_shp_folder,  f'two_letter_pc_code/{pc_test}.shp' ) 
+        pc_shp = gpd.read_file(pc_path)  
+
+    return pc_shp[pc_shp['POSTCODE']==pc]
 
 
 def find_data_pc(pc, data, input_gpk):
     """
     Find buildings based on UPRN match to the postcodes 
+    Inputs:
+    Pc: postcode
+    data: ONSUDE data from loader 
+    input_gpk; builder file 
     """
+    
     gd = gpd.GeoDataFrame(data[data['PCDS'] == pc].copy(), geometry='geometry')
     
     bbox = box(*gd.total_bounds)
     buildings = gpd.read_file(input_gpk, bbox=bbox)
     uprn_match = buildings[buildings['uprn'].isin(gd['UPRN'])].copy()
+    return uprn_match
+
+
+def find_data_pc_joint(pc, onsdata, input_gpk):
+    """
+    Find buildings based on UPRN match to the postcodes and Spatial join 
+    input: joint data product from onsud loadaer (pcshp and onsud data) 
+    """
+    data, pcshp  = onsdata 
+    pcshp = pcshp[pcshp['POSTCODE']==pc]
+
+    gd = gpd.GeoDataFrame(data[data['PCDS'] == pc].copy(), geometry='geometry')
+    
+    bbox = box(*gd.total_bounds)
+    buildings = gpd.read_file(input_gpk, bbox=bbox)
+    uprn_match = buildings[buildings['uprn'].isin(gd['UPRN'])].copy()
+
+    sj_match = buildings.sjoin(pcshp, how='inner', predicate='within')[uprn_match.columns]
+    joint_data = pd.concat([uprn_match, sj_match ]).drop_duplicates()
+    return  joint_data 
+
+def find_data_pc_spatialjoin(pc, input_gpk):
+    """
+    Find buildings based on spatial join  
+    """
+    sph = get_postcode_shapefile(pc) 
+    
+    bbox = box(*sph.total_bounds)
+    buildings = gpd.read_file(input_gpk, bbox=bbox)
+    uprn_match = buildings.sjoin(sph, how='inner', op='within')
     return uprn_match
 
 
@@ -54,9 +128,9 @@ def load_onsud_data(path_to_onsud_file, path_to_pcshp, ):
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     print(f'Finding data for ONSUD file ', label )
     onsud_df = pd.read_csv(path_to_onsud_file)
-    _  , onsud_data = find_postcode_for_ONSUD_file(onsud_file= onsud_df, path_to_pc_shp_folder= path_to_pcshp)
+    pc_df  , onsud_data = find_postcode_for_ONSUD_file(onsud_file= onsud_df, path_to_pc_shp_folder= path_to_pcshp)
 
-    return onsud_data 
+    return onsud_data , pc_df
 
 def get_pcs_to_process(onsud_data, log):
     pcs_list =  onsud_data.PCDS.unique().tolist()
