@@ -12,7 +12,8 @@ BUILD_PERC_VAL = 0.85
 BASEMENT_HEIGHT = 2.4
 BASEMENT_PERCENTAGE_OF_PREMISE_AREA = 1
 DEFAULT_FLOOR_HEIGHT = 2.3
-THRESHOLD_FLOOR_HEIGHT = 5.3
+MAX_THRESHOLD_FLOOR_HEIGHT = 5.3
+MIN_THRESH_FL_HEIGHT = 2.2
 # ============================================================
 # Data Loading Functions
 # ============================================================
@@ -51,7 +52,7 @@ def update_avg_floor_count(df, input_col, avg_table, suffix):
 
 def fill_premise_floor_types(df, glob_av_df, fc_col='floor_count_numeric' ):
     """Fill missing premise floor types with global averages."""
-    # df['validated_fc'] = pd.to_numeric(df['premise_floor_count'], errors='coerce')
+    
     df = update_avg_floor_count(df, fc_col, glob_av_df, 'FGA')
     # df['floor_count_element_av'] = df['premise_floor_count'].apply(handle_comma_separated_values)
     # df = update_avg_floor_count(df, 'floor_count_element_av', glob_av_df, 'FGA')
@@ -171,19 +172,18 @@ def min_side(polygon):
     return least_width 
 
 def update_height_ratio(highs, glob_av_height, glo_av_flc, height_col = 'height_numeric_FGA' , fc_col = 'floor_count_numeric_FGA'):
-    print('starting update hegihts')
     highs['min_side'] = highs['geometry'].apply(min_side)
     highs['threex_minside'] = [x * 3 for x in highs['min_side']]
     highs['validated_height'] = np.where(highs[height_col] >= highs['threex_minside'],   np.nan,  highs[height_col])
     highs['validated_height'] = highs['validated_height'].fillna(0)
-    print('start update heights')
+    
     highs=update_height_with_average_flexifc(highs, 'validated_height', fc_col , glob_av_height, 'FGA' )
-    highs['av_fl_hegiht'] = highs['validated_height_FGA'] / highs['floor_count_numeric']
+    highs['av_fl_height'] = highs['validated_height_FGA'] / highs['floor_count_numeric']
 
-    highs['validated_fc'] = np.where((highs['av_fl_hegiht']> THRESHOLD_FLOOR_HEIGHT ) & (highs['height']< highs['threex_minside']) , np.nan, highs[fc_col])
-    print('start update fc')
+    highs['validated_fc'] = np.where(((highs['av_fl_height']>= MAX_THRESHOLD_FLOOR_HEIGHT )| (highs['av_fl_height'] <= MIN_THRESH_FL_HEIGHT )) & (highs['height']< highs['threex_minside']) , np.nan, highs[fc_col])
+    
     highs = update_avg_floor_count(highs, 'validated_fc', glo_av_flc, 'FGA' ) 
-    print('complete')
+    
     # highs['corr_fl_height'] = highs['validated_height_glob_fill'] / highs['validated_fc_glob_fill']
     return highs 
 
@@ -229,13 +229,18 @@ def pre_process_buildings(df):
     df = create_height_options( df  , glob_av_heights)
      
     df = update_height_ratio(df,glob_av_heights, floor_av ) 
-    
-    print(df.columns )
+
 
     df.drop(columns=[x for x in df.columns if 'Unnamed' in x], inplace=True )
     
     df = update_listed_type(df) 
     print('pre process complete')
+
+    if not df[df['premise_use']!='Unknown'][df['validated_height']==0][df['validated_fc'].isna()].empty:
+        print('Wierd entry which failed both validations on height and Floor count ')
+        print(df[df['validated_height']==0][df['validated_fc'].isna()] )
+        raise Exception('Both validations should not have failed - investigate')
+    
     return df 
 
 def produce_clean_building_data(df):

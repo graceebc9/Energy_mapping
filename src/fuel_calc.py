@@ -87,8 +87,8 @@ def calculate_postcode_attr_with_null_case(df ):
 
 
     # Define the columns to summarize
-    cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA', 'heated_vol_EA_FGA', 
-            'heated_vol_FGA', 'heated_vol_inc_basement_EA_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' 
+    cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA',  
+            'heated_vol_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' 
             ]
     
     prefix = ['all_types_', 'res_', 'mixed_', 'comm_']
@@ -113,17 +113,17 @@ def calculate_postcode_attr_with_null_case(df ):
     dc_res_clean = calc_df_sum_attribute(res_df, cols, 'clean_res_') if not res_df.empty else generate_null_attributes('clean_res_', cols)
 
 
-    mixed_use_df = df[df['map_simple_use'] == 'Mixed Use'].copy()
-    dc_mixed = calc_df_sum_attribute(mixed_use_df, cols, 'mixed_') if not mixed_use_df.empty else generate_null_attributes('mixed_', cols)
+    # mixed_use_df = df[df['map_simple_use'] == 'Mixed Use'].copy()
+    # dc_mixed = calc_df_sum_attribute(mixed_use_df, cols, 'mixed_') if not mixed_use_df.empty else generate_null_attributes('mixed_', cols)
 
-    comm_use = df[df['map_simple_use'] == 'Commercial'].copy()
-    dc_comm = calc_df_sum_attribute(comm_use, cols, 'comm_') if not comm_use.empty else generate_null_attributes('comm_', cols)
+    # comm_use = df[df['map_simple_use'] == 'Commercial'].copy()
+    # dc_comm = calc_df_sum_attribute(comm_use, cols, 'comm_') if not comm_use.empty else generate_null_attributes('comm_', cols)
 
     # Merge the dictionaries
     dc.update(dc_res)
     dc.update(dc_res_clean)
-    dc.update(dc_mixed)
-    dc.update(dc_comm)
+    # dc.update(dc_mixed)
+    # dc.update(dc_comm)
 
     return dc
 
