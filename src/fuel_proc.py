@@ -74,18 +74,34 @@ def process_fuel_batch_base(process_fn, pc_batch, data, gas_df, elec_df, INPUT_G
             raise ValueError('Duplicate postcodes found in the batch')
 
         print('Saving results to log file...')
-        
-        # Check if the log file already exists
         if not os.path.exists(log_file):
-            print('Creating Log file')
-            # If the file does not exist, write with header
+            print('Creating log file')
             df.to_csv(log_file, index=False)
         else:
-            # If the file exists, append without writing the header
-            print('File already exists - append')
+            print('Checking file structure compatibility...')
+            with open(log_file, 'r') as file:
+                existing_header = file.readline().strip().split(',')
+                if existing_header != list(df.columns):
+                    # find wrong columns 
+                    
+                    raise ValueError('Header mismatch between DataFrame and existing CSV file')
+            print('File structure compatible - appending')
+            
+            df = df[existing_header]
             df.to_csv(log_file, mode='a', header=False, index=False)
 
-        print(f'Log file saved for batch: {process_batch_name}')
+        print(f'Log file saved for batch: {process_batch_name}')        
+        # # Check if the log file already exists
+        # if not os.path.exists(log_file):
+        #     print('Creating Log file')
+        #     # If the file does not exist, write with header
+        #     df.to_csv(log_file, index=False)
+        # else:
+        #     # If the file exists, append without writing the header
+        #     print('File already exists - append')
+        #     df.to_csv(log_file, mode='a', header=False, index=False)
+
+        # print(f'Log file saved for batch: {process_batch_name}')
 
 
 

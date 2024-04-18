@@ -236,9 +236,10 @@ def pre_process_buildings(df):
     df = update_listed_type(df) 
     print('pre process complete')
 
-    if not df[df['premise_use']!='Unknown'][df['validated_height']==0][df['validated_fc'].isna()].empty:
+    if not df[df['premise_use']!='Unknown'][df['premise_use']!='None'][df['validated_height']==0][df['validated_fc'].isna()].empty:
         print('Wierd entry which failed both validations on height and Floor count ')
-        print(df[df['validated_height']==0][df['validated_fc'].isna()] )
+        
+        print(df[df['validated_height']==0][df['validated_fc'].isna()][['premise_type', 'height', 'premise_floor_count']] )
         raise Exception('Both validations should not have failed - investigate')
     
     return df 
@@ -255,7 +256,7 @@ def produce_clean_building_data(df):
     invalid = len(df) - len(filtered_df)
 
     test_building_metrics(filtered_df)
-    return filtered_df,  invalid
+    return df,  invalid
 
 # ============================================================
 # Validation and Testing Functions
