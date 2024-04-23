@@ -53,33 +53,36 @@ def compute_global_modal_age(bbox_list, input_gpk, output_PATH):
 
 
 
+from src.pre_process_buildings import creat_age_buckets, create_height_bucket_col
+import pandas as pd 
 
-
-
-def create_global_heights(bbox_list, input_gpk, output_path):
-    # Initialize a dictionary to store intermediate results
-    intermediate_dict = {'map_simple_use': [], 'premise_age': [], 'premise_floor_count': [], 'mean_height': [], 'count': [], 'weighted_height': []}
+def compute_global_heights(bbox_list, input_gpk, output_PATH):
+    listdf = []  # List to hold DataFrame fragments
 
     for bbox in bbox_list:
         print('Processing bounding box:', bbox)
-        subset = gpd.read_file(input_gpk, bbox=bbox)
+        subset = gpd.read_file(input_gpk, bbox=bbox)  # Read subset within the bounding box
         if subset.empty:
             print('Empty subset for bounding box:', bbox)
             continue
+        subset = creat_age_buckets(subset )
+        subset = create_height_bucket_col(subset)
+        subset['floor_count_numeric'] = pd.to_numeric(subset['premise_floor_count'], errors='coerce')
+        subset['av_fl_height']=subset['height_numeric'] / subset['floor_count_numeric']
+        subset = subset[subset['av_fl_height'].between(2.5, 5.5)] 
 
-        # Calculate both mean height and count in one go and add weighted_height calculation
-        stats = subset.groupby(['map_simple_use', 'premise_age', 'premise_floor_count'])['height'].agg(mean_height='mean', count='size').reset_index()
+        # Group by specified columns and calculate both mean height and count in one go
+        stats = subset.groupby(['map_simple_use', 'premise_age_bucketed', 'floor_count_numeric'])['height'] \
+                .agg(mean_height='mean', count='size').reset_index()
         stats['weighted_height'] = stats['mean_height'] * stats['count']
         
-        # Store the results in the dictionary
-        for col in intermediate_dict.keys():
-            intermediate_dict[col].extend(stats[col].tolist())
+        listdf.append(stats)  # Append the calculated stats to the list
 
-    # Convert the dictionary to a DataFrame
-    intermediate_df = pd.DataFrame(intermediate_dict)
+    # Concatenate all DataFrames in the list into one
+    full_df = pd.concat(listdf)
 
     # Calculate total counts and sum of weighted heights for each group across all subsets
-    total_stats = intermediate_df.groupby(['map_simple_use', 'premise_age', 'premise_floor_count']).agg(
+    total_stats = full_df.groupby(['map_simple_use', 'premise_age_bucketed', 'floor_count_numeric']).agg(
         total_count=('count', 'sum'),
         sum_weighted_height=('weighted_height', 'sum')).reset_index()
     
@@ -87,12 +90,54 @@ def create_global_heights(bbox_list, input_gpk, output_path):
     total_stats['weighted_mean'] = total_stats['sum_weighted_height'] / total_stats['total_count']
 
     # Cleanup before returning
-    total_stats = total_stats.drop(columns=['total_count', 'sum_weighted_height'])
-    total_stats = total_stats.rename(columns={'weighted_mean': 'global_average_height'})
+    total_stats = total_stats.drop(columns=[ 'sum_weighted_height'])
 
-    # Save the result to CSV
-    total_stats.to_csv(f'{output_path}_global_average_heights.csv', index=False)
+    total_stats = total_stats.rename(columns={'weighted_mean': 'global_average_height'})
+    total_stats.to_csv(f'{output_PATH}/global_average_heights_bucket.csv')
     print('File saved')
     
 
 
+
+
+def compute_global_fc(bbox_list, input_gpk, output_PATH):
+    listdf = []  # List to hold DataFrame fragments
+
+    for bbox in bbox_list:
+        print('Processing bounding box:', bbox)
+        subset = gpd.read_file(input_gpk, bbox=bbox)  # Read subset within the bounding box
+        if subset.empty:
+            print('Empty subset for bounding box:', bbox)
+            continue
+        subset = creat_age_buckets(subset )
+        subset = create_height_bucket_col(subset)
+        subset['floor_count_numeric'] = pd.to_numeric(subset['premise_floor_count'], errors='coerce')
+        subset['av_fl_height']=subset['height_numeric'] / subset['floor_count_numeric']
+        subset = subset[subset['av_fl_height'].between(2.5, 5.5)] 
+
+        # Group by specified columns and calculate both mean height and count in one go
+        stats = subset.groupby(['map_simple_use', 'premise_age_bucketed', 'height_bucket'])['floor_count_numeric'] \
+                .agg(mean_height='mean', count='size').reset_index()
+        stats['weighted_height'] = stats['mean_height'] * stats['count']
+        
+        listdf.append(stats)  # Append the calculated stats to the list
+
+    # Concatenate all DataFrames in the list into one
+    full_df = pd.concat(listdf)
+
+    # Calculate total counts and sum of weighted heights for each group across all subsets
+    total_stats = full_df.groupby(['map_simple_use', 'premise_age_bucketed', 'height_bucket']).agg(
+        total_count=('count', 'sum'),
+        sum_weighted_height=('weighted_height', 'sum')).reset_index()
+    
+    # Calculate weighted mean height for each group
+    total_stats['weighted_mean'] = total_stats['sum_weighted_height'] / total_stats['total_count']
+
+    # Cleanup before returning
+    total_stats = total_stats.drop(columns=[ 'sum_weighted_height'])
+
+    total_stats = total_stats.rename(columns={'weighted_mean': 'global_average_floorcount'})
+    total_stats.to_csv(f'{output_PATH}/global_average_floor_count_bucket.csv')
+    print('File saved')
+    
+    return total_stats

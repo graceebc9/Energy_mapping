@@ -54,35 +54,18 @@ def fill_premise_floor_types(df, glob_av_df, fc_col='floor_count_numeric' ):
     """Fill missing premise floor types with global averages."""
     
     df = update_avg_floor_count(df, fc_col, glob_av_df, 'FGA')
-    # df['floor_count_element_av'] = df['premise_floor_count'].apply(handle_comma_separated_values)
-    # df = update_avg_floor_count(df, 'floor_count_element_av', glob_av_df, 'FGA')
+
     return df
 
 
-# def update_height_with_average_flexifc(df, input_col, fc_col, avg_table, suffix):
-#     """Update the height column with averages based on age, floor count, and use."""
-#     # Merge with the average table
-#     df = pd.merge(df, avg_table, left_on=['premise_age', fc_col, 'map_simple_use'], right_on=['premise_age', 'premise_floor_count', 'map_simple_use'], how='left')
-    
-#     # Update heights with averages where applicable
-#     update_col_name = f'{input_col}_{suffix}'
-#     df[update_col_name] = np.where(df[input_col] == 0, df['weighted_average_height'], df[input_col])
-    
-#     # Drop the temporary column
-#     df.drop('weighted_average_height', axis=1, inplace=True)
-#     return df
 
-# def create_height_bucket_col(df):
-#     """Bucket height into predefined categories."""
-#     height_bins = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 18, 20, 30, 40, 50, 100, 200]
-#     height_labels = [f"{b}-{height_bins[i+1]}m" for i, b in enumerate(height_bins[:-1])]
-#     df['height_bucket'] = pd.cut(df['height_numeric'], bins=height_bins, labels=height_labels, right=False)
-#     return df
-
+def creat_age_buckets(df):
+    df['premise_age_bucketed'] = np.where(df['premise_age'].isin(['Pre 1837', '1837-1869', '1870-1918']), 'Pre 1919', df['premise_age'])
+    return df 
 
 def create_height_bucket_col(df):
     """Bucket height into predefined categories."""
-    # df['height_numeric'] = pd.to_numeric(df['height'], errors='coerce').fillna(0) 
+    df['height_numeric'] = pd.to_numeric(df['height'], errors='coerce').fillna(0) 
     height_bins = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90, 100, 200]
     height_labels = [f"{b}-{height_bins[i+1]}m" for i, b in enumerate(height_bins[:-1])]
     df['height_bucket'] = pd.cut(df['height_numeric'], bins=height_bins, labels=height_labels, right=False)
@@ -214,9 +197,6 @@ def pre_process_buildings(df):
     Pre-process buildings by cleaning and updating heights and floor counts.
     Input df is the GPKG verisk building data with verisk_premise_id set as upn
     """
-
-    # excluded = df[(df['height'].isna())  &  ( df['premise_floor_count'].isna() ) & ( df['premise_use']=='Unknown') ]
-    # df = df[~df['upn'].isin(excluded.upn.unique().tolist() ) ].copy() 
     floor_av = load_avg_floor_count()
     glob_av_heights = get_average_heights_table() 
     df['height_numeric'] = pd.to_numeric(df['height'], errors='coerce').fillna(0) 
@@ -295,10 +275,11 @@ def test_building_metrics(df):
         'heated_vol_inc_basement_FGA'
     ]
 
-    # for col in metrics_columns:
-    #     check_nulls_percent(df, col)
-
-    # print('DF passed tests')
+#  if validated_height ==0 then 
+#           validated_height_FGA must be > height
+        # validated_fc_FGA == floor_count_numeric_FGA
+# if validated_fc.isna() 
+# then 
 
                  
 # ============================================================
