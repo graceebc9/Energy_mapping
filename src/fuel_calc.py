@@ -91,7 +91,7 @@ def calculate_postcode_attr_with_null_case(df ):
             'heated_vol_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' 
             ]
     
-    prefix = ['all_types_', 'res_', 'mixed_', 'comm_']
+    prefix = ['all_types_', 'all_res_', 'clean_res_']
 
     if df is None:
         return generate_null_attributes_full( prefix, cols )
@@ -165,6 +165,7 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     
     # Generate building metrics, clean and test
     df , num_invalid = pre_process_building_data(uprn_match)    
+    
 
     dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }
     dc = calculate_postcode_attr_with_null_case(df)
@@ -180,7 +181,7 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     dc_full.update(dc_gas)
     dc_full.update(dc_elec)
     
-    
+    print(len(dc_full))
     return dc_full
 
 

@@ -195,18 +195,18 @@ def update_outbuildings(test):
 # ============================================================
 # Utility Functions
 # ============================================================
-def handle_comma_separated_values(val):
-    """Handle comma-separated floor count values."""
-    acceptable_combinations = ['1,2', '2,3', '3,4', '1,3', '4,5', '3,5', '5,6', '4,6', '5,7', '6,7', '6,8', '7,8', '8,9', '9,10', '8,10', '7,9']
-    if val =='' or val == None:
-        return np.nan
-    if val in acceptable_combinations:
-        parts = [int(part) for part in val.split(',')]
-        return np.mean(parts)
-    try:
-        return float(val)
-    except ValueError:
-        return np.nan
+# def handle_comma_separated_values(val):
+#     """Handle comma-separated floor count values."""
+#     acceptable_combinations = ['1,2', '2,3', '3,4', '1,3', '4,5', '3,5', '5,6', '4,6', '5,7', '6,7', '6,8', '7,8', '8,9', '9,10', '8,10', '7,9']
+#     if val =='' or val == None:
+#         return np.nan
+#     if val in acceptable_combinations:
+#         parts = [int(part) for part in val.split(',')]
+#         return np.mean(parts)
+#     try:
+#         return float(val)
+#     except ValueError:
+#         return np.nan
 
 
 def pre_process_buildings(df):
@@ -236,7 +236,7 @@ def pre_process_buildings(df):
     df = update_listed_type(df) 
     print('pre process complete')
 
-    if not df[df['premise_use']!='Unknown'][df['premise_use']!='None'][df['validated_height']==0][df['validated_fc'].isna()].empty:
+    if not df[~df['premise_use'].isna()][df['premise_use']!='Unknown'][df['premise_use']!='None'][df['validated_height']==0][df['validated_fc'].isna()].empty:
         print('Wierd entry which failed both validations on height and Floor count ')
         
         print(df[df['validated_height']==0][df['validated_fc'].isna()][['premise_type', 'height', 'premise_floor_count']] )
