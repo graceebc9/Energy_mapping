@@ -9,7 +9,7 @@ from src.overlap import custom_load_onsud
 
 
 
-COLS = ['heated_vol_fc','heated_vol_h', 'basement_heated_vol_max', 'listed_bool', 'uprn_count']
+COLS = ['heated_vol_fc','heated_vol_h', 'base_floor', 'basement_heated_vol_max', 'listed_bool', 'uprn_count']
 
 PREFIXES = [ 'all_res_', 'clean_res_', 'mixed_', 'outb_res_']
 

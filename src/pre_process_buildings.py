@@ -107,7 +107,6 @@ def fill_local_averages(df):
     if num_builds - num_fc_invalid ==0 | len(df)==1 | num_builds - num_h_invalid == 0 : 
         print('Cannot do local fill for FC')
         # height_fla = df[~df['validated_height'].isna()]['validated_height'].mean()
-        print(pc)
         raise Exception('no local fill ')
 
     fc_fla= df[~df['validated_fc'].isna()]['validated_fc'].mean()
@@ -229,9 +228,7 @@ def test_building_metrics(df):
 
 
 
-               
-
-
+            
 # ============================================================
 # Action functions
 # ============================================================
