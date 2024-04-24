@@ -8,6 +8,11 @@ import numpy as np
 from src.overlap import custom_load_onsud 
 
 
+
+COLS = ['heated_vol_fc','heated_vol_h', 'basement_heated_vol_max', 'listed_bool', 'uprn_count']
+
+PREFIXES = [ 'all_res_', 'clean_res_', 'mixed_', 'outb_res_']
+
 def calc_df_sum_attribute(df, cols, prefix=''):
     """Takes input df with only one postcode and calcs attributes based on summing the building columns."""
 
@@ -17,6 +22,16 @@ def calc_df_sum_attribute(df, cols, prefix=''):
         # Use .sum(min_count=1) to return NaN if there are no valid values to sum (all are NaN)
         attr_dict[prefix + col + '_total'] = df[col].sum(min_count=1)
     return attr_dict
+
+def gen_nulls():
+ 
+    dc = generate_null_attributes_full( PREFIXES, COLS )
+    dc.update({'all_types_total_buildings': np.nan})
+    dc.update({'all_types_uprn_count_total': np.nan })
+    dc.update({'comm_alltypes_count': np.nan})
+    dc.update({'unknown_alltypes': np.nan})
+    
+    return dc 
 
 
 def generate_null_attributes(prefix, cols):
@@ -83,48 +98,47 @@ def calculate_postcode_attr_with_null_case(df ):
     'Linked and step linked premises']
 
     excl_res_types = [ 'Domestic outbuilding', None]
-    
 
-
-    # Define the columns to summarize
-    cols = ['build_vol_FGA', 'base_floor', 'build_vol_inc_basement_FGA',  
-            'heated_vol_FGA', 'heated_vol_inc_basement_FGA', 'listed_bool', 'uprn_count' 
-            ]
-    
-    prefix = ['all_types_', 'all_res_', 'clean_res_']
 
     if df is None:
-        return generate_null_attributes_full( prefix, cols )
+        dc = generate_null_attributes_full( PREFIXES, COLS )
+        dc.update({'mixed_alltypes_count': np.nan})
+        dc.update({'comm_alltypes_count': np.nan})
+        return dc 
     
     # Generate attributes for all types
-    dc = calc_df_sum_attribute(df, cols, 'all_types_')
+    dc = calc_df_sum_attribute(df, ['uprn_count'], 'all_types_')
+    
+    mixed_use_df = df[df['map_simple_use'] == 'Mixed Use'].copy()
+    dc_mixed = calc_df_sum_attribute(mixed_use_df, COLS, 'mixed_') if not mixed_use_df.empty else generate_null_attributes('mixed_', COLS)
+    
+    comm_use = df[df['map_simple_use'] == 'Commercial'].copy()
+    dc_cm = {'comm_alltypes_count': len(comm_use)}
 
-    # Generate attributes for Residential, Mixed Use, and Commercial or set to null if no data
+    unknowns = df[df['map_simple_use']=='Non Residential']
+    dc_unk = {'unknown_alltypes': len(unknowns)}
+    
     res_df = df[df['map_simple_use'] == 'Residential'].copy()
-    dc_res = calc_df_sum_attribute(res_df, cols, 'all_res_') if not res_df.empty else generate_null_attributes('all_res_', cols)
+    dc_res = calc_df_sum_attribute(res_df, COLS, 'all_res_') if not res_df.empty else generate_null_attributes('all_res_', COLS)
 
     if not res_df[~res_df['premise_type'].isin(excl_res_types+res_use_types )].empty:
         print(f'Other residential use type found')
         print(res_df['premise_type'].unique()    )  
         raise ValueError(f'Other residential type found')
     
-    # Generate attributes for Residential, Mixed Use, and Commercial or set to null if no data
-    res_df = res_df[res_df['premise_type'].isin(res_use_types)].copy()
-    dc_res_clean = calc_df_sum_attribute(res_df, cols, 'clean_res_') if not res_df.empty else generate_null_attributes('clean_res_', cols)
+    cl_res_df = res_df[res_df['premise_type'].isin(res_use_types)].copy()
+    dc_res_clean = calc_df_sum_attribute(cl_res_df, COLS, 'clean_res_') if not cl_res_df.empty else generate_null_attributes('clean_res_', COLS)
 
+    ob_res_df = res_df[res_df['premise_type'].isin(['Domestic outbuilding'])].copy()
+    dc_res_OB = calc_df_sum_attribute(ob_res_df, COLS, 'outb_res_') if not ob_res_df.empty else generate_null_attributes('outb_res_', COLS)
 
-    # mixed_use_df = df[df['map_simple_use'] == 'Mixed Use'].copy()
-    # dc_mixed = calc_df_sum_attribute(mixed_use_df, cols, 'mixed_') if not mixed_use_df.empty else generate_null_attributes('mixed_', cols)
-
-    # comm_use = df[df['map_simple_use'] == 'Commercial'].copy()
-    # dc_comm = calc_df_sum_attribute(comm_use, cols, 'comm_') if not comm_use.empty else generate_null_attributes('comm_', cols)
-
-    # Merge the dictionaries
+    dc.update(dc_cm)
+    dc.update(dc_unk)
     dc.update(dc_res)
     dc.update(dc_res_clean)
-    # dc.update(dc_mixed)
-    # dc.update(dc_comm)
-
+    dc.update(dc_res_OB)
+    dc.update(dc_mixed)
+    
     return dc
 
 
@@ -151,7 +165,19 @@ def get_fuel_vars(pc, f , fuel_df):
 
 
 def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = False, batch_dir=None, path_to_pcshp=None  ):
-    """Process one postcode, deriving building attributes and electricity and fuel info."""
+    """Process one postcode, deriving building attributes and electricity and fuel info.
+    
+    Inputs: 
+    
+    pc: postcode 
+    onsud_data: output of find_postcode_for_ONSUD_file, tuples of data, pc_shp 
+    gas_df: gas uk gov data
+    elec_df: uk goc elec data 
+    INPUT_GPK: building file verisk 
+    overlap: bool, is this for the overlapping postcodes? 
+    batch_dir = needed for overlap - where are the batche stored?
+    path_to_schp: path to postcode shapefiles location , needed for overlap 
+    """
     pc = pc.strip() 
 
     if overlap ==True: 
@@ -161,54 +187,30 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
         
     
     uprn_match= find_data_pc_joint(pc, onsud_data, input_gpk=INPUT_GPK)
+    dc_full = {'postcode': pc  }
 
-    
-    # Generate building metrics, clean and test
-    df , num_invalid = pre_process_building_data(uprn_match)    
-    
-
-    dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }
-    dc = calculate_postcode_attr_with_null_case(df)
+    if uprn_match.empty:
+        print('Empty uprn match')
+        dc =  gen_nulls()
+        print(len(dc) ) 
+    else:
+        df  = pre_process_building_data(uprn_match)    
+        if len(df)!=len(uprn_match):
+            raise Exception('Error in pre process - some cols dropped? ')
+        dc = calculate_postcode_attr_with_null_case(df)
+        if df is not None:
+            if check_duplicate_primary_key(df, 'upn'):
+                print('Duplicate primary key found for upn')
+                sys.exit()
     dc_full.update(dc)
-    if df is not None:
-        if check_duplicate_primary_key(df, 'upn'):
-            print('Duplicate primary key found for upn')
-            sys.exit()
- 
 
     dc_gas = get_fuel_vars(pc, 'gas', gas_df)
     dc_elec = get_fuel_vars(pc, 'elec', elec_df)
     dc_full.update(dc_gas)
     dc_full.update(dc_elec)
     
-    print(len(dc_full))
+    print('Len dc full ', len(dc_full))
     return dc_full
 
 
 
-
-
-# def process_postcode_fuel(pc, data, gas_df, elec_df, INPUT_GPK):
-#     """Process one postcode, deriving building attributes and electricity and fuel info."""
-
-#     print('len data is ', len(data))
-#     uprn_match = find_data_pc(pc, data, input_gpk=INPUT_GPK)
-    
-#     # Generate building metrics, clean and test
-#     df , num_invalid = pre_process_building_data(uprn_match)    
-
-#     dc_full = {'postcode': pc, 'num_invalid_builds': num_invalid }
-#     dc = calculate_postcode_attr_with_null_case(df)
-#     dc_full.update(dc)
-#     if df is not None:
-#         if check_duplicate_primary_key(df, 'upn'):
-#             print('Duplicate primary key found for upn')
-#             sys.exit()
- 
-
-#     dc_gas = get_fuel_vars(pc, 'gas', gas_df)
-#     dc_elec = get_fuel_vars(pc, 'elec', elec_df)
-#     dc_full.update(dc_gas)
-#     dc_full.update(dc_elec)
-
-#     return dc_full

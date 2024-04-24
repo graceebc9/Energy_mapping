@@ -1,6 +1,8 @@
 import geopandas as gpd
 import pandas as pd
 from scipy.stats import mode
+from src.pre_process_buildings import creat_age_buckets, create_height_bucket_col
+
 
 def compute_global_modal_age(bbox_list, input_gpk, output_PATH):
     # Function to find the modal premise age for each premise_type
@@ -49,12 +51,6 @@ def compute_global_modal_age(bbox_list, input_gpk, output_PATH):
     
 
 
-
-
-
-
-from src.pre_process_buildings import creat_age_buckets, create_height_bucket_col
-import pandas as pd 
 
 def compute_global_heights(bbox_list, input_gpk, output_PATH):
     listdf = []  # List to hold DataFrame fragments
@@ -140,4 +136,3 @@ def compute_global_fc(bbox_list, input_gpk, output_PATH):
     total_stats.to_csv(f'{output_PATH}/global_average_floor_count_bucket.csv')
     print('File saved')
     
-    return total_stats

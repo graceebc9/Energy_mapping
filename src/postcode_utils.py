@@ -128,7 +128,7 @@ def load_onsud_data(path_to_onsud_file, path_to_pcshp, ):
     label = path_to_onsud_file.split('/')[-1].split('.')[0].split('_')[-1]
     print(f'Finding data for ONSUD file ', label )
     onsud_df = pd.read_csv(path_to_onsud_file)
-    pc_df  , onsud_data = find_postcode_for_ONSUD_file(onsud_file= onsud_df, path_to_pc_shp_folder= path_to_pcshp)
+    onsud_data, pc_df  = find_postcode_for_ONSUD_file(onsud_file= onsud_df, path_to_pc_shp_folder= path_to_pcshp)
 
     return onsud_data , pc_df
 
@@ -173,4 +173,4 @@ def find_postcode_for_ONSUD_file(onsud_file, path_to_pc_shp_folder):
     if len(data[data['PC_AREA'].isna()] ) > 0.1*len(data):
         raise ValueError('More than 10% of the data is missing')    
     
-    return pc_df , data 
+    return data ,pc_df 
