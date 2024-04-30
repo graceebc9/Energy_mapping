@@ -3,6 +3,7 @@ import pandas as pd
 from src.postcode_utils import load_onsud_data, load_ids_from_file, get_onsud_path
 from src.fuel_proc import run_fuel_calc_main , run_fuel_calc_main_overlap, load_fuel_data
 from src.age_proc import run_age_calc
+from src.type_proc import run_type_calc
 
 def main(batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK, region_label, batch_label, attr_lab, process_function, gas_path=None, elec_path=None, overlap= None, batch_dir = None ):
     
@@ -71,4 +72,5 @@ def run_fuel_process_overlap(batch_ids, onsud_data, INPUT_GPK,  batch_size, batc
 def run_age_process(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file, gas_path=None, elec_path=None, overlap=None, batch_dir=None, path_to_pcshp=None):
     run_age_calc(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file )
 
-
+def run_type_process(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file, gas_path=None, elec_path=None, overlap=None, batch_dir=None, path_to_pcshp=None):
+    run_type_calc(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file )
