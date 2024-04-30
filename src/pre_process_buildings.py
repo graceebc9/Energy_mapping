@@ -224,10 +224,6 @@ def test_building_metrics(df):
     assert_larger(test, 'height', 'height_filled')
 
 
-
-
-
-
             
 # ============================================================
 # Action functions
