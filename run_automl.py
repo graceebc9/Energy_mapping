@@ -29,6 +29,8 @@ def main():
     time_limit = 100  # seconds
     model_preset= 'medium_quality'
 
+    print(f'starting model run for {target_var}, time lim {time_limit}, model preset {model_preset}' )
+
     train_subset_prop = 0.01  # Proportion of data to use for training
     col_type ='allcols'
 
