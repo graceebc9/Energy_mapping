@@ -28,10 +28,10 @@ def main():
     target_var='avgas'
     time_limit = 100  # seconds
     model_preset= 'medium_quality'
+    train_subset_prop = 0.01
+    print(f'starting model run for {target_var}, time lim {time_limit}, model preset {model_preset} adn train subset {train_subset_prop}' )
 
-    print(f'starting model run for {target_var}, time lim {time_limit}, model preset {model_preset}' )
-
-    train_subset_prop = 0.01  # Proportion of data to use for training
+      # Proportion of data to use for training
     col_type ='allcols'
 
     data_path = os.environ.get('DATA_PATH')
@@ -42,7 +42,7 @@ def main():
         sys.exit(1)
 
     dataset_name = os.path.basename(data_path).split('.')[0]
-    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{col_type}"
+    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{col_type}_tsp_{train_subset_prop}"
     
     if os.path.exists(output_directory):
         print(f"Directory {output_directory} already exists. Exiting to prevent data overwrite.")
