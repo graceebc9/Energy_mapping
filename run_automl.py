@@ -60,7 +60,7 @@ def main():
     output_path = os.environ.get('OUTPUT_PATH')
     model_preset= os.environ.get('MODEL_PRESET')
     time_limit = int(os.environ.get('TIME_LIM'))
-    train_subset_prop = int(os.environ.get('TRAIN_SUBSET_PROP') )
+    train_subset_prop = float(os.environ.get('TRAIN_SUBSET_PROP') )
     
     label = 'av_gas_per_vol'
     target_var='avgas'    
