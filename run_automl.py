@@ -119,10 +119,10 @@ def main():
 
     save_results(results, output_directory)
     res = predictor.leaderboard(test_data)
-    res.to_csv(os.path.join(output_path, 'leaderboard_results.csv'))
+    res.to_csv(os.path.join(output_directory, 'leaderboard_results.csv'))
 
     pred = predictor.feature_importance(test_data)
-    pred.to_csv(os.path.join(output_path, 'feature_importance.csv'))
+    pred.to_csv(os.path.join(output_directory, 'feature_importance.csv'))
 
 
 
