@@ -59,8 +59,8 @@ def main():
     data_path = os.environ.get('DATA_PATH')
     output_path = os.environ.get('OUTPUT_PATH')
     model_preset= os.environ.get('MODEL_PRESET')
-    time_limit = os.environ.get('TIME_LIM')
-    train_subset_prop = os.environ.get('TRAIN_SUBSET_PROP') 
+    time_limit = int(os.environ.get('TIME_LIM'))
+    train_subset_prop = int(os.environ.get('TRAIN_SUBSET_PROP') )
     
     label = 'av_gas_per_vol'
     target_var='avgas'    
@@ -134,7 +134,7 @@ if __name__ == '__main__':
 # export DATA_PATH='/Users/gracecolverd/New_dataset/postcode_attrs/ml-data_engwales_census_v1.csv'
 # export DATA_PATH='/Users/gracecolverd/New_dataset/postcode_attrs/ml_data_V1.csv'
 # export OUTPUT_PATH='/Users/gracecolverd/New_dataset/ml/results'
-# export model_preset='/Users/gracecolverd/New_dataset/postcode_attrs/ml-data_engwales_census_v1.csv'
-# export TIME_LIM= 100
-# export TRAIN_SUBSET_PROP=1 
+# export model_preset='medium_quality'
+# export TIME_LIM=100
+# export TRAIN_SUBSET_PROP=0.01
   
