@@ -60,7 +60,7 @@ def main():
     model_preset= 'medium_quality'
     train_subset_prop = 0.01
     model_names ='all'
-    
+
     print(f'starting model run for {target_var}, time lim {time_limit}, model preset {model_preset} adn train subset {train_subset_prop}' )
 
       # Proportion of data to use for training
@@ -108,7 +108,7 @@ def main():
     results = predictor.evaluate_predictions(y_true=test_data[label], y_pred=y_pred, auxiliary_metrics=True)
     print(results)
 
-    # save_results(predictor, output_directory)
+    save_results(predictor, output_directory)
 
 if __name__ == '__main__':
     main()
