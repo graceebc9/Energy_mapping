@@ -49,10 +49,11 @@ def transform(df, label):
     return df
 
 def save_results(results, output_path):
-    res_string = results.to_string()
+    res_string = str(results)
     # summary = predictor.fit_summary()
     with open(os.path.join(output_path, 'model_summary.txt'), 'w') as f:
         f.write(res_string)
+
 
 def main():
     label = 'av_gas_per_vol'
@@ -79,7 +80,7 @@ def main():
     
     # Example usage:
     
-    required_files = ['model_summary.txt']  # List of files you expect to exist
+    required_files = ['model_summary.txt', 'feature_importance.csv', 'leaderboard_results.csv']  # List of files you expect to exist
 
     # Check if output directory exists and has all required files
     if check_directory_and_files(output_directory, required_files):
@@ -107,9 +108,18 @@ def main():
     test_data = transform(TabularDataset(test_data), label)
     y_pred = predictor.predict(test_data.drop(columns=[label]))
     results = predictor.evaluate_predictions(y_true=test_data[label], y_pred=y_pred, auxiliary_metrics=True)
+
+    
     print(results)
 
     save_results(results, output_directory)
+    res = predictor.leaderboard(test_data)
+    res.to_csv(os.path.join(output_path, 'leaderboard_results.csv'))
+
+    pred = predictor.feature_importance(test_data)
+    pred.to_csv(os.path.join(output_path, 'feature_importance.csv'))
+
+
 
 if __name__ == '__main__':
     main()
