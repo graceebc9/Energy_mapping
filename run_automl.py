@@ -5,6 +5,36 @@ from datetime import datetime
 from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 
+
+import os
+import sys
+
+def check_directory_and_files(output_directory, required_files):
+    """
+    Check if the specified directory exists and contains the required files.
+    
+    Parameters:
+        output_directory (str): The path to the directory to check.
+        required_files (list): A list of filenames expected in the directory.
+    
+    Returns:
+        bool: True if the directory exists and contains all required files, False otherwise.
+    """
+    # Check if the directory exists
+    if not os.path.exists(output_directory):
+        print(f"Directory {output_directory} does not exist. Will be created.")
+        return False
+
+    # Check for the presence of all required files in the directory
+    missing_files = [file for file in required_files if not os.path.isfile(os.path.join(output_directory, file))]
+    if missing_files:
+        print(f"Missing files in {output_directory}: {', '.join(missing_files)}")
+        return False
+    
+    return True
+
+
+
 def transform(df, label):
     cols_remove = [
         'ï»¿pcd7', 'pcd8', 'pcds', 'dointr', 'doterm', 'usertype', 'oa21cd',
@@ -29,6 +59,8 @@ def main():
     time_limit = 100  # seconds
     model_preset= 'medium_quality'
     train_subset_prop = 0.01
+    model_names ='all'
+    
     print(f'starting model run for {target_var}, time lim {time_limit}, model preset {model_preset} adn train subset {train_subset_prop}' )
 
       # Proportion of data to use for training
@@ -42,13 +74,22 @@ def main():
         sys.exit(1)
 
     dataset_name = os.path.basename(data_path).split('.')[0]
-    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{col_type}_tsp_{train_subset_prop}"
+    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{col_type}_tsp_{train_subset_prop}_{model_names}"
     
-    if os.path.exists(output_directory):
-        print(f"Directory {output_directory} already exists. Exiting to prevent data overwrite.")
+    # Example usage:
+    
+    required_files = ['model_summary.txt']  # List of files you expect to exist
+
+    # Check if output directory exists and has all required files
+    if check_directory_and_files(output_directory, required_files):
+        print(f"Directory {output_directory} already contains all necessary files. Exiting to prevent data overwrite.")
         sys.exit(0)
     else:
-        os.makedirs(output_directory)
+        # Create directory if it doesn't exist
+        os.makedirs(output_directory, exist_ok=True)
+        print(f"Directory {output_directory} is ready for use.")
+
+
 
     df = pd.read_csv(data_path)
     train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
