@@ -56,11 +56,14 @@ def save_results(results, output_path):
 
 
 def main():
+    data_path = os.environ.get('DATA_PATH')
+    output_path = os.environ.get('OUTPUT_PATH')
+    model_preset= os.environ.get('MODEL_PRESET')
+    time_limit = os.environ.get('TIME_LIM')
+    train_subset_prop = os.environ.get('TRAIN_SUBSET_PROP') 
+    
     label = 'av_gas_per_vol'
-    target_var='avgas'
-    time_limit = 100  # seconds
-    model_preset= 'medium_quality'
-    train_subset_prop = 0.01
+    target_var='avgas'    
     model_names ='all'
 
     print(f'starting model run for {target_var}, time lim {time_limit}, model preset {model_preset} adn train subset {train_subset_prop}' )
@@ -68,8 +71,7 @@ def main():
       # Proportion of data to use for training
     col_type ='allcols'
 
-    data_path = os.environ.get('DATA_PATH')
-    output_path = os.environ.get('OUTPUT_PATH')
+
 
     if not data_path or not output_path:
         print("Please set DATA_PATH and OUTPUT_PATH environment variables.")
@@ -98,7 +100,10 @@ def main():
     train_data = transform(TabularDataset(train_data), label)
     
     # Reduce the training dataset if needed
-    train_subset, _ = train_test_split(train_data, test_size=1-train_subset_prop, random_state=42)
+    if train_subset_prop != 1:
+        train_subset, _ = train_test_split(train_data, test_size=1-train_subset_prop, random_state=42)
+    else:
+        train_subset = train_data   
     
     predictor = TabularPredictor(label, path=output_directory).fit(train_subset, 
                                                                 time_limit=time_limit,
@@ -129,4 +134,7 @@ if __name__ == '__main__':
 # export DATA_PATH='/Users/gracecolverd/New_dataset/postcode_attrs/ml-data_engwales_census_v1.csv'
 # export DATA_PATH='/Users/gracecolverd/New_dataset/postcode_attrs/ml_data_V1.csv'
 # export OUTPUT_PATH='/Users/gracecolverd/New_dataset/ml/results'
+# export model_preset='/Users/gracecolverd/New_dataset/postcode_attrs/ml-data_engwales_census_v1.csv'
+# export TIME_LIM= 100
+# export TRAIN_SUBSET_PROP=1 
   
