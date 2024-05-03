@@ -48,10 +48,11 @@ def transform(df, label):
     df = df[~df[label].isna()]
     return df
 
-def save_results(predictor, output_path):
-    summary = predictor.fit_summary()
+def save_results(results, output_path):
+    res_string = results.to_string()
+    # summary = predictor.fit_summary()
     with open(os.path.join(output_path, 'model_summary.txt'), 'w') as f:
-        f.write(summary)
+        f.write(res_string)
 
 def main():
     label = 'av_gas_per_vol'
@@ -108,7 +109,7 @@ def main():
     results = predictor.evaluate_predictions(y_true=test_data[label], y_pred=y_pred, auxiliary_metrics=True)
     print(results)
 
-    save_results(predictor, output_directory)
+    save_results(results, output_directory)
 
 if __name__ == '__main__':
     main()
