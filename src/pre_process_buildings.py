@@ -125,8 +125,12 @@ def fill_glob_avs(df, fc ):
 
 
 def create_heated_vol(df):
-    df['heated_vol_fc'] = df['premise_area'] * df['fc_filled']
-    df['heated_vol_h'] = df['premise_area'] * df['global_average_floorcount']
+    """
+    calc heated premise are
+    """
+    df['heated_prem_area_fc'] = df['premise_area'] * df['fc_filled']
+    df['heated_prem_area_h'] = df['premise_area'] * df['global_average_floorcount']
+
     return df 
 
 def create_basement_metrics(df):

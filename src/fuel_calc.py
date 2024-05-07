@@ -9,9 +9,9 @@ from src.overlap import custom_load_onsud
 
 
 
-COLS = ['premise_area', 'gross_area', 'heated_vol_fc','heated_vol_h', 'base_floor', 'basement_heated_vol_max', 'listed_bool', 'uprn_count']
+COLS = ['premise_area', 'heated_vol_fc','heated_vol_h', 'base_floor', 'basement_heated_vol_max', 'listed_bool', 'uprn_count']
 
-PREFIXES = [ 'all_res_', 'clean_res_', 'mixed_', 'outb_res_']
+PREFIXES = ['all_types_',  'all_res_', 'clean_res_', 'mixed_', 'outb_res_']
 
 def calc_df_sum_attribute(df, cols, prefix=''):
     """Takes input df with only one postcode and calcs attributes based on summing the building columns."""
@@ -107,7 +107,7 @@ def calculate_postcode_attr_with_null_case(df ):
         return dc 
     
     # Generate attributes for all types
-    dc = calc_df_sum_attribute(df, ['uprn_count'], 'all_types_')
+    dc = calc_df_sum_attribute(df, COLS, 'all_types_')
     
     mixed_use_df = df[df['map_simple_use'] == 'Mixed Use'].copy()
     dc_mixed = calc_df_sum_attribute(mixed_use_df, COLS, 'mixed_') if not mixed_use_df.empty else generate_null_attributes('mixed_', COLS)
