@@ -84,7 +84,9 @@ def main():
     # Example usage:
     
     required_files = ['model_summary.txt', 'feature_importance.csv', 'leaderboard_results.csv']  # List of files you expect to exist
-    excluded_model_types = ['KNeighborsDist_BAG_L1', 'KNeighborsUnif_BAG_L1','LightGBMXT_BAG_L1','LightGBM_BAG_L1']
+    excluded_model_types = ['KNN', 'KNeighborsDist_BAG_L1', 
+                            'KNeighborsUnif_BAG_L1','LightGBMXT_BAG_L1','LightGBM_BAG_L1'
+                            , 'CatBoost', 'ExtraTreesMSE', 'LightGBM', 'LightGBMXT']
     
     # Check if output directory exists and has all required files
     if check_directory_and_files(output_directory, required_files):
