@@ -42,6 +42,7 @@ def transform(df, label):
         'ladnmw', 'pcd7', 'diff_min_max_gas_per_vol', 'diff_gas_meters_uprns_res',
         'min_gas_per_vol', 'max_gas_per_vol', 'total_gas', 'avg_gas', 'median_gas',
         'num_meters_gas', 'total_elec', 'avg_elec', 'median_elec', 'num_meters_elec',
+        'comm_alltypes_count', 'unknown_alltypes', 'outb_res_uprn_count_total', 'mixed_total_buildings', 'mixed_premise_area_total', 'mixed_gross_area_total', 'mixed_heated_vol_fc_total', 'mixed_heated_vol_h_total', 'mixed_base_floor_total', 'mixed_basement_heated_vol_max_total', 'mixed_listed_bool_total', 'mixed_uprn_count_total', 'percent_residential', 'perc_all_res', 'Unknown_pct', 'ethnic_group_perc_Does not apply', 'household_siz_perc_perc_0 people in household', 'occupancy_rating_perc_Does not apply', 'household_comp_by_bedroom_perc_Does not apply_Does not apply', 'household_comp_by_bedroom_perc_Does not apply_1 bedroom', 'household_comp_by_bedroom_perc_Does not apply_2 bedrooms', 'household_comp_by_bedroom_perc_Does not apply_3 bedrooms', 'household_comp_by_bedroom_perc_Does not apply_4 or more bedrooms', 'household_comp_by_bedroom_perc_One-person household_Does not apply', 'household_comp_by_bedroom_perc_Single family household: All aged 66 years and over_Does not apply', 'household_comp_by_bedroom_perc_Single family household: Couple family household_Does not apply', 'household_comp_by_bedroom_perc_Single family household: Lone parent household_Does not apply', 'household_comp_by_bedroom_perc_Other household types_Does not apply', 'central_heating_perc_Does not apply'
     ]
     working_cols = [col for col in df.columns if col not in cols_remove]
     df = df[working_cols]
@@ -78,12 +79,13 @@ def main():
         sys.exit(1)
 
     dataset_name = os.path.basename(data_path).split('.')[0]
-    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{col_type}_tsp_{train_subset_prop}_{model_names}"
+    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{model_preset}_{col_type}_tsp_{train_subset_prop}_{model_names}"
     
     # Example usage:
     
     required_files = ['model_summary.txt', 'feature_importance.csv', 'leaderboard_results.csv']  # List of files you expect to exist
-
+    excluded_model_types = ['KNeighborsDist_BAG_L1', 'KNeighborsUnif_BAG_L1','LightGBMXT_BAG_L1','LightGBM_BAG_L1']
+    
     # Check if output directory exists and has all required files
     if check_directory_and_files(output_directory, required_files):
         print(f"Directory {output_directory} already contains all necessary files. Exiting to prevent data overwrite.")
@@ -92,8 +94,12 @@ def main():
         # Create directory if it doesn't exist
         os.makedirs(output_directory, exist_ok=True)
         print(f"Directory {output_directory} is ready for use.")
-
-
+        # model_dir = os.path.join(output_directory, 'models')
+        # existing_models = os.listdir(model_dir)
+        # # filter to only dirs within the dir 
+        # existing_models = [x for x in existing_models if os.path.isdir(os.path.join(model_dir, x))]
+        # excluded_model_types += existing_models
+    
 
     df = pd.read_csv(data_path)
     train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
@@ -106,9 +112,10 @@ def main():
         train_subset = train_data   
     
     predictor = TabularPredictor(label, path=output_directory).fit(train_subset, 
+                                                                #    num_gpus=1,
                                                                 time_limit=time_limit,
                                                                 presets=model_preset,
-                                                                excluded_model_types=['KNeighborsDist_BAG_L1', 'KNeighborsUnif_BAG_L1','LightGBMXT_BAG_L1','LightGBM_BAG_L1'])
+                                                                excluded_model_types=excluded_model_types)
     
     test_data = transform(TabularDataset(test_data), label)
     y_pred = predictor.predict(test_data.drop(columns=[label]))
@@ -131,10 +138,8 @@ if __name__ == '__main__':
 
 
 
-# export DATA_PATH='/Users/gracecolverd/New_dataset/postcode_attrs/ml-data_engwales_census_v1.csv'
-# export DATA_PATH='/Users/gracecolverd/New_dataset/postcode_attrs/ml_data_V1.csv'
-# export OUTPUT_PATH='/Users/gracecolverd/New_dataset/ml/results'
-# export model_preset='medium_quality'
-# export TIME_LIM=100
-# export TRAIN_SUBSET_PROP=0.01
-  
+# export DATA_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_data_engwales_census_v2.csv'
+# export OUTPUT_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml/results'
+# export MODEL_PRESET='medium_quality'
+# export TIME_LIM=500
+# export TRAIN_SUBSET_PROP=0.1
