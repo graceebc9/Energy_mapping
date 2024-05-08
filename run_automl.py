@@ -84,8 +84,8 @@ def main():
     # Example usage:
     
     required_files = ['model_summary.txt', 'feature_importance.csv', 'leaderboard_results.csv']  # List of files you expect to exist
-    excluded_model_types = ['KNN', 'KNeighborsDist_BAG_L1', 
-                            'KNeighborsUnif_BAG_L1','LightGBMXT_BAG_L1','LightGBM_BAG_L1'
+    excluded_model_types = ['KNN', 
+                            
                             , 'CatBoost', 'ExtraTreesMSE', 'LightGBM', 'LightGBMXT']
     
     # Check if output directory exists and has all required files
@@ -96,20 +96,19 @@ def main():
         # Create directory if it doesn't exist
         os.makedirs(output_directory, exist_ok=True)
         print(f"Directory {output_directory} is ready for use.")
-        # model_dir = os.path.join(output_directory, 'models')
-        # existing_models = os.listdir(model_dir)
-        # # filter to only dirs within the dir 
-        # existing_models = [x for x in existing_models if os.path.isdir(os.path.join(model_dir, x))]
-        # excluded_model_types += existing_models
-    
+
 
     df = pd.read_csv(data_path)
     train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
+    train_data.to_csv(os.path.join(output_directory, 'train_data.csv'), index=False)
+    test_data.to_csv(os.path.join(output_directory, 'test_data.csv'), index=False)
+
     train_data = transform(TabularDataset(train_data), label)
     
     # Reduce the training dataset if needed
     if train_subset_prop != 1:
         train_subset, _ = train_test_split(train_data, test_size=1-train_subset_prop, random_state=42)
+        train_subset.to_csv(os.path.join(output_directory, 'train_subset.csv'), index=False)
     else:
         train_subset = train_data   
     
