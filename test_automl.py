@@ -37,12 +37,15 @@ def main():
     data_path = os.environ.get('DATA_PATH')
     train_subset_prop = float(os.environ.get('TRAIN_SUBSET_PROP') )
     predictor_input= "/home/gb669/rds/hpc-work/energy_map/data/automl_models/results/ml_data_engwales_census_v2_avgas_12000_None_allcols_tsp_0.2_all"
-    
+    test_prop = 0.2   
 
 
     df = pd.read_csv(data_path)
     _, test_data = train_test_split(df, test_size=0.2, random_state=42)
-    test_data = test_data.sample(n=20000, random_state=42) 
+    lent = len(test_data)
+    num_sample = lent * test_prop
+    print('num samples ', num_sample)
+    test_data = test_data.sample(n=num_sample, random_state=42) 
     test_data = transform(TabularDataset(test_data), label)
 
     predictor = TabularPredictor.load("/home/gb669/rds/hpc-work/energy_map/data/automl_models/results/ml_data_engwales_census_v2_avgas_12000_None_allcols_tsp_0.2_all")
