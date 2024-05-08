@@ -73,6 +73,9 @@ def main():
     label = 'av_gas_per_vol'
     target_var='avgas'    
     
+    if 'train' not in train_path:
+        raise ValueError("Please provide the training data path.")
+    
 
     if model_types == 'all':
         excl_models = []
