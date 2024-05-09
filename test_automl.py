@@ -40,14 +40,13 @@ def transform(df, label):
 def main():
     label = 'av_gas_per_vol'
     label = 'total_gas'
-    data_path = os.environ.get('DATA_PATH')
+    # data_path = os.environ.get('DATA_PATH')
     predictor_input= "/home/gb669/rds/hpc-work/energy_map/data/automl_models/results/ml_data_engwales_withtemp_V3_total_gas_16000_medium_quality_allcols_tsp_0.2_set1"
     test_data_path = os.path.join(predictor_input, "test_data.csv") 
 
-    df = pd.read_csv(data_path)
-    _, test_data = train_test_split(df, test_size=0.2, random_state=42)
-    
-    
+    # df = pd.read_csv(data_path)
+    # _, test_data = train_test_split(df, test_size=0.2, random_state=42)
+
     
     # test_data = test_data.sample(n=20000, random_state=42) 
     test_data = pd.read_csv(test_data_path)
