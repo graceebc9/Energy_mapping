@@ -90,7 +90,7 @@ def main():
     if model_types == 'all':
         excl_models = []
     elif model_types=='set1':
-        excl_models = ['KNN', 'GBM', 'CAT', 'RF', 'XT', 'NN_TORCH']
+        excl_models = ['KNN']
 
     print(f'starting model run for {target_var}, time lim {time_limit}, model preset {model_preset} and train subset {train_subset_prop}' )
 
