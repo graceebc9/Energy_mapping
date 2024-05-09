@@ -124,9 +124,10 @@ def main():
     df = pd.read_csv(data_path)
     train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
     # train_data.to_csv(os.path.join(output_directory, 'train_data.csv'), index=False)
-    test_data.to_csv(os.path.join(output_directory, 'test_data.csv'), index=False)
+    
 
-    train_data = transform(TabularDataset(train_data), label, )
+    train_data = transform(TabularDataset(train_data), label )
+    test_data.to_csv(os.path.join(output_directory, 'test_data.csv'), index=False)
     
     # Reduce the training dataset if needed
     if train_subset_prop != 1:
