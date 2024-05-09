@@ -77,7 +77,7 @@ def main():
     target_var=label    
     model_names ='all'
     excl_models = [] 
-    
+
     if model_types == 'all':
         excl_models = []
     elif model_types=='set1':
