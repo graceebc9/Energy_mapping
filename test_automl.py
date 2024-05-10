@@ -19,7 +19,8 @@ def save_results(results, output_path):
 
 def transform(df, label):
     cols_remove = [
-            'Unnamed: 0', 'index', 'POSTCODE', 'postcode',
+            # 'Unnamed: 0', 'index',
+            #   'POSTCODE', 'postcode',
             'ï»¿pcd7', 'pcd8', 'pcds', 'dointr', 'doterm', 'usertype', 'oa21cd',
             'lsoa21cd', 'msoa21cd', 'ladcd', 'lsoa21nm', 'msoa21nm', 'ladnm',
             'ladnmw', 'pcd7', 'diff_min_max_gas_per_vol', 'diff_gas_meters_uprns_res',
