@@ -1,0 +1,154 @@
+import os
+import geopandas as gpd
+import pandas as pd
+import glob 
+
+
+import os
+import geopandas as gpd
+import rasterio
+from rasterio.mask import mask
+import numpy as np
+import pandas as pd
+import glob 
+import re 
+from datetime import datetime
+
+
+
+def load_extents(example_tif, pcs):
+    current_dir = os.path.dirname(__file__)
+    csv_path = os.path.join(current_dir, 'src', 'sentinel' , 'shapefile_extents_ndvicrs.csv')
+    
+    if os.path.exists(csv_path):
+        extents_df = pd.read_csv(csv_path)
+    else:
+        target_crs  = rasterio.open(example_tif).crs
+        print('Generating extent')
+        shapefile_extents = []
+        # Process each shapefile
+        for shp in pcs: 
+            shp_path = os.path.join(pc_shp_folder, shp)
+            if shp_path.endswith('.shp'):
+                extent = get_shapefile_extent(shp_path, target_crs)
+                shapefile_extents.append({'shapefile': shp, 'extent': extent, 'crs': target_crs})
+
+        # Convert list to DataFrame
+        extents_df = pd.DataFrame(shapefile_extents)
+        extents_df['extent2'] = extents_df.extent.str.replace('  ', ',' ).str.replace('[ ', '[').str.replace(' ', ',')
+        extents_df.to_csv(csv_path, index=False)
+        print("Shapefile extents saved to CSV.")
+    return extents_df 
+
+
+# Function to get the geographic extent of a shapefile in its original CRS
+def get_shapefile_extent(shp_path, target_crs):
+    gdf = gpd.read_file(shp_path)
+    # original_crs = gdf.crs
+    gdf = gdf.to_crs(target_crs)
+    
+    return gdf.total_bounds
+
+def extract_date_from_filename(filename):
+    # Regular expression to match the date and time part of the filename
+    match = re.search(r'\d{8}T\d{6}', filename)
+    if match:
+        date_str = match.group(0)
+        # Convert the string to a datetime object
+        date_time = datetime.strptime(date_str, '%Y%m%dT%H%M%S')
+        return date_time
+    else:
+        return None
+
+# Function to get the geographic extent of a raster
+def get_raster_extent(tif_path):
+    with rasterio.open(tif_path) as src:
+        bounds = src.bounds
+    return bounds
+
+# Function to check if two extents overlap
+def extents_overlap(extent1, extent2):
+    return not (extent1[0] > extent2[2] or extent1[2] < extent2[0] or
+                extent1[1] > extent2[3] or extent1[3] < extent2[1])
+
+
+
+def run_ndvi(outpath, extent_df, tif_list):
+        
+    # Store results
+    results = []
+
+    # Process each tif file
+    for tif_path in tif_list:
+        if tif_path.endswith('.tif'):
+            filename = os.path.basename(tif_path)
+            
+            outname = os.path.join(outpath, filename.split('__ndvi')[0] + '_pcresults.csv' ) 
+            # check if file already exists 
+            if os.path.exists(outname):
+                print('results already exists')
+                continue
+            
+
+            date_time = extract_date_from_filename(filename)
+            tif_extent = get_raster_extent(tif_path)
+            tif_crs = rasterio.open(tif_path).crs.to_string()
+
+            # Process each pre-loaded shapefile extent
+            for idx, row in extent_df.iterrows():
+            
+                shp_path =  row['shapefile'] 
+                shp_extent = eval(row['extent2'])
+                if extents_overlap(tif_extent, shp_extent):
+                    gdf = gpd.read_file(shp_path)
+                    gdf = gdf.to_crs(tif_crs)  # Convert to the TIF's CRS
+
+                    # Process each geometry in the shapefile
+                    for _, geom_row in gdf.iterrows():
+                        geom = [geom_row['geometry']]
+                        postcode = geom_row['POSTCODE']
+                        
+                        # Clip and process raster
+                        with rasterio.open(tif_path) as src:
+                            try:
+                                out_image, out_transform = mask(src, geom, crop=True)
+                                masked_data = np.where(out_image >= -1, out_image, np.nan)
+                                mean_value = np.nanmean(masked_data)
+
+                                # Store the result
+                                results.append({'postcode': postcode, 'mean_value': mean_value, 'date_time': date_time, 'tif_path': tif_path, 'shp_path': shp_path  })
+                                # print(f"Processed {postcode} for {tif}.")
+                            # except if WindowError 
+                            except:
+                                # print(f"Error processing {postcode} for {tif}.")
+                                continue
+
+            # Save results to a CSV file
+            results_df = pd.DataFrame(results)
+            results_df['month'] = pd.to_datetime(results_df['date_time']).dt.month
+            results_df['day'] = pd.to_datetime(results_df['date_time']).dt.day
+            results_df.to_csv(outname, index=False)
+            print("Results saved successfully.")
+
+def main(pcs, outpath, tif_folder):
+    """
+    pcs: list of path to shps for polygons split by postcode
+    outpath: where results table saved 
+    tif_folder: folder where tifs of NDVI for sentinel live
+    """
+    tif_list = glob.glob(tif_folder+'/*.tif')
+    tif_list = tif_list[0:2]
+
+    extent_df = load_extents(tif_list[0], pcs)
+     
+    run_ndvi(outpath, extent_df, tif_list)
+
+
+if __name__ == "__main__":
+    # use xarr env 
+    pc_shp_folder = '/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291/'
+    pcs = glob.glob(pc_shp_folder + 'two_letter_pc_code/*.shp') + glob.glob(pc_shp_folder + 'one_letter_pc_code/*/*.shp')
+    outpath = '/Users/gracecolverd/New_dataset/test'
+    tif_folder = '/Volumes/T9/Data_downloads/NDVI/2022_04'
+    
+    main(pcs, outpath, tif_folder)
