@@ -76,7 +76,7 @@ def main():
     train_subset_prop = float(os.environ.get('TRAIN_SUBSET_PROP') )
     model_types = os.environ.get('MODEL_TYPES')
     target = os.environ.get('TARGET')
-
+    tr_lab = 'v2'
     if target == 'avgas':   
         label = 'av_gas_per_vol'
     elif target == 'totalgas':
@@ -104,7 +104,7 @@ def main():
         sys.exit(1)
 
     dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
-    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{model_preset}_{col_type}_tsp_{train_subset_prop}_{model_types}"
+    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{model_preset}_{col_type}_tsp_{train_subset_prop}_{model_types}_{tr_lab}"
     
     # Example usage:
     
