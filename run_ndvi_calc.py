@@ -35,7 +35,7 @@ def load_extents(example_tif, pcs):
 
         # Convert list to DataFrame
         extents_df = pd.DataFrame(shapefile_extents)
-        extents_df['extent2'] = extents_df.extent.str.replace('  ', ',' ).str.replace('[ ', '[').str.replace(' ', ',')
+        
         extents_df.to_csv(csv_path, index=False)
         print("Shapefile extents saved to CSV.")
     return extents_df 
@@ -74,10 +74,9 @@ def extents_overlap(extent1, extent2):
 
 
 def run_ndvi(outpath, extent_df, tif_list):
-        
+    extent_df['extent2'] = extent_df.extent.str.replace('  ', ',' ).str.replace('[ ', '[').str.replace(' ', ',').str.replace(',,' , ',').str.replace('[,','[' )
     # Store results
     results = []
-
     # Process each tif file
     for tif_path in tif_list:
         if tif_path.endswith('.tif'):
@@ -146,9 +145,18 @@ def main(pcs, outpath, tif_folder):
 
 if __name__ == "__main__":
     # use xarr env 
-    pc_shp_folder = '/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291/'
-    pcs = glob.glob(pc_shp_folder + 'two_letter_pc_code/*.shp') + glob.glob(pc_shp_folder + 'one_letter_pc_code/*/*.shp')
-    outpath = '/Users/gracecolverd/New_dataset/test'
-    tif_folder = '/Volumes/T9/Data_downloads/NDVI/2022_04'
+    pc_shp_folder = os.environ.get('PC_SHP')
+    tif_folder = os.environ.get('TIF_PATH')
+    outpath = os.environ.get('OUTPUT_PATH')
+
+    pcs = glob.glob(os.path.join(pc_shp_folder, 'two_letter_pc_code/*.shp') )+ glob.glob(os.path.join(pc_shp_folder + 'one_letter_pc_code/*/*.shp'))
+
     
     main(pcs, outpath, tif_folder)
+
+
+# export TIF_PATH='/Volumes/T9/Data_downloads/NDVI/2022_04'
+# export OUTPUT_PATH='/Users/gracecolverd/New_dataset/test'
+# export PC_SHP='/Volumes/T9/Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291'
+
+
