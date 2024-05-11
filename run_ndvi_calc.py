@@ -137,7 +137,7 @@ def main(pcs, outpath, tif_folder):
     tif_folder: folder where tifs of NDVI for sentinel live
     """
     tif_list = glob.glob(tif_folder+'/*.tif')
-    tif_list = tif_list[0:2]
+
 
     extent_df = load_extents(tif_list[0], pcs)
      
@@ -145,7 +145,7 @@ def main(pcs, outpath, tif_folder):
 
 
 if __name__ == "__main__":
-    # use xarr env 
+
     pc_shp_folder = os.environ.get('PC_SHP')
     tif_folder = os.environ.get('TIF_PATH')
     outpath = os.environ.get('OUTPUT_PATH')
