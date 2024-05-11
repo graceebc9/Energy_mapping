@@ -1,11 +1,5 @@
 import os
 import geopandas as gpd
-import pandas as pd
-import glob 
-
-
-import os
-import geopandas as gpd
 import rasterio
 from rasterio.mask import mask
 import numpy as np
@@ -71,10 +65,17 @@ def extents_overlap(extent1, extent2):
     return not (extent1[0] > extent2[2] or extent1[2] < extent2[0] or
                 extent1[1] > extent2[3] or extent1[3] < extent2[1])
 
+def convert_string_to_float_list(string):
+    # Strip the square brackets and then split by space
+    cleaned_string = string.strip('[]')
+    # Convert each split string into a float
+    float_list = [float(num) for num in cleaned_string.split()]
+    return float_list
+
 
 
 def run_ndvi(outpath, extent_df, tif_list):
-    extent_df['extent2'] = extent_df.extent.str.replace('  ', ',' ).str.replace('[ ', '[').str.replace(' ', ',').str.replace(',,' , ',').str.replace('[,','[' )
+    extent_df['extent2'] = extent_df['extent'].apply(convert_string_to_float_list)
     # Store results
     results = []
     # Process each tif file
@@ -97,7 +98,7 @@ def run_ndvi(outpath, extent_df, tif_list):
             for idx, row in extent_df.iterrows():
             
                 shp_path =  row['shapefile'] 
-                shp_extent = eval(row['extent2'])
+                shp_extent = row['extent2']
                 if extents_overlap(tif_extent, shp_extent):
                     gdf = gpd.read_file(shp_path)
                     gdf = gdf.to_crs(tif_crs)  # Convert to the TIF's CRS
