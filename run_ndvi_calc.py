@@ -7,8 +7,7 @@ import pandas as pd
 import glob 
 import re 
 from datetime import datetime
-
-
+from pathlib import Path
 
 def load_extents(example_tif, pcs):
     current_dir = os.path.dirname(__file__)
@@ -73,6 +72,14 @@ def convert_string_to_float_list(string):
     return float_list
 
 
+def get_tif_files(directory):
+    # Create a Path object
+    path = Path(directory)
+
+    # Use rglob to find all .tif files
+    tif_files = [p for p in path.rglob('*.tif') if not p.name.startswith('._')]
+
+    return tif_files 
 
 def run_ndvi(outpath, extent_df, tif_list):
     extent_df['extent2'] = extent_df['extent'].apply(convert_string_to_float_list)
@@ -136,7 +143,7 @@ def main(pcs, outpath, tif_folder):
     outpath: where results table saved 
     tif_folder: folder where tifs of NDVI for sentinel live
     """
-    tif_list = glob.glob(tif_folder+'/*.tif')
+    tif_list =get_tif_files(tif_folder)
 
 
     extent_df = load_extents(tif_list[0], pcs)
