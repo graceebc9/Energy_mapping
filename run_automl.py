@@ -127,7 +127,7 @@ def main():
     
 
     train_data = transform(TabularDataset(train_data), label )
-    test_data.to_csv(os.path.join(output_directory, 'test_data.csv'), index=False)
+    
     
     # Reduce the training dataset if needed
     if train_subset_prop != 1:
@@ -143,6 +143,7 @@ def main():
                                                                 excluded_model_types=excl_models)
     
     test_data = transform(TabularDataset(test_data), label)
+    test_data.to_csv(os.path.join(output_directory, 'test_data.csv'), index=False)
     y_pred = predictor.predict(test_data.drop(columns=[label]))
     results = predictor.evaluate_predictions(y_true=test_data[label], y_pred=y_pred, auxiliary_metrics=True)
 
