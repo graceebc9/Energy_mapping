@@ -94,9 +94,9 @@ uprn_cols = [ 'all_types_uprn_count_total',
             'min_vol_per_uprn',] 
 
 
-settings_col_dict = {1: total_builds + region_cols , 
-2 : total_builds + region_cols + temp_cols ,
-3 : total_builds + region_cols + temp_cols + clean_res_cols, 
+settings_col_dict = {0: total_builds + region_cols , 
+1 : total_builds + region_cols + temp_cols ,
+2 : total_builds + region_cols + temp_cols + clean_res_cols, 
 3 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols,
 4 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + type_cols, 
 5 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols,
