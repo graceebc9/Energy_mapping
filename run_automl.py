@@ -6,12 +6,8 @@ from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 
 
-import os
-import sys
+from ml_utils.src.model_col_settings import settings_col_dict 
 
-# # set random seed 
-# import random
-# random.seed(42) 
 
 def check_directory_and_files(output_directory, required_files):
     """
@@ -38,23 +34,9 @@ def check_directory_and_files(output_directory, required_files):
     return True
 
 
-
-def transform(df, label):
-    cols_remove = [
-            'Unnamed: 0', 'index', 'POSTCODE', 'postcode',
-            'ï»¿pcd7', 'pcd8', 'pcds', 'dointr', 'doterm', 'usertype', 'oa21cd',
-            'lsoa21cd', 'msoa21cd', 'ladcd', 'lsoa21nm', 'msoa21nm', 'ladnm',
-            'ladnmw', 'pcd7', 'diff_min_max_gas_per_vol', 'diff_gas_meters_uprns_res',
-            'min_gas_per_vol', 'max_gas_per_vol',  'avg_gas', 'median_gas',
-            'num_meters_gas', 'total_elec', 'avg_elec', 'median_elec', 'num_meters_elec',
-            'comm_alltypes_count', 'unknown_alltypes', 'outb_res_uprn_count_total', 'mixed_total_buildings', 'mixed_premise_area_total', 'mixed_gross_area_total', 'mixed_heated_vol_fc_total', 'mixed_heated_vol_h_total', 'mixed_base_floor_total', 'mixed_basement_heated_vol_max_total', 'mixed_listed_bool_total', 'mixed_uprn_count_total', 'percent_residential', 'perc_all_res', 'Unknown_pct', 'ethnic_group_perc_Does not apply', 'household_siz_perc_perc_0 people in household', 'occupancy_rating_perc_Does not apply', 'household_comp_by_bedroom_perc_Does not apply_Does not apply', 'household_comp_by_bedroom_perc_Does not apply_1 bedroom', 'household_comp_by_bedroom_perc_Does not apply_2 bedrooms', 'household_comp_by_bedroom_perc_Does not apply_3 bedrooms', 'household_comp_by_bedroom_perc_Does not apply_4 or more bedrooms', 'household_comp_by_bedroom_perc_One-person household_Does not apply', 'household_comp_by_bedroom_perc_Single family household: All aged 66 years and over_Does not apply', 'household_comp_by_bedroom_perc_Single family household: Couple family household_Does not apply', 'household_comp_by_bedroom_perc_Single family household: Lone parent household_Does not apply', 'household_comp_by_bedroom_perc_Other household types_Does not apply', 'central_heating_perc_Does not apply'
-        ]
-    if label == 'av_gas_per_vol':
-        cols_remove+=['total_gas']
-    elif label == 'total_gas':
-        cols_remove += ['av_gas_per_vol'] 
-            
-    working_cols = [col for col in df.columns if col not in cols_remove]
+def transform(df, label, col_setting):
+    cols = settings_col_dict[col_setting]
+    working_cols = cols + [label]
     df = df[working_cols]
     df = df[~df[label].isna()]
     return df
@@ -67,8 +49,7 @@ def save_results(results, output_path):
 
 
 def main():
-    # train_path = os.environ.get('TRAIN_PATH')
-    # test_path = os.environ.get('TEST_PATH')
+
     data_path = os.environ.get('DATA_PATH')
     output_path = os.environ.get('OUTPUT_PATH')
     model_preset= os.environ.get('MODEL_PRESET')
@@ -76,15 +57,16 @@ def main():
     train_subset_prop = float(os.environ.get('TRAIN_SUBSET_PROP') )
     model_types = os.environ.get('MODEL_TYPES')
     target = os.environ.get('TARGET')
+    column_setting =int( os.environ.get('COL_SETTING'))
     tr_lab = 'v2'
-    if target == 'avgas':   
-        label = 'av_gas_per_vol'
+    if target == 'avgas1':   
+        label = 'av_gas_per_vol_v1'
     elif target == 'totalgas':
         label = 'total_gas'
+    else:
+        raise Exception('No target')
 
-    
-    target_var=label    
-    # model_names ='all'
+
     excl_models = [] 
 
     if model_types == 'all':
@@ -92,7 +74,7 @@ def main():
     elif model_types=='set1':
         excl_models = ['KNN']
 
-    print(f'starting model run for {target_var}, time lim {time_limit}, model preset {model_preset} and train subset {train_subset_prop}' )
+    print(f'starting model run for target {label}, time lim {time_limit}, col setting {column_setting}, model preset {model_preset} and train subset {train_subset_prop}' )
 
       # Proportion of data to use for training
     col_type ='allcols'
@@ -104,7 +86,7 @@ def main():
         sys.exit(1)
 
     dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
-    output_directory = f"{output_path}/{dataset_name}_{target_var}_{time_limit}_{model_preset}_{col_type}_tsp_{train_subset_prop}_{model_types}_{tr_lab}"
+    output_directory = f"{output_path}/{dataset_name}__{label}__{time_limit}__colset_{column_setting}__{model_preset}__{col_type}_tsp_{train_subset_prop}_{model_types}_{tr_lab}"
     
     # Example usage:
     
@@ -123,10 +105,7 @@ def main():
 
     df = pd.read_csv(data_path)
     train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
-    # train_data.to_csv(os.path.join(output_directory, 'train_data.csv'), index=False)
-    
-
-    train_data = transform(TabularDataset(train_data), label )
+    train_data = transform(TabularDataset(train_data), label, column_setting )
     
     
     # Reduce the training dataset if needed
@@ -142,7 +121,7 @@ def main():
                                                                 presets=model_preset,
                                                                 excluded_model_types=excl_models)
     
-    test_data = transform(TabularDataset(test_data), label)
+    test_data = transform(TabularDataset(test_data), label, column_setting)
     test_data.to_csv(os.path.join(output_directory, 'test_data.csv'), index=False)
     y_pred = predictor.predict(test_data.drop(columns=[label]))
     results = predictor.evaluate_predictions(y_true=test_data[label], y_pred=y_pred, auxiliary_metrics=True)
@@ -164,9 +143,10 @@ if __name__ == '__main__':
 
 
 
-# export TRAIN_PATH='
-# export TEST_PATH='
+# export DATA_PATH='/Users/gracecolverd/New_dataset/ml_scripts/V2_ml_input_data.csv'
 # export OUTPUT_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml/results'
 # export MODEL_PRESET='medium_quality'
 # export TIME_LIM=500
 # export TRAIN_SUBSET_PROP=0.1
+# export TARGET='avgas'
+# export COL_SETTING=1
