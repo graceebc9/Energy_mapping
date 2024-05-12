@@ -5,7 +5,7 @@ temp_cols= ['HDD',
  'HDD_winter',
  'CDD_winter']
 
-region_cols = ['oa11cd', 'lsoa11cd', 'msoa11cd', 'ladcd', 'region', 'outcode' ,
+region_cols = ['oa11cd', 'lsoa11cd', 'msoa11cd', 'ladcd', 'outcode' ,
   'region_EE',
  'region_EM',
  'region_LN',
