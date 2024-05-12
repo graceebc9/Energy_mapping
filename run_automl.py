@@ -148,5 +148,5 @@ if __name__ == '__main__':
 # export MODEL_PRESET='medium_quality'
 # export TIME_LIM=500
 # export TRAIN_SUBSET_PROP=0.1
-# export TARGET='avgas'
+# export TARGET='avgas1'
 # export COL_SETTING=1
