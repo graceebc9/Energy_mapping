@@ -5,7 +5,7 @@ temp_cols= ['HDD',
  'HDD_winter',
  'CDD_winter']
 
-region_cols = ['oa11cd', 'lsoa11cd', 'msoa11cd', 'ladcd', 'outcode' ,
+region_cols = ['oa11cd', 'lsoa11cd', 'msoa11cd', 'ladcd', 'outcode' , 'region',
   'region_EE',
  'region_EM',
  'region_LN',
@@ -109,3 +109,31 @@ settings_col_dict = {0: total_builds + region_cols ,
 12: region_cols,
 13: type_cols, 
  }
+
+
+name_mapping = {0: 'build_region',
+1: 'build_region_temp' ,
+2: 'build+region+temp+cleanres',
+3: 'build+region+temp+cleanres+outb',
+4:'build+region+temp+cleanres+outb+type',
+5:'build+region+temp+cleanres+outb+age',
+6:'build+region+temp+cleanres+outb+age+type',
+7:'build+region+temp+cleanres+outb+age+type+uprn',
+8:'build+region+temp+cleanres+outb+age+type+uprn+res',
+9:'build+temp+cleanres+outb+age+type+uprn+res',
+10: 'temp',
+11:'age',
+12:'region',
+13:'type'
+}
+
+region_mapping = {0: 'SW',
+ 1: 'EM',
+ 2: 'EE',
+ 3: 'WA',
+ 4: 'NW',
+ 5: 'YH',
+ 6: 'WM',
+ 7: 'SC',
+ 8: 'LN',
+ 9: 'NE'}
