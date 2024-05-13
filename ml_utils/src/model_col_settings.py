@@ -109,24 +109,28 @@ settings_col_dict = {0: total_builds + region_cols ,
 12: region_cols,
 13: type_cols, 
 14: total_builds,  
+15: clean_res_cols,
+16: uprn_cols
  }
 
 
 name_mapping = {0: 'build_region',
-1: 'build_region_temp' ,
-2: 'build+region+temp+cleanres',
-3: 'build+region+temp+cleanres+outb',
-4:'build+region+temp+cleanres+outb+type',
-5:'build+region+temp+cleanres+outb+age',
-6:'build+region+temp+cleanres+outb+age+type',
-7:'build+region+temp+cleanres+outb+age+type+uprn',
-8:'build+region+temp+cleanres+outb+age+type+uprn+res',
-9:'build+temp+cleanres+outb+age+type+uprn+res',
+1: 'build_region_tmp' ,
+2: 'build_region_tmp_clres',
+3: 'build+region_tmp_clres_ob',
+4:'build_region_tmp_clres_ob_type',
+5:'build_region_tmp_clres_ob_age',
+6:'build_region_tmp_clres_ob_age_type',
+7:'build_region_tmp_clres_ob_age_type_uprn',
+8:'build_region_tmp_clres_ob_age_type_uprn_res',
+9:'build_temp_clres_ob_age_type_uprn_res',
 10: 'temp',
 11:'age',
 12:'region',
 13:'type',
-14: 'build'
+14: 'build',
+15: 'clres',
+16: 'uprn'
 }
 
 region_mapping = {0: 'SW',
