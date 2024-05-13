@@ -75,6 +75,8 @@ def main():
         excl_models = []
     elif model_types=='set1':
         excl_models = ['KNN']
+    
+    df = pd.read_csv(data_path)
 
     if run_regionally == 'Yes':
         loc_type='local'
@@ -104,7 +106,6 @@ def main():
         print(f"Directory {output_directory} is ready for use.")
 
 
-    df = pd.read_csv(data_path)
 
 
 
