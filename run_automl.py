@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 
 
-from ml_utils.src.model_col_settings import settings_col_dict 
+from ml_utils.src.model_col_settings import settings_col_dict , region_mapping
 
 
 def check_directory_and_files(output_directory, required_files):
@@ -59,6 +59,8 @@ def main():
     target = os.environ.get('TARGET')
     column_setting =int( os.environ.get('COL_SETTING'))
     tr_lab = 'v2'
+    run_regionally = os.environ.get('RUN_REGIONAL')
+
     if target == 'avgas1':   
         label = 'av_gas_per_vol_v1'
     elif target == 'totalgas':
@@ -80,17 +82,10 @@ def main():
     col_type ='allcols'
 
 
-
-    if not data_path or not output_path or not data_path:
-        print("Please set DATA_PATH and OUTPUT_PATH environment variables.")
-        sys.exit(1)
-
     dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
     output_directory = f"{output_path}/{dataset_name}__{label}__{time_limit}__colset_{column_setting}__{model_preset}__{col_type}_tsp_{train_subset_prop}_{model_types}_{tr_lab}"
-    
-    # Example usage:
-    
-    required_files = ['model_summary.txt', 'feature_importance.csv', 'leaderboard_results.csv']  # List of files you expect to exist
+        
+    required_files = ['model_summary.txt']  # List of files you expect to exist
     
     
     # Check if output directory exists and has all required files
@@ -104,9 +99,18 @@ def main():
 
 
     df = pd.read_csv(data_path)
+
+    if run_regionally is True:
+        int_region = os.environ.get('REGION_INT')
+        region = region_mapping[int_region]
+        df =df[df['region'] ==region]
+        train_subset_prop = 1 
+
+
+    
     train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
     train_data = transform(TabularDataset(train_data), label, column_setting )
-    
+        
     
     # Reduce the training dataset if needed
     if train_subset_prop != 1:
@@ -114,9 +118,8 @@ def main():
         # train_subset.to_csv(os.path.join(output_directory, 'train_subset.csv'), index=False)
     else:
         train_subset = train_data   
-    
+    size_train = len(train_subset) 
     predictor = TabularPredictor(label, path=output_directory).fit(train_subset, 
-                                                                #    num_gpus=1,
                                                                 time_limit=time_limit,
                                                                 presets=model_preset,
                                                                 excluded_model_types=excl_models)
@@ -125,9 +128,13 @@ def main():
     test_data.to_csv(os.path.join(output_directory, 'test_data.csv'), index=False)
     y_pred = predictor.predict(test_data.drop(columns=[label]))
     results = predictor.evaluate_predictions(y_true=test_data[label], y_pred=y_pred, auxiliary_metrics=True)
+    size_test = len(test_data)
 
     
     print(results)
+
+    sizett = {'len_train' :size_train, 'len_test':size_test  }
+    results.update(sizett)
 
     save_results(results, output_directory)
     res = predictor.leaderboard(test_data)
@@ -150,3 +157,5 @@ if __name__ == '__main__':
 # export TRAIN_SUBSET_PROP=0.1
 # export TARGET='avgas1'
 # export COL_SETTING=1
+export RUN_REGIONAL=True
+export REGION_INT
