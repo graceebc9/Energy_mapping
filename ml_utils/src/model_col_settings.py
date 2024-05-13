@@ -52,6 +52,21 @@ type_cols = [ '2 storeys terraces with t rear extension_pct',
  'Very large detached_pct',
  'Very tall point block flats_pct']
 
+total_builds_new = ['all_types_total_buildings']
+
+clean_res_cols = [ 'clean_res_total_buildings',
+ 'clean_res_premise_area_total',
+ 'clean_res_gross_area_total',
+ 'clean_res_heated_vol_fc_total',
+ 'clean_res_heated_vol_h_total',
+ 'clean_res_base_floor_total',
+ 'clean_res_basement_heated_vol_max_total',
+ 'clean_res_listed_bool_total',
+'range_heated_vol',
+'max_heated_vol',
+'min_heated_vol',
+ ]
+
 total_builds = ['all_types_total_buildings',  'perc_all_res',
  'perc_clean_res',
  'perc_all_res_basement',
@@ -67,7 +82,21 @@ res_cols = ['all_res_total_buildings',
  'all_res_listed_bool_total',
 ]
 
-clean_res_cols = [ 'clean_res_total_buildings',
+
+
+res = ['all_res_total_buildings',
+ 'all_res_premise_area_total',
+ 'all_res_gross_area_total',
+ 'all_res_heated_vol_fc_total',
+ 'all_res_heated_vol_h_total',
+ 'all_res_base_floor_total',
+ 'all_res_basement_heated_vol_max_total',
+ 'all_res_listed_bool_total',
+ 'perc_all_res',
+ 'perc_clean_res',
+ 'perc_all_res_basement',
+ 'perc_all_res_listed',
+ 'clean_res_total_buildings',
  'clean_res_premise_area_total',
  'clean_res_gross_area_total',
  'clean_res_heated_vol_fc_total',
@@ -93,7 +122,6 @@ uprn_cols = [ 'all_types_uprn_count_total',
             'max_vol_per_uprn',
             'min_vol_per_uprn',] 
 
-
 settings_col_dict = {0: total_builds + region_cols , 
 1 : total_builds + region_cols + temp_cols ,
 2 : total_builds + region_cols + temp_cols + clean_res_cols, 
@@ -109,8 +137,27 @@ settings_col_dict = {0: total_builds + region_cols ,
 12: region_cols,
 13: type_cols, 
 14: total_builds,  
-15: clean_res_cols,
-16: uprn_cols
+ }
+
+
+settings_col_dict_new = {0: temp_cols,
+1:age_cols,
+2: region_cols,
+3: type_cols, 
+4: total_builds_new,  
+5: res,
+6: uprn_cols, 
+7: outb_cols, 
+8: total_builds_new + region_cols , 
+9 : total_builds_new + region_cols + temp_cols ,
+10 : total_builds_new + region_cols + type_cols ,
+11 : total_builds_new + region_cols + age_cols ,
+12 : total_builds_new + region_cols + res, 
+13 : total_builds_new + region_cols + res + outb_cols,
+14 : total_builds_new + region_cols + temp_cols + res + outb_cols , 
+15 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols,
+16 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols,
+17 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols ,
  }
 
 
