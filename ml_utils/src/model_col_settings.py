@@ -108,6 +108,7 @@ settings_col_dict = {0: total_builds + region_cols ,
 11:age_cols,
 12: region_cols,
 13: type_cols, 
+14: total_builds,  
  }
 
 
@@ -124,7 +125,8 @@ name_mapping = {0: 'build_region',
 10: 'temp',
 11:'age',
 12:'region',
-13:'type'
+13:'type',
+14: 'build'
 }
 
 region_mapping = {0: 'SW',
