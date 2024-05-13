@@ -76,14 +76,20 @@ def main():
     elif model_types=='set1':
         excl_models = ['KNN']
 
-    print(f'starting model run for target {label}, time lim {time_limit}, col setting {column_setting}, model preset {model_preset} and train subset {train_subset_prop}' )
+    if run_regionally == 'Yes':
+        loc_type='local'
+        int_region = int(os.environ.get('REGION_INT'))
+        region = region_mapping[int_region]
+        df =df[df['region'] ==region]
+        train_subset_prop = 1 
+    else:
+        loc_type= 'global'
 
-      # Proportion of data to use for training
-    col_type ='allcols'
+    print(f'starting model run for {loc_type} target {label}, time lim {time_limit}, col setting {column_setting}, model preset {model_preset} and train subset {train_subset_prop}' )
 
 
     dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
-    output_directory = f"{output_path}/{dataset_name}__{label}__{time_limit}__colset_{column_setting}__{model_preset}__{col_type}_tsp_{train_subset_prop}_{model_types}_{tr_lab}"
+    output_directory = f"{output_path}/{dataset_name}__{loc_type}__{label}__{time_limit}__colset_{column_setting}__{model_preset}___tsp_{train_subset_prop}__{model_types}"
         
     required_files = ['model_summary.txt']  # List of files you expect to exist
     
@@ -100,11 +106,7 @@ def main():
 
     df = pd.read_csv(data_path)
 
-    if run_regionally is True:
-        int_region = os.environ.get('REGION_INT')
-        region = region_mapping[int_region]
-        df =df[df['region'] ==region]
-        train_subset_prop = 1 
+
 
 
     
@@ -150,12 +152,12 @@ if __name__ == '__main__':
 
 
 
-# export DATA_PATH='/Users/gracecolverd/New_dataset/ml_scripts/V2_ml_input_data.csv'
+# export DATA_PATH='/Users/gracecolverd/New_dataset/ml_scripts/V3_ml_input_data.csv'
 # export OUTPUT_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml/results'
 # export MODEL_PRESET='medium_quality'
 # export TIME_LIM=500
 # export TRAIN_SUBSET_PROP=0.1
 # export TARGET='avgas1'
 # export COL_SETTING=1
-export RUN_REGIONAL=True
-export REGION_INT
+# export RUN_REGIONAL='Yes'
+# export REGION_INT=1
