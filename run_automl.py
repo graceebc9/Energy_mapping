@@ -86,12 +86,13 @@ def main():
         train_subset_prop = 1 
     else:
         loc_type= 'global'
+        int_region = 'None'
 
     print(f'starting model run for {loc_type} target {label}, time lim {time_limit}, col setting {column_setting}, model preset {model_preset} and train subset {train_subset_prop}' )
 
 
     dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
-    output_directory = f"{output_path}/{dataset_name}__{loc_type}__{label}__{time_limit}__colset_{column_setting}__{model_preset}___tsp_{train_subset_prop}__{model_types}"
+    output_directory = f"{output_path}/{dataset_name}__{loc_type}__{label}__{time_limit}__colset_{column_setting}__{model_preset}___tsp_{train_subset_prop}__{model_types}__{int_region}"
         
     required_files = ['model_summary.txt']  # List of files you expect to exist
     
