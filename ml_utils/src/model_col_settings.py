@@ -122,22 +122,29 @@ uprn_cols = [ 'all_types_uprn_count_total',
             'max_vol_per_uprn',
             'min_vol_per_uprn',] 
 
-settings_col_dict = {0: total_builds + region_cols , 
-1 : total_builds + region_cols + temp_cols ,
-2 : total_builds + region_cols + temp_cols + clean_res_cols, 
-3 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols,
-4 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + type_cols, 
-5 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols,
-6 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols + type_cols,
-7 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols + type_cols + uprn_cols ,
-8 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols + type_cols + uprn_cols + res_cols,
-9 : total_builds + temp_cols + clean_res_cols + outb_cols + age_cols + type_cols + uprn_cols + res_cols,
-10: temp_cols,
-11:age_cols,
-12: region_cols,
-13: type_cols, 
-14: total_builds,  
- }
+best_cols = [ 'max_vol_per_uprn',
+            'min_vol_per_uprn',
+            'all_types_total_buildings',
+               'all_res_heated_vol_fc_total',
+ 'all_res_heated_vol_h_total']
+
+
+# settings_col_dict = {0: total_builds + region_cols , 
+# 1 : total_builds + region_cols + temp_cols ,
+# 2 : total_builds + region_cols + temp_cols + clean_res_cols, 
+# 3 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols,
+# 4 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + type_cols, 
+# 5 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols,
+# 6 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols + type_cols,
+# 7 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols + type_cols + uprn_cols ,
+# 8 : total_builds + region_cols + temp_cols + clean_res_cols + outb_cols + age_cols + type_cols + uprn_cols + res_cols,
+# 9 : total_builds + temp_cols + clean_res_cols + outb_cols + age_cols + type_cols + uprn_cols + res_cols,
+# 10: temp_cols,
+# 11:age_cols,
+# 12: region_cols,
+# 13: type_cols, 
+# 14: total_builds,  
+#  }
 
 
 settings_col_dict_new = {0: temp_cols,
@@ -158,7 +165,10 @@ settings_col_dict_new = {0: temp_cols,
 15 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols,
 16 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols,
 17 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols ,
- }
+18: total_builds_new + type_cols , 
+19: best_cols }
+
+
 
 
 name_mapping = {0: 'build_region',
