@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 
 
-from ml_utils.src.model_col_settings import settings_col_dict , region_mapping, settings_col_dict_new
+from ml_utils.src.model_col_settings import region_mapping, settings_col_dict_new
 
 
 def check_directory_and_files(output_directory, required_files):
