@@ -61,8 +61,8 @@ def main():
     tr_lab = 'v2'
     run_regionally = os.environ.get('RUN_REGIONAL')
 
-    if target == 'avgas1':   
-        label = 'av_gas_per_vol_v1'
+    if target == 'totalelec':   
+        label = 'total_elec'
     elif target == 'totalgas':
         label = 'total_gas'
     else:
