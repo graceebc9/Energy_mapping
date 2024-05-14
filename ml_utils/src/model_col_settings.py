@@ -118,9 +118,9 @@ outb_cols = [ 'outb_res_total_buildings',
 
 uprn_cols = [ 'all_types_uprn_count_total',
             'all_res_uprn_count_total',  
-            'clean_res_uprn_count_total', 
-            'max_vol_per_uprn',
-            'min_vol_per_uprn',] 
+            'clean_res_uprn_count_total', ]
+            # 'max_vol_per_uprn',
+            # 'min_vol_per_uprn',] 
 
 best_cols = [ 'max_vol_per_uprn',
             'min_vol_per_uprn',
