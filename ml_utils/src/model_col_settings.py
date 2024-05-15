@@ -129,6 +129,9 @@ best_cols = [ 'max_vol_per_uprn',
  'all_res_heated_vol_h_total']
 
 
+
+ndvi = ['max_ndvi_cols']
+ 
 # settings_col_dict = {0: total_builds + region_cols , 
 # 1 : total_builds + region_cols + temp_cols ,
 # 2 : total_builds + region_cols + temp_cols + clean_res_cols, 
@@ -166,7 +169,10 @@ settings_col_dict_new = {0: temp_cols,
 16 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols,
 17 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols ,
 18: total_builds_new + type_cols , 
-19: best_cols }
+19: best_cols ,
+20: best_cols + ndvi,
+
+}
 
 
 
@@ -189,6 +195,8 @@ name_mapping = {0: 'build_region',
 15: 'clres',
 16: 'uprn'
 }
+
+
 
 region_mapping = {0: 'SW',
  1: 'EM',
