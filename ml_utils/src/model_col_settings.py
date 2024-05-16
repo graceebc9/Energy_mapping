@@ -171,6 +171,9 @@ settings_col_dict_new = {0: temp_cols,
 18: total_builds_new + type_cols , 
 19: best_cols ,
 20: best_cols + ndvi,
+21: ndvi,
+22: total_builds_new + region_cols +  type_cols + temp_cols + ndvi ,
+23:  total_builds_new + region_cols +  type_cols + temp_cols 
 
 }
 
