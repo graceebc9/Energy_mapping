@@ -130,7 +130,7 @@ best_cols = [ 'max_vol_per_uprn',
 
 
 
-ndvi = ['max_ndvi_cols']
+ndvi = ['max_ndvi']
 
 l_fuel_pov = ['PercentageOfHouseholdsFuelPoor', 'EstimatedNumberOfFuelPoorHouseholds' ]
  
@@ -171,15 +171,23 @@ settings_col_dict_new = {0: temp_cols,
 16 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols,
 17 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols ,
 18: total_builds_new + type_cols , 
+
 19: best_cols ,
 20: best_cols + ndvi,
 21: ndvi,
 22: total_builds_new + region_cols +  type_cols + temp_cols + ndvi ,
 23:  total_builds_new + region_cols +  type_cols + temp_cols , 
+
 24: total_builds_new  + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols ,
 25 : total_builds_new  + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols +l_fuel_pov  ,
 26: l_fuel_pov, 
-27:   total_builds_new  + temp_cols + l_fuel_pov + type_cols}
+27:   total_builds_new  + temp_cols + l_fuel_pov + type_cols,
+28:   total_builds_new  + temp_cols  + type_cols,
+
+29: total_builds_new  +  ndvi, 
+30 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols + ndvi   , 
+31 :  total_builds_new  + temp_cols  + type_cols + ndvi  ,
+}
 
 
 
