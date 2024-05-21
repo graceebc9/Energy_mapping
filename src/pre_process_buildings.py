@@ -116,7 +116,9 @@ def fill_local_averages(df):
     df = create_height_bucket_cols(df, 'height_filled')
     return df 
 
-def fill_glob_avs(df, fc ):
+def fill_glob_avs(df, fc = None  ):
+    if fc is None:
+        fc = load_avg_floor_count() 
     df = df.merge(fc, left_on=['map_simple_use', 'premise_age_bucketed',  'height_filled_bucket'], right_on = [ 'map_simple_use', 'premise_age_bucketed', 'height_bucket'], how='left')
     if df.empty:
         raise Exception ('Error merging with global averages')
@@ -228,12 +230,10 @@ def test_building_metrics(df):
     assert_larger(test, 'height', 'height_filled')
 
 
-            
-# ============================================================
-# Action functions
-# ============================================================
+
 def pre_process_building_data(build):
     fc = load_avg_floor_count() 
+    print(fc)
     """Calculate and validate building metrics from verisk data."""
     # print("Pre-processing building data...")
     processed_df = pre_process_buildings(build, fc)
@@ -242,167 +242,3 @@ def pre_process_building_data(build):
     clean_df = produce_clean_building_data(processed_df)
     
     return clean_df
-
-
-
-    # ============================================================
-# Building metric fns 
-# ============================================================     
-
-# def calculate_volume_metrics(df):
-#     """Calculate various volume metrics based on building data."""
-
-#     # Calculate building volume, considering height and area
-#     df['build_vol_FGA'] = df['premise_area'] * df['validated_height_FGA']
-
-#     # Efficiently determine the presence of a basement
-#     basement_conditions = [
-#         df['basement'].isin(['Basement confirmed', 'Basement likely']),
-#         ~df['basement'].isin(['Basement confirmed', 'Basement likely'])
-#     ]
-#     basement_choices = [1, 0]
-#     df['base_floor'] = np.select(basement_conditions, basement_choices, default=0)
-
-#     # Calculate building and heated volumes including basement adjustments
-#     basement_height_adjustment = df['base_floor'] *  df['premise_area'] * BASEMENT_HEIGHT * BASEMENT_PERCENTAGE_OF_PREMISE_AREA 
-#     df['build_vol_inc_basement_FGA'] = df['build_vol_FGA'] + basement_height_adjustment
-
-#     # df['heated_vol_EA_FGA'] = df['premise_area'] * df['floor_count_element_av_FGA'] * DEFAULT_FLOOR_HEIGHT  
-#     df['heated_vol_FGA'] = df['premise_area'] * df['validated_fc_FGA'] * DEFAULT_FLOOR_HEIGHT 
-
-#     # df['heated_vol_inc_basement_EA_FGA'] = df['heated_vol_EA_FGA'] + basement_height_adjustment
-#     df['heated_vol_inc_basement_FGA'] = df['heated_vol_FGA'] + basement_height_adjustment
-
-#     return df
-
-
-
-# def pre_process_buildings(df):
-#     """
-#     Pre-process buildings by cleaning and updating heights and floor counts.
-    
-#     Args:
-#         df (pandas.DataFrame): The GPKG verisk building data with verisk_premise_id set as upn.
-        
-#     Returns:
-#         pandas.DataFrame: The pre-processed dataframe with updated height and floor count columns.
-#     """
-#     floor_av = load_avg_floor_count()
-#     glob_av_heights = get_average_heights_table() 
-#     df['height_numeric'] = pd.to_numeric(df['height'], errors='coerce').fillna(0) 
-#     df['floor_count_numeric'] = pd.to_numeric(df['premise_floor_count'], errors='coerce')
-    
-#     df = update_outbuildings(df)
-    
-#     df = create_height_bucket_col(df)
-#     df = fill_premise_floor_types(df, floor_av)
-#     df = create_height_options(df, glob_av_heights)
-     
-#     df = update_height_ratio(df, glob_av_heights, floor_av) 
-
-
-#     df.drop(columns=[x for x in df.columns if 'Unnamed' in x], inplace=True)
-    
-#     df = update_listed_type(df) 
-#     print('pre process complete')
-
-#     if not df[~df['premise_use'].isna()][df['premise_use']!='Unknown'][df['premise_use']!='None'][df['validated_height']==0][df['validated_fc'].isna()].empty:
-#         print('Wierd entry which failed both validations on height and Floor count ')
-        
-#         print(df[df['validated_height']==0][df['validated_fc'].isna()][['premise_type', 'height', 'premise_floor_count']])
-#         raise Exception('Both validations should not have failed - investigate')
-    
-#     return df
-
-
-# def update_height_ratio(highs, glob_av_height, glo_av_flc, height_col = 'height_numeric_FGA' , fc_col = 'floor_count_numeric_FGA'):
-#     highs['min_side'] = highs['geometry'].apply(min_side)
-#     highs['threex_minside'] = [x * 3 for x in highs['min_side']]
-#     highs['validated_height'] = np.where(highs[height_col] >= highs['threex_minside'],   np.nan,  highs[height_col])
-#     highs['validated_height'] = highs['validated_height'].fillna(0)
-    
-#     highs=update_height_with_average_flexifc(highs, 'validated_height', fc_col , glob_av_height, 'FGA' )
-#     highs['av_fl_height'] = highs['validated_height_FGA'] / highs['floor_count_numeric']
-
-#     highs['validated_fc'] = np.where(((highs['av_fl_height']>= MAX_THRESHOLD_FLOOR_HEIGHT )| (highs['av_fl_height'] <= MIN_THRESH_FL_HEIGHT )) & (highs['height']< highs['threex_minside']) , np.nan, highs[fc_col])
-    
-#     highs = update_avg_floor_count(highs, 'validated_fc', glo_av_flc, 'FGA' ) 
-    
-#     # highs['corr_fl_height'] = highs['validated_height_glob_fill'] / highs['validated_fc_glob_fill']
-#     return highs 
-
-
-
-# ============================================================
-# Height and Floor Count functions & Pre processing of columns 
-# ============================================================
-# def update_avg_floor_count(df, input_col, avg_table, suffix):
-#     """Update DataFrame column with average floor count values based on criteria."""
-#     if (df[input_col] == 0).any():
-#         raise ValueError('Some floor counts are set to 0, expecting NaN for missing values.')
-#     # df = pd.merge(df, avg_table, on=['premise_age', 'height_bucket', 'map_simple_use'], how='left')
-#     df = pd.merge(df, avg_table, on=[ 'height_bucket', 'map_simple_use'], how='left')
-#     df[f'{input_col}_{suffix}'] = np.where(df[input_col].isna(), df['weighted_average_floor_count'], df[input_col])
-#     df.drop('weighted_average_floor_count', axis=1, inplace=True)
-#     return df
-
-# def fill_premise_floor_types(df, glob_av_df, fc_col='floor_count_numeric' ):
-#     """Fill missing premise floor types with global averages."""
-    
-#     df = update_avg_floor_count(df, fc_col, glob_av_df, 'FGA')
-
-#     return df
-
-
-
-
-# def update_height_with_average(df, input_col, avg_table, suffix):
-#     """Update the height column with averages based on age, floor count, and use."""
-#     # Merge with the average table
-#     df = pd.merge(df, avg_table, left_on = ['premise_age', 'floor_count_numeric', 'map_simple_use'] , right_on=['premise_age', 'premise_floor_count', 'map_simple_use'], how='left')
-#     # df = pd.merge(df, avg_table, on=['premise_floor_count', 'map_simple_use'], how='left')
-    
-#     # Update heights with averages where applicable
-#     update_col_name = f'{input_col}_{suffix}'
-#     df[update_col_name] = np.where(df[input_col] == 0, df['weighted_average_height'], df[input_col])
-    
-#     # Drop the temporary column
-#     df.drop('weighted_average_height', axis=1, inplace=True)
-#     return df
-
-
-# def update_height_with_average_flexifc(df, input_col, fc_col, avg_table, suffix):
-#     """Update the height column with averages based on age, floor count, and use."""
-#     # Merge with the average table
-    
-#     df = pd.merge(df, avg_table, left_on = ['premise_age', fc_col, 'map_simple_use'], right_on=['premise_age', 'premise_floor_count', 'map_simple_use'], how='left')
-    
-#     # Update heights with averages where applicable
-#     update_col_name = f'{input_col}_{suffix}'
-#     df[update_col_name] = np.where(df[input_col] == 0, df['weighted_average_height'], df[input_col])
-    
-#     # Drop the temporary column
-#     df.drop('weighted_average_height', axis=1, inplace=True)
-#     return df
-
-# def create_height_options(df,  glob_av_df, height_col='height_numeric'):
-#     """Fill in missing or zero heights with global averages."""
-#     # Convert 'height' to numeric, filling non-convertible values with 0
-#     df[height_col] = pd.to_numeric(df['height'], errors='coerce').fillna(0)
-    
-#     # Check for unexpected NaN values after conversion
-#     if df[height_col].isna().any():
-#         raise ValueError('Unexpected NaN values found in height_numeric.')
-    
-#     # Update heights using the global averages table
-#     df = update_height_with_average(df, height_col, glob_av_df, 'FGA')
-#     return df
-
-# def get_average_heights_table():
-#     """Load a CSV file containing average heights grouped by criteria."""
-#     current_dir = os.path.dirname(__file__)
-#     csv_path = os.path.join(current_dir, 'global_avs' , 'avg_heights_whole_uk.csv')
-#     df = pd.read_csv(csv_path)
-#     df = df[df['map_simple_use']=='Residential']
-#     df['premise_floor_count'] = pd.to_numeric(df['premise_floor_count'])
-#     return df 

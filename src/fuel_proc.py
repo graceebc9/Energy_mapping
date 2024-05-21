@@ -138,6 +138,7 @@ def process_fuel_batch_base(process_fn, pc_batch, data, gas_df, elec_df, INPUT_G
 
 
 
+
 # def run_fuel_calc_multi_thread(pcs_list, data, gas_df, elec_df, INPUT_GPK, temp_dir, max_workers, batch_size):
 #     # Ensure temporary directory exists
 #     os.makedirs(temp_dir, exist_ok=True)
