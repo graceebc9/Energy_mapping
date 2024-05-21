@@ -129,6 +129,7 @@ best_cols = [ 'max_vol_per_uprn',
  'all_res_heated_vol_h_total']
 
 
+pc_geom = ['postcode_area', 'postcode_density']
 
 ndvi = ['max_ndvi']
 
@@ -187,6 +188,10 @@ settings_col_dict_new = {0: temp_cols,
 29: total_builds_new  +  ndvi, 
 30 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols + ndvi   , 
 31 :  total_builds_new  + temp_cols  + type_cols + ndvi  ,
+
+32: pc_geom,
+33: total_builds_new + pc_geom, 
+34: total_builds_new + region_cols + pc_geom, 
 }
 
 
