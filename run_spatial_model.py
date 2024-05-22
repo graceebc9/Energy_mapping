@@ -3,13 +3,14 @@ import pandas as pd
 import geopandas as gpd
 import numpy as np
 from libpysal.weights import KNN
-from spreg import ML_Lag
+from spreg import ML_Error
 from splot.esda import plot_moran
 import esda
 import matplotlib.pyplot as plt
 import pickle
+from sklearn.model_selection import train_test_split
 
-def load_and_prepare_data(input_m3, pclatlong_path):
+def load_and_prepare_data(input_m3, pclatlong_path, test_size):
     # Load the data
     data = pd.read_csv(input_m3)
 
@@ -32,24 +33,44 @@ def load_and_prepare_data(input_m3, pclatlong_path):
     gdf = gpd.GeoDataFrame(results_df, geometry=gpd.points_from_xy(results_df.longitude, results_df.latitude))
 
     # Merge with additional data and select relevant columns
-    gdf = gdf.merge(data, on='postcode')[cols + target + ['geometry', 'postcode', 'latitude', 'longitude']].copy()
-    gdf.dropna(inplace=True)
+    gdf = gdf.merge(data, on='postcode')
 
-    return gdf, cols, target
+    target_len = len(gdf) * (1 - float(test_size))
 
-def calculate_spatial_weights(gdf):
-    # Calculate spatial weights matrix using K-Nearest Neighbors
-    w = KNN.from_dataframe(gdf, k=5)
-    w.transform = 'R'
-    return w
+    working_data = gdf[cols + target + ['ladcd', 'geometry', 'postcode', 'latitude', 'longitude']].copy() 
+    working_data.dropna(inplace=True)   
 
-def fit_spatial_lag_model(gdf, w, cols, target):
-    # Extract the dependent variable and independent variables
-    y = gdf[target].values
-    X = gdf[cols].values
+    props = pd.DataFrame(working_data['ladcd'].value_counts(normalize=True)).reset_index()
+    props.columns = ['ladcd', 'proportion']
+    # Randomly sample 80% of the ladcds from props
+    train_ladcd = props.sample(frac=1 - float(test_size) , random_state=42)['ladcd'].values
+
+    # Check if the train size is within 5% of the target length
+    if abs(100 - len(working_data[working_data['ladcd'].isin(train_ladcd)]) / target_len * 100) < 5:
+        print('Train size within 5% of the target length')
+    else:
+        raise ValueError('Train size not within 5% of the target length')
+
+
+    # Split the data into training and testing sets based on ladcd
+    gdf_train = working_data[working_data['ladcd'].isin(train_ladcd)]
+    gdf_test = working_data[~working_data['ladcd'].isin(train_ladcd)]
+
+
+    # Calculate spatial weights matrix using K-Nearest Neighbors for the training set
+    w_train = KNN.from_dataframe(gdf_train, k=5)
+    w_train.transform = 'R'
+
+    # Extract the dependent variable and independent variables for training
+    y_train = gdf_train['total_gas'].values
+    X_train = gdf_train[cols].values
+
+    return X_train, y_train, gdf_train, gdf_test,   w_train, target, cols
+
+def fit_spatial_lag_model(y_train, X_train , w_train , target, cols ):
 
     # Fit a Spatial Lag Model
-    model = ML_Lag(y, X, w, name_y=target[0], name_x=cols)
+    model = ML_Error(y_train, X_train, w_train, name_y=target[0], name_x=cols)
     return model
 
 def save_model_and_results(model, output_path):
@@ -67,10 +88,11 @@ def main():
     input_m3 = os.environ.get('MLPATH')
     output_path = os.environ.get('OUTPUTPATH')
     pclatlong_path = os.environ.get('PCLATLONGPATH')
+    test_size = os.environ.get('TESTSIZE')
 
-    gdf, cols, target = load_and_prepare_data(input_m3, pclatlong_path)
-    w = calculate_spatial_weights(gdf)
-    model = fit_spatial_lag_model(gdf, w, cols, target)
+    X_train, y_train, gdf_train, gdf_test , w_train, target, cols = load_and_prepare_data(input_m3, pclatlong_path, test_size)
+    
+    model = fit_spatial_lag_model(y_train, X_train , w_train , target, cols )
     
     # Print the model summary
     print(model.summary)
@@ -84,3 +106,12 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# export MLPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_input/V3.2_region_geoms.csv'
+# export OUTPUTPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_output'   
+# export PCLATLONGPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_input/postcode_lat_lon.csv' 
+# export TESTSIZE=0.2
+
+
+
