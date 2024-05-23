@@ -235,3 +235,143 @@ region_mapping = {0: 'SW',
  7: 'SC',
  8: 'LN',
  9: 'NE'}
+
+
+
+economic_census = [ 
+'economic_activity_perc_Does not apply',
+ 'economic_activity_perc_Economically active (excluding full-time students): In employment: Employee: Part-time',
+ 'economic_activity_perc_Economically active (excluding full-time students): In employment: Employee: Full-time',
+ 'economic_activity_perc_Economically active (excluding full-time students): In employment: Self-employed with employees: Part-time',
+ 'economic_activity_perc_Economically active (excluding full-time students): In employment: Self-employed with employees: Full-time',
+ 'economic_activity_perc_Economically active (excluding full-time students): In employment: Self-employed without employees: Part-time',
+ 'economic_activity_perc_Economically active (excluding full-time students): In employment: Self-employed without employees: Full-time',
+ 'economic_activity_perc_Economically active (excluding full-time students): Unemployed: Seeking work or waiting to start a job already obtained: Available to start working within 2 weeks',
+ 'economic_activity_perc_Economically active and a full-time student: In employment: Employee: Part-time',
+ 'economic_activity_perc_Economically active and a full-time student: In employment: Employee: Full-time',
+ 'economic_activity_perc_Economically active and a full-time student: In employment: Self-employed with employees: Part-time',
+ 'economic_activity_perc_Economically active and a full-time student: In employment: Self-employed with employees: Full-time',
+ 'economic_activity_perc_Economically active and a full-time student: In employment: Self-employed without employees: Part-time',
+ 'economic_activity_perc_Economically active and a full-time student: In employment: Self-employed without employees: Full-time',
+ 'economic_activity_perc_Economically active and a full-time student: Unemployed: Seeking work or waiting to start a job already obtained: Available to start working within 2 weeks',
+ 'economic_activity_perc_Economically inactive: Retired',
+ 'economic_activity_perc_Economically inactive: Looking after home or family',
+ 'economic_activity_perc_Economically inactive: Long-term sick or disabled',
+ 'economic_activity_perc_Economically inactive: Other',
+]
+education_ocupation = [ 
+ 'highest_qual_perc_Level 1 and entry level qualifications: 1 to 4 GCSEs grade A* to C, Any GCSEs at other grades, O levels or CSEs (any grades), 1 AS level, NVQ level 1, Foundation GNVQ, Basic or Essential Skills',
+ 'highest_qual_perc_Level 2 qualifications: 5 or more GCSEs (A* to C or 9 to 4), O levels (passes), CSEs (grade 1), School Certification, 1 A level, 2 to 3 AS levels, VCEs, Intermediate or Higher Diploma, Welsh Baccalaureate Intermediate Diploma, NVQ level 2, Intermediate GNVQ, City and Guilds Craft, BTEC First or General Diploma, RSA Diploma',
+ 'highest_qual_perc_Apprenticeship',
+ 'highest_qual_perc_Level 3 qualifications: 2 or more A levels or VCEs, 4 or more AS levels, Higher School Certificate, Progression or Advanced Diploma, Welsh Baccalaureate Advance Diploma, NVQ level 3; Advanced GNVQ, City and Guilds Advanced Craft, ONC, OND, BTEC National, RSA Advanced Diploma',
+ 'highest_qual_perc_Other: vocational or work-related qualifications, other qualifications achieved in England or Wales, qualifications achieved outside England or Wales (equivalent not stated or unknown)',
+ 'occupation_perc_4. Administrative and secretarial occupations',
+ 'occupation_perc_5. Skilled trades occupations',
+ 'occupation_perc_6. Caring, leisure and other service occupations',
+ 'occupation_perc_7. Sales and customer service occupations',
+ 'occupation_perc_8. Process, plant and machine operatives',
+ 'occupation_perc_9. Elementary occupations', ] 
+
+ethnic_census = [ 
+ 'ethnic_group_perc_Does not apply',
+ 'ethnic_group_perc_Asian, Asian British or Asian Welsh: Bangladeshi',
+ 'ethnic_group_perc_Asian, Asian British or Asian Welsh: Chinese',
+ 'ethnic_group_perc_Asian, Asian British or Asian Welsh: Indian',
+ 'ethnic_group_perc_Asian, Asian British or Asian Welsh: Pakistani',
+ 'ethnic_group_perc_Asian, Asian British or Asian Welsh: Other Asian',
+ 'ethnic_group_perc_Black, Black British, Black Welsh, Caribbean or African: African',
+ 'ethnic_group_perc_Black, Black British, Black Welsh, Caribbean or African: Caribbean',
+ 'ethnic_group_perc_Mixed or Multiple ethnic groups: White and Asian',
+ 'ethnic_group_perc_Mixed or Multiple ethnic groups: White and Black African',
+ 'ethnic_group_perc_Mixed or Multiple ethnic groups: White and Black Caribbean',
+ 'ethnic_group_perc_Mixed or Multiple ethnic groups: Other Mixed or Multiple ethnic groups',
+ 'ethnic_group_perc_White: Irish',
+ 'ethnic_group_perc_White: Gypsy or Irish Traveller',
+ 'ethnic_group_perc_White: Roma',
+ 'ethnic_group_perc_Other ethnic group: Arab',
+]
+age_census = [ 
+ 'age_perc_Aged 15 years',
+ 'age_perc_Aged 16 to 17 years',
+ 'age_perc_Aged 25 to 29 years',
+ 'age_perc_Aged 40 to 44 years',
+ 'age_perc_Aged 45 to 49 years',
+ 'age_perc_Aged 50 to 54 years',
+ 'age_perc_Aged 55 to 59 years',
+ 'age_perc_Aged 60 to 64 years',
+ 'age_perc_Aged 65 years'] 
+
+household_size_census = [ 
+ 'household_siz_perc_perc_0 people in household',
+ 'household_siz_perc_perc_1 person in household',
+ 'household_siz_perc_perc_2 people in household',
+ 'household_siz_perc_perc_5 people in household',
+ 'household_siz_perc_perc_6 people in household',
+ 'household_siz_perc_perc_7 people in household',
+ 'household_siz_perc_perc_8 or more people in household',
+]
+occupancy_census = [ 
+ 'occupancy_rating_perc_Does not apply',
+ 'occupancy_rating_perc_Occupancy rating of bedrooms: +2 or more',
+ 'occupancy_rating_perc_Occupancy rating of bedrooms: +1',
+]
+household_comp = [ 
+ 'household_comp_by_bedroom_perc_Does not apply_Does not apply',
+ 'household_comp_by_bedroom_perc_Does not apply_1 bedroom',
+ 'household_comp_by_bedroom_perc_Does not apply_2 bedrooms',
+ 'household_comp_by_bedroom_perc_Does not apply_3 bedrooms',
+ 'household_comp_by_bedroom_perc_Does not apply_4 or more bedrooms',
+ 'household_comp_by_bedroom_perc_One-person household_Does not apply',
+ 'household_comp_by_bedroom_perc_One-person household_3 bedrooms',
+ 'household_comp_by_bedroom_perc_Single family household: All aged 66 years and over_Does not apply',
+ 'household_comp_by_bedroom_perc_Single family household: All aged 66 years and over_1 bedroom',
+ 'household_comp_by_bedroom_perc_Single family household: Couple family household_Does not apply',
+ 'household_comp_by_bedroom_perc_Single family household: Lone parent household_Does not apply',
+ 'household_comp_by_bedroom_perc_Single family household: Lone parent household_1 bedroom',
+ 'household_comp_by_bedroom_perc_Single family household: Lone parent household_2 bedrooms',
+ 'household_comp_by_bedroom_perc_Single family household: Lone parent household_3 bedrooms',
+ 'household_comp_by_bedroom_perc_Single family household: Lone parent household_4 or more bedrooms',
+ 'household_comp_by_bedroom_perc_Other household types_Does not apply',
+ 'household_comp_by_bedroom_perc_Other household types_1 bedroom',
+ 'household_comp_by_bedroom_perc_Other household types_2 bedrooms',
+ 'household_comp_by_bedroom_perc_Other household types_3 bedrooms',
+ 'household_comp_by_bedroom_perc_Other household types_4 or more bedrooms',
+]
+tenure_census = [ 
+ 'tenure_perc_L7: Intermediate occupations',
+ 'tenure_perc_L10 and L11: Lower supervisory and technical occupations',
+]
+
+central_heat_census = [ 
+ 'central_heating_perc_Does not apply',
+ 'central_heating_perc_No central heating',
+ 'central_heating_perc_Mains gas only',
+ 'central_heating_perc_Tank or bottled gas only',
+ 'central_heating_perc_Electric only',
+ 'central_heating_perc_Wood only',
+ 'central_heating_perc_Solid fuel only',
+ 'central_heating_perc_Renewable energy only',
+ 'central_heating_perc_District or communal heat networks only',
+ 'central_heating_perc_Other central heating only',
+ 'central_heating_perc_Two or more types of central heating (not including renewable energy)',
+ 'central_heating_perc_Two or more types of central heating (including renewable energy)'
+ ]
+
+all_census = economic_census + education_ocupation + ethnic_census + age_census + household_size_census + occupancy_census + household_comp + tenure_census + central_heat_census
+
+
+settings_col_dict_census = {0: economic_census,
+                            1: education_ocupation,
+                            2: ethnic_census, 
+                            3: age_census,
+                            4: household_size_census,
+                            5: occupancy_census,
+                            6: household_comp,
+                            7: tenure_census,
+                            8: central_heat_census,
+                            9: all_census,
+                            10: total_builds_new + all_census,
+                            11: total_builds_new + region_cols + all_census,
+                            12: total_builds_new + type_cols + temp_cols + all_census ,  
+                            13: total_builds_new + type_cols + temp_cols + all_census + pc_geom,
+                            }
