@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 
 
-from ml_utils.src.model_col_settings import region_mapping, settings_col_dict_new
+from ml_utils.src.model_col_settings import region_mapping, settings_col_dict_new, settings_col_dict_census
 
 
 def check_directory_and_files(output_directory, required_files):
@@ -34,8 +34,8 @@ def check_directory_and_files(output_directory, required_files):
     return True
 
 
-def transform(df, label, col_setting):
-    cols = settings_col_dict_new[col_setting]
+def transform(df, label, col_setting, settting_dict):
+    cols = settting_dict[col_setting]
     working_cols = cols + [label]
     df = df[working_cols]
     df = df[~df[label].isna()]
@@ -60,6 +60,7 @@ def main():
     column_setting =int( os.environ.get('COL_SETTING'))
     tr_lab = 'v2'
     run_regionally = os.environ.get('RUN_REGIONAL')
+    run_census = os.environ.get('run_census')   
 
     if target == 'totalelec':   
         label = 'total_elec'
@@ -88,6 +89,11 @@ def main():
         loc_type= 'global'
         int_region = 'None'
 
+    if run_census =='Yes':
+        setting_dir = settings_col_dict_census
+    else:
+        setting_dir = settings_col_dict_new 
+
     print(f'starting model run for {loc_type} target {label}, time lim {time_limit}, col setting {column_setting}, model preset {model_preset} and train subset {train_subset_prop}' )
 
 
@@ -106,14 +112,9 @@ def main():
         os.makedirs(output_directory, exist_ok=True)
         print(f"Directory {output_directory} is ready for use.")
 
-
-
-
-
-
     
     train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
-    train_data = transform(TabularDataset(train_data), label, column_setting )
+    train_data = transform(TabularDataset(train_data), label, column_setting, setting_dir)
         
     
     # Reduce the training dataset if needed
@@ -163,3 +164,4 @@ if __name__ == '__main__':
 # export COL_SETTING=1
 # export RUN_REGIONAL='Yes'
 # export REGION_INT=1
+# export run_census="no"
