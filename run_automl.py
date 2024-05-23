@@ -34,7 +34,7 @@ def check_directory_and_files(output_directory, required_files):
     return True
 
 
-def transform(df, label, col_setting, settting_dict):
+def transform(df, label, col_setting,settting_dict ):
     cols = settting_dict[col_setting]
     working_cols = cols + [label]
     df = df[working_cols]
@@ -90,6 +90,7 @@ def main():
         int_region = 'None'
 
     if run_census =='Yes':
+        print('running with census data')
         setting_dir = settings_col_dict_census
     else:
         setting_dir = settings_col_dict_new 
@@ -129,7 +130,7 @@ def main():
                                                                 presets=model_preset,
                                                                 excluded_model_types=excl_models)
     
-    test_data = transform(TabularDataset(test_data), label, column_setting)
+    test_data = transform(TabularDataset(test_data), label, column_setting, setting_dir)
     test_data.to_csv(os.path.join(output_directory, 'test_data.csv'), index=False)
     y_pred = predictor.predict(test_data.drop(columns=[label]))
     results = predictor.evaluate_predictions(y_true=test_data[label], y_pred=y_pred, auxiliary_metrics=True)
@@ -155,13 +156,13 @@ if __name__ == '__main__':
 
 
 
-# export DATA_PATH='/Users/gracecolverd/New_dataset/ml_scripts/V3_ml_input_data.csv'
+# export DATA_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_input/V4.2_ndvi_inc_geoms.csv'
 # export OUTPUT_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml/results'
 # export MODEL_PRESET='medium_quality'
 # export TIME_LIM=500
 # export TRAIN_SUBSET_PROP=0.1
-# export TARGET='avgas1'
+# export TARGET='totalgas'
 # export COL_SETTING=1
-# export RUN_REGIONAL='Yes'
+# export RUN_REGIONAL='No'
 # export REGION_INT=1
-# export run_census="no"
+# export run_census="Yes"
