@@ -193,7 +193,8 @@ settings_col_dict_new = {0: temp_cols,
 33: total_builds_new + pc_geom, 
 34: total_builds_new + region_cols + pc_geom, 
 35: total_builds_new + region_cols + pc_geom + temp_cols, 
-36 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols  + pc_geom ,
+36 : total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols  + pc_geom +  best_cols,
+37 : total_builds_new + region_cols + temp_cols  + age_cols + type_cols   + pc_geom ,
 }
 
 
