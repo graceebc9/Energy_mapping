@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import silhouette_score
 import joblib
 import matplotlib.pyplot as plt
-import seaborn as sns
+# import seaborn as sns
 
 def load_and_prepare_data(input_path, test_size):
     data = pd.read_csv(input_path)
@@ -91,7 +91,8 @@ def save_model(output_path, run_name, spectral_model, scaler, pca, labels, X_pri
     
     # Save the visualization
     plt.figure(figsize=(10, 7))
-    sns.scatterplot(x='P1', y='P2', hue=labels, data=X_principal, palette=sns.color_palette("hsv", 10))
+    plt.scatterplot(x='P1', y='P2', hue=labels, data=X_principal)
+    #  palette=sns.color_palette("hsv", 10)
     plt.title('Spectral Clustering Results')
     plt.savefig(os.path.join(run_path, 'spectral_clustering_results.png'))
     plt.close()
@@ -119,9 +120,9 @@ def main():
 if __name__ == "__main__":
     main()
 
-# Example of setting environment variables and running the script:
+
 # export MLPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_input/V3.2_region_geoms.csv'
 # export OUTPUTPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_results'
-# export TESTSIZE=0.99
-# export NUM_CLUSTERS=10  
+# export TESTSIZE=0.95
+# export NUM_CLUSTERS=20  
 # python run_spectral.py
