@@ -303,16 +303,16 @@ ethnic_census = [
  'ethnic_group_perc_Other ethnic group: Arab',
  'ethnic_group_perc_Other ethnic group: Any other ethnic group',
 ]
-age_census = [ 
- 'age_perc_Aged 15 years',
- 'age_perc_Aged 16 to 17 years',
- 'age_perc_Aged 25 to 29 years',
- 'age_perc_Aged 40 to 44 years',
- 'age_perc_Aged 45 to 49 years',
- 'age_perc_Aged 50 to 54 years',
- 'age_perc_Aged 55 to 59 years',
- 'age_perc_Aged 60 to 64 years',
- 'age_perc_Aged 65 years'] 
+# age_census = [ 
+#  'age_perc_Aged 15 years',
+#  'age_perc_Aged 16 to 17 years',
+#  'age_perc_Aged 25 to 29 years',
+#  'age_perc_Aged 40 to 44 years',
+#  'age_perc_Aged 45 to 49 years',
+#  'age_perc_Aged 50 to 54 years',
+#  'age_perc_Aged 55 to 59 years',
+#  'age_perc_Aged 60 to 64 years',
+#  'age_perc_Aged 65 years'] 
 
 household_size_census = [ 
  'household_siz_perc_perc_0 people in household',
@@ -408,13 +408,13 @@ deprivation = [ 'deprivation_perc_Does not apply',
  'deprivation_perc_Household is deprived in four dimensions',
 ]
 
-all_census = economic_census + education_census  + occupation_census + ethnic_census + age_census + household_size_census + occupancy_census + household_comp + tenure_census + deprivation + sex_census + average_household_size + central_heat_census 
+all_census = economic_census + education_census  + occupation_census + ethnic_census  + household_size_census + occupancy_census + household_comp + tenure_census + deprivation + sex_census + average_household_size + central_heat_census 
 
 
 settings_col_dict_census = {0: economic_census,
                             1: education_census,
                             2: ethnic_census, 
-                            3: age_census,
+                            # 3: age_census,
                             4: household_size_census,
                             5: occupancy_census,
                             6: household_comp,
