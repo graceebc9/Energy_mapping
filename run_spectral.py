@@ -15,11 +15,26 @@ def load_and_prepare_data(input_path, test_size):
     cols = [
         'all_types_total_buildings', 
         'all_res_heated_vol_h_total',
-        'HDD_winter',
+        # 'HDD_winter',
         'max_vol_per_uprn',
         'all_types_uprn_count_total',
         'postcode_area',
-        'postcode_density'
+        'postcode_density',
+        # '2 storeys terraces with t rear extension_pct',
+        # '3-4 storey and smaller flats_pct',
+        # 'Domestic outbuilding_pct',
+        # 'Large detached_pct',
+        # 'Large semi detached_pct',
+        # 'Linked and step linked premises_pct',
+        # 'Medium height flats 5-6 storeys_pct',
+        # 'None_type_pct',
+        # 'Planned balanced mixed estates_pct',
+        # 'Semi type house in multiples_pct',
+        # 'Small low terraces_pct',
+        # 'Standard size detached_pct',
+        # 'Standard size semi detached_pct',
+        # 'Tall flats 6-15 storeys_pct',
+        # 'Tall terraces 3-4 storeys_pct',
     ]
 
     target = ['total_gas']
@@ -34,7 +49,7 @@ def load_and_prepare_data(input_path, test_size):
 
     # Split the data into train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=float(test_size), random_state=0)
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, cols
 
 def train_spectral_model(X_train, num_clusters):
     # Standardize the features
@@ -87,6 +102,9 @@ def save_model(output_path, run_name, spectral_model, scaler, pca, labels, X_pri
     with open(silhouette_file, 'w') as f:
         f.write(f'Silhouette Score: {silhouette_avg}')
     
+    # Save the principal components
+    X_principal.to_csv(os.path.join(run_path, 'X_principal.csv'), index=False)
+    
     # Save the visualization
     plt.figure(figsize=(10, 7))
     scatter = plt.scatter(X_principal['P1'], X_principal['P2'], c=labels, cmap='hsv')
@@ -96,6 +114,28 @@ def save_model(output_path, run_name, spectral_model, scaler, pca, labels, X_pri
     plt.ylabel('P2')
     plt.savefig(os.path.join(run_path, 'spectral_clustering_results.png'))
     plt.close()
+    
+def plot_variable_distributions(X_train, labels, cols, run_path):
+    # Get the variables and labels
+    df = pd.DataFrame(X_train, columns=cols)
+    df['Cluster'] = labels
+    
+    # Create a subfolder for the plots
+    plots_folder = os.path.join(run_path, 'variable_distributions')
+    os.makedirs(plots_folder, exist_ok=True)
+    
+    # Plot distributions of the variables with respect to each cluster
+    for col in cols:
+        plt.figure(figsize=(10, 6))
+        for cluster in np.unique(labels):
+            cluster_data = df[df['Cluster'] == cluster]
+            plt.hist(cluster_data[col], bins=30, alpha=0.5, label=f'Cluster {cluster}')
+        plt.title(f'Distribution of {col} by Cluster')
+        plt.xlabel(col)
+        plt.ylabel('Frequency')
+        plt.legend()
+        plt.savefig(os.path.join(plots_folder, f'{col}_distribution.png'))
+        plt.close()
 
 def main():
     input_path = os.environ.get('MLPATH')
@@ -120,23 +160,28 @@ def main():
             'pca.pkl',
             'labels.csv',
             'silhouette_score.txt',
-            'spectral_clustering_results.png'
+            'spectral_clustering_results.png',
+            'X_principal.csv'
         ]
         if all(os.path.exists(os.path.join(run_path, f)) for f in expected_files):
             print(f"All expected output files already exist in {run_path}. Aborting the training run to avoid overwriting.")
             return
 
-    X_train, X_test, y_train, y_test = load_and_prepare_data(input_path, test_size)
+    X_train, X_test, y_train, y_test, cols = load_and_prepare_data(input_path, test_size)
     print(X_train.shape)
     spectral_model_rbf, scaler, pca, labels_rbf, X_principal, silhouette_avg = train_spectral_model(X_train, num_clusters)
     print('starting save ')
     save_model(output_path, run_name, spectral_model_rbf, scaler, pca, labels_rbf, X_principal, silhouette_avg)
+    
+    print('starting visualization')
+    plot_variable_distributions(X_train, labels_rbf, cols, run_path)
 
 if __name__ == "__main__":
     main()
 
+# Example usage:
 # export MLPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_input/V3.2_region_geoms.csv'
 # export OUTPUTPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_results'
 # export TESTSIZE=0.95
-# export NUM_CLUSTERS=20  
+# export NUM_CLUSTERS=10
 # python run_spectral.py
