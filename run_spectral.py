@@ -11,6 +11,17 @@ import matplotlib.pyplot as plt
 
 def load_and_prepare_data(input_path, test_size):
     data = pd.read_csv(input_path)
+# Map age bands to integers
+    age_band_mapping = {
+        'Pre 1919': 0,
+        '1919-1944': 1,
+        '1945-1959': 2,
+        '1960-1979': 3,
+        '1980-1989': 4,
+        '1990-1999': 5,
+        'Post 1999': 6
+    }
+    data['localfill_median_age'] = data['localfill_median_age'].map(age_band_mapping)
 
     cols = [
         'all_types_total_buildings', 
@@ -20,21 +31,8 @@ def load_and_prepare_data(input_path, test_size):
         'all_types_uprn_count_total',
         'postcode_area',
         'postcode_density',
-        # '2 storeys terraces with t rear extension_pct',
-        # '3-4 storey and smaller flats_pct',
-        # 'Domestic outbuilding_pct',
-        # 'Large detached_pct',
-        # 'Large semi detached_pct',
-        # 'Linked and step linked premises_pct',
-        # 'Medium height flats 5-6 storeys_pct',
-        # 'None_type_pct',
-        # 'Planned balanced mixed estates_pct',
-        # 'Semi type house in multiples_pct',
-        # 'Small low terraces_pct',
-        # 'Standard size detached_pct',
-        # 'Standard size semi detached_pct',
-        # 'Tall flats 6-15 storeys_pct',
-        # 'Tall terraces 3-4 storeys_pct',
+ 'localfill_median_age',
+  'localfill_range_age',
     ]
 
     target = ['total_gas']
@@ -182,6 +180,6 @@ if __name__ == "__main__":
 # Example usage:
 # export MLPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_input/V3.2_region_geoms.csv'
 # export OUTPUTPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_results'
-# export TESTSIZE=0.95
+# export TESTSIZE=0.99
 # export NUM_CLUSTERS=10
 # python run_spectral.py
