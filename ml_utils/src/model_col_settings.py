@@ -431,7 +431,9 @@ settings_col_dict_census = {0: economic_census,
                             17:  total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols  + pc_geom +  best_cols + all_census ,
                             18: total_builds_new  + temp_cols +  all_census + pc_geom,
                             19:  total_builds_new + all_census,  
-                            20: total_builds_new , }
+                            20: total_builds_new ,
+                            21:  total_builds_new  + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols  + pc_geom +  best_cols + all_census ,
+                                }
 
 
 
