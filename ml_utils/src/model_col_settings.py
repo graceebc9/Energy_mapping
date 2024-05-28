@@ -119,15 +119,24 @@ outb_cols = [ 'outb_res_total_buildings',
 uprn_cols = [ 'all_types_uprn_count_total',
             'all_res_uprn_count_total',  
             'clean_res_uprn_count_total', ]
-            'max_vol_per_uprn',
-            'min_vol_per_uprn',] 
+            # 'max_vol_per_uprn',
+            # 'min_vol_per_uprn',] 
 
 
-best_cols = [ 'max_vol_per_uprn',
-            'min_vol_per_uprn',
-            'all_types_total_buildings',
-               'all_res_heated_vol_fc_total',
- 'all_res_heated_vol_h_total']
+# best_cols = [ 'max_vol_per_uprn',
+#             'min_vol_per_uprn',
+#             'all_types_total_buildings',
+#                'all_res_heated_vol_fc_total',
+#  'all_res_heated_vol_h_total']
+
+
+best_cols = [
+    'max_vol_per_uprn',
+            'min_vol_per_uprn',]
+            # 'all_types_total_buildings',
+              #  'all_res_heated_vol_fc_total',
+#  'all_res_heated_vol_h_total'
+ 
 
 
 pc_geom = ['postcode_area', 'postcode_density']
@@ -429,11 +438,11 @@ settings_col_dict_census = {0: economic_census,
                             14: total_builds_new + all_census,  
                             15: total_builds_new + region_cols + all_census,
                             16: total_builds_new + type_cols + temp_cols +  all_census + pc_geom,
-                            17:  total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols  + pc_geom  + all_census ,
+                            17:  total_builds_new + region_cols + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols  + pc_geom  + all_census + best_cols ,
                             18: total_builds_new  + temp_cols +  all_census + pc_geom,
                             19:  total_builds_new + all_census,  
                             20: total_builds_new ,
-                            21:  total_builds_new  + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols  + pc_geom  + all_census ,
+                            21:  total_builds_new  + temp_cols + res + outb_cols + age_cols + type_cols + uprn_cols  + pc_geom  + all_census + best_cols,
                                 }
 
 
