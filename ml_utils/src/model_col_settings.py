@@ -209,6 +209,11 @@ settings_col_dict_new = {0: temp_cols,
 
 38 :  total_builds_new  + temp_cols  + ndvi  + pc_geom ,
 39 :  total_builds_new  + temp_cols  + ndvi   ,
+
+40:  ['all_res_heated_vol_fc_total'] , 
+41: ['all_res_heated_vol_h_total'],
+42: ['all_res_gross_area_total'], 
+43: ['range_heated_vol' +  'all_res_heated_vol_h_total'],
 }
 
 
