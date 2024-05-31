@@ -14,6 +14,7 @@ def find_batches(pc, batch_dir ):
                 files_paths.append(f)
     print(files_paths)
     if len(files_paths)< 2:
+        raise Exception('no batches found')
         return None
     return files_paths 
 
@@ -26,6 +27,7 @@ def convert_batch_fp_to_onsud(path):
 def custom_load_onsud(pc , batch_dir  ):
     paths = find_batches(pc, batch_dir)    
     if paths is None:
+        print('no paths found')
         return None 
     df_list = [] 
     for p in paths:
