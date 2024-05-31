@@ -21,18 +21,18 @@ def load_fuel_data(gas_path, elec_path):
 
 ###################################################  Overlap fns  ###################################################
 
-def run_fuel_calc_main_overlap(pcs_list, INPUT_GPK, batch_size, batch_label, log_file, gas_df, elec_df, overlap, batch_dir, path_to_pcshp  ):
-    """ main fn called from pc_main to run fuel calc with overlap
-    """
-    onsud_data=None 
-    for i in range(0, len(pcs_list) , batch_size):
-        batch = pcs_list[i:i+batch_size]
-        print(batch)
-        process_fuel_batch_overlap(batch, onsud_data, gas_df, elec_df, INPUT_GPK, batch_label, log_file, overlap, batch_dir, path_to_pcshp )
+# def run_fuel_calc_main_overlap(pcs_list, INPUT_GPK, batch_size, batch_label, log_file, gas_df, elec_df, overlap, batch_dir, path_to_pcshp  ):
+#     """ main fn called from pc_main to run fuel calc with overlap
+#     """
+#     onsud_data=None 
+#     for i in range(0, len(pcs_list) , batch_size):
+#         batch = pcs_list[i:i+batch_size]
+#         print(batch)
+#         process_fuel_batch_overlap(batch, onsud_data, gas_df, elec_df, INPUT_GPK, batch_label, log_file, overlap, batch_dir, path_to_pcshp )
 
-def process_fuel_batch_overlap( pc_batch, data, gas_df, elec_df, INPUT_GPK, process_batch_name, log_file, overlap, batch_dir , path_to_pcshp):
-    """calls base fn with process fn"""
-    process_fuel_batch_base(process_postcode_fuel, pc_batch, data, gas_df, elec_df, INPUT_GPK, process_batch_name, log_file, overlap, batch_dir , path_to_pcshp )
+# def process_fuel_batch_overlap( pc_batch, data, gas_df, elec_df, INPUT_GPK, process_batch_name, log_file, overlap, batch_dir , path_to_pcshp):
+#     """calls base fn with process fn"""
+#     process_fuel_batch_base(process_postcode_fuel, pc_batch, data, gas_df, elec_df, INPUT_GPK, process_batch_name, log_file, overlap, batch_dir , path_to_pcshp )
 
 
 ###################################################  Normal fns  ###################################################

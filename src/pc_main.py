@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from src.postcode_utils import load_onsud_data, load_ids_from_file, get_onsud_path
-from src.fuel_proc import run_fuel_calc_main , run_fuel_calc_main_overlap, load_fuel_data
+from src.fuel_proc import run_fuel_calc_main , load_fuel_data
 from src.age_proc import run_age_calc
 from src.type_proc import run_type_calc
 
@@ -59,12 +59,12 @@ def run_fuel_process(batch_ids, onsud_data, INPUT_GPK,  batch_size, batch_label,
     gas_df, elec_df = load_fuel_data(gas_path, elec_path)
     run_fuel_calc_main(batch_ids, onsud_data,  INPUT_GPK= INPUT_GPK, batch_size= batch_size, batch_label = batch_label, log_file= log_file ,gas_df = gas_df, elec_df = elec_df)
 
-def run_fuel_process_overlap(batch_ids, onsud_data, INPUT_GPK,  batch_size, batch_label, log_file, gas_path, elec_path, overlap, batch_dir, path_to_pcshp):
-    """
-    overlap: bool
-    """
-    gas_df, elec_df = load_fuel_data(gas_path, elec_path)
-    run_fuel_calc_main_overlap(batch_ids, INPUT_GPK, batch_size, batch_label, log_file, gas_df, elec_df, overlap, batch_dir , path_to_pcshp) 
+# def run_fuel_process_overlap(batch_ids, onsud_data, INPUT_GPK,  batch_size, batch_label, log_file, gas_path, elec_path, overlap, batch_dir, path_to_pcshp):
+#     """
+#     overlap: bool
+#     """
+#     gas_df, elec_df = load_fuel_data(gas_path, elec_path)
+#     run_fuel_calc_main_overlap(batch_ids, INPUT_GPK, batch_size, batch_label, log_file, gas_df, elec_df, overlap, batch_dir , path_to_pcshp) 
 
 
 # def run_fuel_process_overlap(batch_ids, INPUT_GPK,  batch_size, batch_label, log_file, gas_path, elec_path, overlap, batch_dir):
@@ -75,12 +75,6 @@ def run_fuel_process_overlap(batch_ids, onsud_data, INPUT_GPK,  batch_size, batc
 
 def run_age_process(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file, gas_path=None, elec_path=None, overlap=None, batch_dir=None, path_to_pcshp=None):
     run_age_calc(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file )
-
-
-
-def run_age_process_overlap(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file, gas_path=None, elec_path=None, overlap=True, batch_dir=None, path_to_pcshp=None):
-    run_age_calc(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file , overlap)
-
 
 
 
