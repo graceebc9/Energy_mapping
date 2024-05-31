@@ -14,7 +14,7 @@ def find_batches(pc, batch_dir ):
                 files_paths.append(f)
     print(files_paths)
     if len(files_paths)< 2:
-        raise Exception('no batches found')
+        # raise Exception('no batches found')
         return None
     return files_paths 
 

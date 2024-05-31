@@ -58,8 +58,9 @@ def process_age_batch(pc_batch, data, INPUT_GPK, process_batch_name, log_file):
         print(f'Log file saved for batch: {process_batch_name}')
 
 
-def run_age_calc(pcs_list, data, INPUT_GPK, batch_size, batch_label, log_file):
-    
+def run_age_calc(pcs_list, data, INPUT_GPK, batch_size, batch_label, log_file, overlap):
+    if overlap ==True:
+        
     for i in range(0, len(pcs_list) , batch_size):
         batch = pcs_list[i:i+batch_size]
         process_age_batch(batch, data, INPUT_GPK, batch_label, log_file)
