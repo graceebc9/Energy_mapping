@@ -19,7 +19,6 @@ def load_fuel_data(gas_path, elec_path):
     return  gas_df, elec_df
 
 
-
 ###################################################  Overlap fns  ###################################################
 
 def run_fuel_calc_main_overlap(pcs_list, INPUT_GPK, batch_size, batch_label, log_file, gas_df, elec_df, overlap, batch_dir, path_to_pcshp  ):

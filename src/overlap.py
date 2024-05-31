@@ -34,4 +34,5 @@ def custom_load_onsud(pc , batch_dir  ):
         df1 = df1[df1['PCDS'].str.strip() ==pc ]
         df_list.append(df1)
     df = pd.concat(df_list )
+    print('custom load complete')
     return df 

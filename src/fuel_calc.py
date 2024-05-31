@@ -11,7 +11,6 @@ from src.overlap import custom_load_onsud
 
 
 COLS = ['premise_area', 'heated_vol_fc','heated_vol_h', 'base_floor', 'basement_heated_vol_max', 'listed_bool', 'uprn_count']
-
 PREFIXES = ['all_types_',  'all_res_', 'clean_res_', 'mixed_', 'outb_res_']
 
 def calc_df_sum_attribute(df, cols, prefix=''):
@@ -184,18 +183,24 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     if overlap ==True: 
         print('starting overlap pc')
         onsud_data = custom_load_onsud(pc, batch_dir)
-        _, onsud_data = find_postcode_for_ONSUD_file(onsud_data, path_to_pcshp )
-        
+        print('finding pc')
+        onsud_data = find_postcode_for_ONSUD_file(onsud_data, path_to_pcshp )
+        print('pc found')
     
+    print('finding uprn')
     uprn_match= find_data_pc_joint(pc, onsud_data, input_gpk=INPUT_GPK)
     dc_full = {'postcode': pc  }
-
+    print('dc ful started')
     if uprn_match.empty:
         print('Empty uprn match')
         dc =  gen_nulls()
         print(len(dc) ) 
     else:
+        print('starting data pre process')
+        # print('len of uprn match is ', len(uprn_match))
+        # print(uprn_match)
         df  = pre_process_building_data(uprn_match)    
+        print('pre process complete')
         if len(df)!=len(uprn_match):
             raise Exception('Error in pre process - some cols dropped? ')
         dc = calculate_postcode_attr_with_null_case(df)

@@ -80,7 +80,7 @@ def validate_and_calculate_percentages_type(df):
     """
 
     # List of building type columns (exclude 'postcode' and 'len_res')
-    building_types = df.columns.difference(['postcode', 'len_res'])
+    building_types = df.columns.difference(['postcode', 'len_res', 'region'])
     df['len_res'] = df['len_res'].fillna(0)
     # Calculate the sum of all building types for each row
     df['sum_buildings'] = df[building_types].fillna(0).sum(axis=1)
@@ -194,8 +194,6 @@ def post_proc_new_fuel(df):
     df['diff_gas_meters_uprns_res'] = np.abs(df['num_meters_gas'] - df['all_res_uprn_count_total']) / df['num_meters_gas'] * 100 
 
     clean = df[df['diff_gas_meters_uprns_res']<=40].copy() 
-
-
     data = clean[clean['percent_residential']==1].copy() 
 
 

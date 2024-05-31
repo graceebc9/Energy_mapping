@@ -60,6 +60,9 @@ def run_fuel_process(batch_ids, onsud_data, INPUT_GPK,  batch_size, batch_label,
     run_fuel_calc_main(batch_ids, onsud_data,  INPUT_GPK= INPUT_GPK, batch_size= batch_size, batch_label = batch_label, log_file= log_file ,gas_df = gas_df, elec_df = elec_df)
 
 def run_fuel_process_overlap(batch_ids, onsud_data, INPUT_GPK,  batch_size, batch_label, log_file, gas_path, elec_path, overlap, batch_dir, path_to_pcshp):
+    """
+    overlap: bool
+    """
     gas_df, elec_df = load_fuel_data(gas_path, elec_path)
     run_fuel_calc_main_overlap(batch_ids, INPUT_GPK, batch_size, batch_label, log_file, gas_df, elec_df, overlap, batch_dir , path_to_pcshp) 
 

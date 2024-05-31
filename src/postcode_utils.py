@@ -62,11 +62,12 @@ def find_data_pc(pc, data, input_gpk):
     return uprn_match
 
 
-def find_data_pc_joint(pc, onsdata, input_gpk):
+def find_data_pc_joint(pc, onsdata, input_gpk, overlap=False):
     """
     Find buildings based on UPRN match to the postcodes and Spatial join 
     input: joint data product from onsud loadaer (pcshp and onsud data) 
     """
+    print(onsdata)
     data, pcshp  = onsdata 
     pcshp = pcshp[pcshp['POSTCODE']==pc]
 

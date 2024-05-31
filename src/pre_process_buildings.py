@@ -97,7 +97,6 @@ def update_avgfloor_count_outliers(df):
 
 
 
-
 def fill_local_averages(df):
     num_builds = len(df )
 
@@ -130,8 +129,8 @@ def create_heated_vol(df):
     """
     calc heated premise are
     """
-    df['heated_prem_area_fc'] = df['premise_area'] * df['fc_filled']
-    df['heated_prem_area_h'] = df['premise_area'] * df['global_average_floorcount']
+    df['heated_vol_fc'] = df['premise_area'] * df['fc_filled']
+    df['heated_vol_h'] = df['premise_area'] * df['global_average_floorcount']
 
     return df 
 
@@ -223,21 +222,28 @@ def check_nulls_percent(df, col, threshold=0.5):
 def test_building_metrics(df):
     """Run various assertions on building metrics."""
 
-    for c in ['heated_vol_fc', 'heated_vol_h']:
+
+    for c in ['heated_vol_h', 'heated_vol_fc']:
         check_nulls_percent(df, c, 0)
 
     test = df[df['validated_height'].isna()].copy() 
     assert_larger(test, 'height', 'height_filled')
 
-
+# ['premise_age', 'premise_year', 'premise_use', 'premise_type', 'premise_floor_count', 'height', 'premise_area', 'building_area',
+#  'address_area', 'gross_area', 'basement', 'listed_grade', 'element_count', 'bathroom_count', 'bedroom_count', 'reception_room_count',
+#   'roof_type', 'wall_type', 'substructure_type', 'glazing_type', 'wall_construction_type', 'extension_count', 'habitable_rooms',
+#    'open_fireplaces', 'floor_type', 'distance_building', 'site_id', 'site_area', 'site_non_built_area', 'site_building_count',
+#     'distance_water', 'verisk_building_id', 'uprn', 'uprn_count', 'uprn_distance', 'toid', 'map_age', 'map_floors', 'map_use', 
+#     'map_simple_use', 'upn', 'geometry', 'premise_age_bucketed', 'height_numeric', 'floor_count_numeric', 'av_fl_height',
+#      'listed_bool', 'min_side', 'threex_minside', 'validated_height', 'validated_fc', 'fc_filled', 'height_filled',
+#       'height_filled_bucket', 'global_average_floorcount', 'updated', 'heated_prem_area_fc', 'heated_prem_area_h', 'base_floor', 'basement_heated_vol_max']
 
 def pre_process_building_data(build):
     fc = load_avg_floor_count() 
     print(fc)
     """Calculate and validate building metrics from verisk data."""
-    # print("Pre-processing building data...")
+    print("Pre-processing building data...")
     processed_df = pre_process_buildings(build, fc)
-
     print('Cleaning data')
     clean_df = produce_clean_building_data(processed_df)
     
