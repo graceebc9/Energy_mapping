@@ -1,9 +1,5 @@
 import os 
-# from src.fuel_proc import load_fuel_data 
-# from src.postcode_utils import load_ids_from_file, get_onsud_path 
 import pandas as pd 
-
-
 from src.pc_main import main , run_fuel_process_overlap
 
 
@@ -31,7 +27,7 @@ if __name__ == "__main__":
 
 
 
-# export BATCH_DIR='/Users/gracecolverd/New_dataset/test/batches'
+# export BATCH_DIR='/Volumes/T9/Data_downloads/new-data-outputs/batches (1)'
 # export  BATCH_PATH='/Users/gracecolverd/New_dataset/overlapping_pcs.txt'
 # export DATA_DIR='/Users/gracecolverd/New_dataset/test'
 # export ONSUD_DIR='/Volumes/T9/Data_downloads/ONS_UPRN_database/ONSUD_DEC_2022'
