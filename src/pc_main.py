@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from src.postcode_utils import load_onsud_data, load_ids_from_file, get_onsud_path
 from src.fuel_proc import run_fuel_calc_main , load_fuel_data
-from src.age_proc import run_age_calc
+from src.age_perc_proc import run_age_calc
 from src.type_proc import run_type_calc
 from src.overlap import get_overlap_batch_ids
 

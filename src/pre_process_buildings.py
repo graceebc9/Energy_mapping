@@ -240,7 +240,6 @@ def test_building_metrics(df):
 
 def pre_process_building_data(build):
     fc = load_avg_floor_count() 
-    print(fc)
     """Calculate and validate building metrics from verisk data."""
     print("Pre-processing building data...")
     processed_df = pre_process_buildings(build, fc)
