@@ -1,7 +1,6 @@
 total_builds_new = ['all_types_total_buildings', 'log_all_types_total_buildings',]
 
 res = [ 
-
 'comm_alltypes_count',
 'unknown_alltypes',
 'all_res_total_buildings',
@@ -101,13 +100,14 @@ settings_dict = {
 8: ['UPRN BS', uprn_cols],
 9: ['All census', all_census ] , 
 10: ['Rural/Urban',  rural_urban],
-11: ['All vars', all_vars], 
+11 : ['COB + BS', res + outb + total_builds_new]
 12: ['COB + Type', total_builds_new + type_cols ],
 13: ['COB + Region', total_builds_new + region_cols ], 
 14: ['COB + Age', total_builds_new + age_cols ],
 15: ['COB + Temp', total_builds_new + temp_cols ],
 16: ['COB + PC Geom', total_builds_new + postcode_geoms ],
 17: ['COB + UR', total_builds_new  + rural_urban]
+18: ['All vars', all_vars], 
 }
 
 
