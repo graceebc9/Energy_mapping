@@ -4,9 +4,9 @@ from src.postcode_utils import load_onsud_data, load_ids_from_file, get_onsud_pa
 from src.fuel_proc import run_fuel_calc_main , load_fuel_data
 from src.age_proc import run_age_calc
 from src.type_proc import run_type_calc
+from src.overlap import get_overlap_batch_ids
 
-
-def main(batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK, region_label, batch_label, attr_lab, process_function, gas_path=None, elec_path=None, overlap= None, batch_dir = None ):
+def main(batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK, region_label, batch_label, attr_lab, process_function, gas_path=None, elec_path=None, overlap= None, batch_dir = None , overlap_outcode=None):
     
     def gen_batch_ids(batch_ids, log_file):
         if os.path.exists(log_file):
@@ -33,9 +33,14 @@ def main(batch_path, data_dir, path_to_onsud_file, path_to_pcshp, INPUT_GPK, reg
     print('Loading onsud data')
     onsud_data = load_onsud_data(path_to_onsud_file, path_to_pcshp)
     
-
-    batch_ids = load_ids_from_file(batch_path)
-    batch_ids = gen_batch_ids(batch_ids, log_file)
+    print(batch_path)
+    if overlap == 'Yes':
+        print('overlap starting')
+        batch_ids = get_overlap_batch_ids(overlap_outcode, batch_path)  
+    else:
+            
+        batch_ids = load_ids_from_file(batch_path)
+        batch_ids = gen_batch_ids(batch_ids, log_file)
     
     print('Len of batch is ', len(batch_ids))
     print('Starting batch process')
@@ -74,7 +79,7 @@ def run_fuel_process(batch_ids, onsud_data, INPUT_GPK,  batch_size, batch_label,
 
 
 def run_age_process(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file, gas_path=None, elec_path=None, overlap=None, batch_dir=None, path_to_pcshp=None):
-    run_age_calc(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file )
+    run_age_calc(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file, overlap )
 
 
 

@@ -1,7 +1,8 @@
 import os 
 import glob 
 import pandas as pd 
-
+import re 
+from src.postcode_utils import load_ids_from_file 
 
 def find_batches(pc, batch_dir ):
     pc= pc.strip()
@@ -38,3 +39,17 @@ def custom_load_onsud(pc , batch_dir  ):
     df = pd.concat(df_list )
     print('custom load complete')
     return df 
+
+def get_overlap_batch_ids(overlap_outcode, batch_path):
+    def extract_letters(postcode):
+        match = pattern.match(postcode)
+        return match.group(0) if match else None
+    pcs_list = load_ids_from_file(batch_path)
+    pcs_list = pd.DataFrame(pcs_list, columns=['postcode'])
+    pattern = re.compile(r'^[A-Z]+')
+    # Apply the function to each postcode
+    pcs_list['outcode'] = [extract_letters(postcode) for postcode in pcs_list.postcode]
+    # Filter for the overlap outcode
+    pcs_list = pcs_list[pcs_list.outcode == overlap_outcode]
+    return pcs_list.postcode.tolist()   
+
