@@ -1,7 +1,7 @@
 total_builds_new = ['all_types_total_buildings', 'log_all_types_total_buildings',]
 
 res = [ 
-'all_types_uprn_count_total',
+
 'comm_alltypes_count',
 'unknown_alltypes',
 'all_res_total_buildings',
@@ -11,7 +11,6 @@ res = [
 'all_res_heated_vol_h_total',
 'all_res_base_floor_total',
 'all_res_listed_bool_total',
-'all_res_uprn_count_total',
 'clean_res_total_buildings',
 'clean_res_premise_area_total',
 'clean_res_gross_area_total',
@@ -19,14 +18,17 @@ res = [
 'clean_res_heated_vol_h_total',
 'clean_res_base_floor_total',
 'clean_res_basement_heated_vol_max_total',
-'clean_res_uprn_count_total',
 'perc_all_res',
 'perc_clean_res',
 'perc_all_res_basement',
 'perc_all_res_listed',
-'max_vol_per_uprn',
-'min_vol_per_uprn',
+
 ]
+
+uprn_cols = ['max_vol_per_uprn',
+'min_vol_per_uprn',
+'all_types_uprn_count_total',
+'all_res_uprn_count_total',]
 
 outb = [
 'outb_res_total_buildings',
@@ -85,6 +87,8 @@ region_cols =[  'region',
 'msoa11cd',
 'ladcd' ] 
 
+all_vars = total_builds_new + res + outb + type_cols + age_cols + temp_cols + postcode_geoms + region_cols + uprn_cols + all_census + rural_urban
+
 settings_dict = {
 0: ['Count of all Buildings' , total_builds_new ] , 
 1: ['Residential BS', res],
@@ -94,6 +98,16 @@ settings_dict = {
 5: ['Temperature', temp_cols],
 6: ['Postcode Geom', postcode_geoms],
 7: ['Region', region_cols],
+8: ['UPRN BS', uprn_cols],
+9: ['All census', all_census ] , 
+10: ['Rural/Urban',  rural_urban],
+11: ['All vars', all_vars], 
+12: ['COB + Type', total_builds_new + type_cols ],
+13: ['COB + Region', total_builds_new + region_cols ], 
+14: ['COB + Age', total_builds_new + age_cols ],
+15: ['COB + Temp', total_builds_new + temp_cols ],
+16: ['COB + PC Geom', total_builds_new + postcode_geoms ],
+17: ['COB + UR', total_builds_new  + rural_urban]
 }
 
 
@@ -264,7 +278,7 @@ deprivation = [ 'deprivation_perc_Does not apply',
 'deprivation_perc_Household is deprived in four dimensions',
 ]
 
-all_census = economic_census + education_census  + occupation_census + ethnic_census  + household_size_census + occupancy_census + household_comp + tenure_census + deprivation + sex_census + average_household_size + central_heat_census 
+all_census = economic_census + education_census  + occupation_census + ethnic_census  + household_size_census + occupancy_census + household_comp + tenure_census + deprivation + sex_census + average_household_size + central_heat_census
 
 settings_col_dict_census = {
     0: ['Economic', economic_census],
