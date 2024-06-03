@@ -6,7 +6,8 @@ from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 
 
-from ml_utils.src.model_col_settings import region_mapping, settings_col_dict_new, settings_col_dict_census
+from ml_utils.src.model_col_settings import  settings_col_dict_census
+from ml_utils.src.model_col_final import settings_dict
 
 
 def check_directory_and_files(output_directory, required_files):
@@ -34,8 +35,8 @@ def check_directory_and_files(output_directory, required_files):
     return True
 
 
-def transform(df, label, col_setting,settting_dict ):
-    cols = settting_dict[col_setting]
+def transform(df, label, col_setting, settting_dict ):
+    cols = settting_dict[col_setting][1]
     working_cols = cols + [label]
     df = df[working_cols]
     df = df[~df[label].isna()]
@@ -58,7 +59,6 @@ def main():
     model_types = os.environ.get('MODEL_TYPES')
     target = os.environ.get('TARGET')
     column_setting =int( os.environ.get('COL_SETTING'))
-    tr_lab = 'v2'
     run_regionally = os.environ.get('RUN_REGIONAL')
     run_census = os.environ.get('run_census')   
 
@@ -69,13 +69,10 @@ def main():
     else:
         raise Exception('No target')
 
+    
+    excl_models = []
+    
 
-    excl_models = [] 
-
-    if model_types == 'all':
-        excl_models = []
-    elif model_types=='set1':
-        excl_models = ['KNN']
     
     df = pd.read_csv(data_path)
 
@@ -93,7 +90,7 @@ def main():
         print('running with census data')
         setting_dir = settings_col_dict_census
     else:
-        setting_dir = settings_col_dict_new 
+        setting_dir = settings_dict 
 
     print(f'starting model run for {loc_type} target {label}, time lim {time_limit}, col setting {column_setting}, model preset {model_preset} and train subset {train_subset_prop}' )
 
@@ -165,4 +162,4 @@ if __name__ == '__main__':
 # export COL_SETTING=1
 # export RUN_REGIONAL='No'
 # export REGION_INT=1
-# export run_census="Yes"
+# export run_census="No"
