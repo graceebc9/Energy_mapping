@@ -27,7 +27,7 @@ if __name__ == "__main__":
     if overlap=='Yes':
         print('overlap starting')
         overlap_outcode = os.environ.get('OVERLAP_OUTCODE')
-        ovl_diir =os.environ.get('OVERLAP_ONSUD_BATCH_FOlDER')  
+        ovl_diir =os.environ.get('OVERLAP_ONSUD_BATCH_FOLDER')  
         onsud_path = os.path.join(ovl_diir, f'{overlap_outcode}_omsud.csv')
         label=f'overlap_{overlap_outcode}'
         batch_id = f'overlap_{overlap_outcode}'

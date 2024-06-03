@@ -6,7 +6,6 @@ import pandas as pd
 
 from src.pc_main import main , run_type_process
 
-
 if __name__ == "__main__":
     attr_lab='type'
     onsud_data = 'DEC_2022'
@@ -19,14 +18,24 @@ if __name__ == "__main__":
     input_gpk_building = os.environ.get('BUILDING_PATH')
     batch_path = os.environ.get('BATCH_PATH') 
     
-    label = batch_path.split('/')[-2]
-    batch_id = batch_path.split('/')[-1].split('.')[0].split('_')[-1]
-    # path_to_onsud_file = get_onsud_path( onsud_dir, onsud_data, label )
-    onsud_path = os.path.join(os.path.dirname(batch_path), f'onsud_{batch_id}.csv') 
-    print(onsud_path)
-    main(batch_path, data_dir, onsud_path, path_to_pcshp, INPUT_GPK=input_gpk_building, region_label=label,  batch_label=batch_id, attr_lab=attr_lab, process_function=run_type_process, gas_path=gas_path, elec_path=elec_path)
+    overlap = os.environ.get('OVERLAP_BL')
+ 
+    print(overlap)
+    if overlap=='Yes':
+        print('overlap starting')
+        overlap_outcode = os.environ.get('OVERLAP_OUTCODE')
+        ovl_diir =os.environ.get('OVERLAP_ONSUD_BATCH_FOLDER')  
+        onsud_path = os.path.join(ovl_diir, f'{overlap_outcode}_omsud.csv')
+        label=f'overlap_{overlap_outcode}'
+        batch_id = f'overlap_{overlap_outcode}'
+    else:
+        print('Non overlap starting')
+        label = batch_path.split('/')[-2]
+        batch_id = batch_path.split('/')[-1].split('.')[0].split('_')[-1]
+        onsud_path = os.path.join(os.path.dirname(batch_path), f'onsud_{batch_id}.csv') 
+        overlap_outcode= None 
 
-
+    main(batch_path, data_dir, onsud_path, path_to_pcshp, INPUT_GPK=input_gpk_building, region_label=label,  batch_label=batch_id, attr_lab=attr_lab, process_function=run_type_process, gas_path=gas_path, elec_path=elec_path,  overlap_outcode=overlap_outcode, overlap=overlap) 
 
 
 # export  BATCH_PATH='/Users/gracecolverd/New_dataset/test/batches/WM/batch_5.txt'
