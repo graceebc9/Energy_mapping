@@ -16,8 +16,7 @@ def process_age_batch(pc_batch, data, INPUT_GPK, process_batch_name, log_file, o
             results.append(pc_result)
     
     print(f'Number of processed results: {len(results)}')
-    
-    # Only proceed if we have results
+
     if results:
         df = pd.DataFrame(results)
         print('Saving results to log file...')

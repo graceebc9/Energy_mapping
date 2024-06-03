@@ -115,9 +115,6 @@ def get_onsud_path(onsud_dir, onsud_data  ,label ):
     return filepath
 
 def get_onsud_path_batches(onsud_dir, onsud_data  ,label ):
-
-    
-    
     filepath = os.path.join(onsud_dir, f'Data/ONSUD_{onsud_data}_{label}.csv' ) 
     return filepath
 
