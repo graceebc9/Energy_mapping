@@ -86,8 +86,6 @@ region_cols =[  'region',
 'msoa11cd',
 'ladcd' ] 
 
-all_vars = total_builds_new + res + outb + type_cols + age_cols + temp_cols + postcode_geoms + region_cols + uprn_cols + all_census + rural_urban
-
 
 
 
@@ -259,6 +257,9 @@ deprivation = [ 'deprivation_perc_Does not apply',
 ]
 
 all_census = economic_census + education_census  + occupation_census + ethnic_census  + household_size_census + occupancy_census + household_comp + tenure_census + deprivation + sex_census + average_household_size + central_heat_census
+all_vars = total_builds_new + res + outb + type_cols + age_cols + temp_cols + postcode_geoms + region_cols + uprn_cols + all_census + rural_urban
+
+
 
 settings_col_dict_census = {
     0: ['Economic', economic_census],
