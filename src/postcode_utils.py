@@ -72,7 +72,8 @@ def find_data_pc_joint(pc, onsdata, input_gpk, overlap=False):
     pcshp = pcshp[pcshp['POSTCODE']==pc]
 
     gd = gpd.GeoDataFrame(data[data['PCDS'] == pc].copy(), geometry='geometry')
-    
+    if gd.empty:
+        return None 
     bbox = box(*gd.total_bounds)
     buildings = gpd.read_file(input_gpk, bbox=bbox)
     uprn_match = buildings[buildings['uprn'].isin(gd['UPRN'])].copy()

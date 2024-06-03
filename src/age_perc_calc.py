@@ -20,7 +20,7 @@ def calc_filtered_percentage_of_building_age(df, age_types):
 
     df = df[df['premise_use'] == 'Residential']
     all_building_ages = df['premise_age_bucketed'].value_counts()
-    nn = df[df['premise_age_bucketed'].isna()]
+    nn = df[(df['premise_age_bucketed'].isna()) | (df['premise_age_bucketed'] == 'Unknown date')    ]
     # Filter to keep only the specified building ages
     filtered_building_ages = all_building_ages[all_building_ages.index.isin(age_types)]
     fa = filtered_building_ages.to_dict()

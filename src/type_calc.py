@@ -74,13 +74,6 @@ def process_postcode_buildtype(pc, onsud_data,  INPUT_GPK, overlap = False, batc
 
 
     pc = pc.strip() 
-
-    if overlap ==True: 
-        print('starting overlap pc')
-        onsud_data = custom_load_onsud(pc, batch_dir)
-        _, onsud_data = find_postcode_for_ONSUD_file(onsud_data, path_to_pcshp )
-        
-    
     uprn_match= find_data_pc_joint(pc, onsud_data, input_gpk=INPUT_GPK)
     dc_full = {'postcode': pc  }
 
@@ -89,7 +82,7 @@ def process_postcode_buildtype(pc, onsud_data,  INPUT_GPK, overlap = False, batc
     dc_full['len_res'] = np.nan 
     dc_full['None_type'] = np.nan
 
-    if uprn_match.empty:
+    if  uprn_match is None:
         print('Empty uprn match')
         
     else:
