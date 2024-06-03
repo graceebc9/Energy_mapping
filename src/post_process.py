@@ -54,7 +54,8 @@ def load_from_log(log):
 ######################### Post process type ######################### 
 
 def validate_and_calculate_percentages_type(df):
-    building_types = df.columns.difference(['postcode', 'len_res', 'region'])
+    df ['all_unknown'] = df.Unknown.fillna(0) + df.None_type.fillna(0)
+    building_types = df.columns.difference(['postcode', 'len_res', 'region', 'Unknown','None_type' ])
     df['len_res'] = df['len_res'].fillna(0)
     df['sum_buildings'] = df[building_types].fillna(0).sum(axis=1)
 
@@ -180,5 +181,24 @@ def post_proc_new_fuel(df):
     return df, data
 
 def deal_unknown_res(data):
+    """
+    Remove those with more than threshold value of unknwon residentails builds
+    remove those with more volume of outbiilding than res (should only be a few rows )
+    """
     og_len = len(data)
-    data['unkn_res'] = data['all_res_total_buildings']
+    data['unkn_res'] = data['all_res_total_buildings'] - data['clean_res_total_buildings'] - data['outb_res_total_buildings']
+    data['perc_unk_res'] = data['unkn_res'] / data['all_res_total_buildings'] * 100 
+    data['perc_unk_res'] = data['perc_unk_res'].fillna(0)
+    
+    data= data[data['clean_res_heated_vol_fc_total'] > data['outb_res_heated_vol_fc_total'].fillna(0) ] 
+    if len(data) / og_len * 100  < 0.9:
+        raise Exception('More than 10% filtered out')
+    return  data[data['perc_unk_res']< PERC_UNKNOWN_RES_ALLOWED ]
+
+
+def call_post_process(df):
+    data = post_proc_new_fuel(df)
+    data=deal_unknown_res(data)
+
+    test_data(data)
+    return data 

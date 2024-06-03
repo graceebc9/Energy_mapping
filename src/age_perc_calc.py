@@ -63,7 +63,7 @@ def process_postcode_building_age(pc, onsud_data, INPUT_GPK, overlap=False, batc
     dc_full['len_res'] = np.nan 
     dc_full['None_age'] = np.nan
 
-    if uprn_match.empty:
+    if uprn_match is None:
         print('Empty uprn match')
     else:
         df = pre_process_building_data(uprn_match)

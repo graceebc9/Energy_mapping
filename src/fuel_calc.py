@@ -191,7 +191,7 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     uprn_match= find_data_pc_joint(pc, onsud_data, input_gpk=INPUT_GPK)
     dc_full = {'postcode': pc  }
     print('dc ful started')
-    if uprn_match.empty:
+    if uprn_match is None :
         print('Empty uprn match')
         dc =  gen_nulls()
         print(len(dc) ) 
