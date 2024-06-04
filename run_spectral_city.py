@@ -71,44 +71,6 @@ def train_spectral_model(X_train, num_clusters):
     
     return spectral_model_rbf, scaler, pca, labels_rbf, X_principal, silhouette_avg
 
-# def save_model(output_path, run_name, spectral_model, scaler, pca, labels, X_principal, silhouette_avg):
-#     run_path = os.path.join(output_path, run_name)
-#     os.makedirs(run_path, exist_ok=True)
-
-#     # Save the model
-#     model_file = os.path.join(run_path, 'spectral_model_rbf.pkl')
-#     joblib.dump(spectral_model, model_file)
-    
-#     # Save the scaler and PCA
-#     scaler_file = os.path.join(run_path, 'scaler.pkl')
-#     joblib.dump(scaler, scaler_file)
-    
-#     pca_file = os.path.join(run_path, 'pca.pkl')
-#     joblib.dump(pca, pca_file)
-    
-#     # Save the labels
-#     labels_file = os.path.join(run_path, 'labels.csv')
-#     labels_df = pd.DataFrame(labels, columns=['Cluster'])
-#     labels_df.to_csv(labels_file, index=False)
-
-#     # Save the silhouette score
-#     silhouette_file = os.path.join(run_path, 'silhouette_score.txt')
-#     with open(silhouette_file, 'w') as f:
-#         f.write(f'Silhouette Score: {silhouette_avg}')
-    
-#     # Save the principal components
-#     X_principal.to_csv(os.path.join(run_path, 'X_principal.csv'), index=False)
-    
-#     # Save the visualization
-#     plt.figure(figsize=(10, 7))
-#     scatter = plt.scatter(X_principal['P1'], X_principal['P2'], c=labels, cmap='hsv')
-#     plt.title('Spectral Clustering Results')
-#     plt.colorbar(scatter, label='Cluster')
-#     plt.xlabel('P1')
-#     plt.ylabel('P2')
-#     plt.savefig(os.path.join(run_path, 'spectral_clustering_results.png'))
-#     plt.close()
-
 import pandas as pd
 from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
 
@@ -188,9 +150,10 @@ def plot_variable_distributions(X_train, labels, run_path, cols):
 
 
 
+
 def plot_variable_distributions(X_train, labels, run_path, cols):
     """
-    Plot the KDE distributions of variables for each cluster in a single figure.
+    Plot the KDE distributions of variables for each cluster in a figure with three columns and multiple rows.
     
     Parameters:
     X_train (pd.DataFrame): The training data.
@@ -206,12 +169,15 @@ def plot_variable_distributions(X_train, labels, run_path, cols):
     plots_folder = os.path.join(run_path, 'variable_distributions')
     os.makedirs(plots_folder, exist_ok=True)
     
-    # Plot distributions of the variables with respect to each cluster in a single figure
-    num_cols = len(cols)
-    plt.figure(ncols = 3, nrows = round(num_cols / 3 ) , figsize=(15, 5*  num_cols/ 3 ))
+    # Determine the number of rows needed for 3 columns
+    num_cols = 3
+    num_rows = (len(cols) + num_cols - 1) // num_cols  # Ceiling division
+    
+    # Create the figure with the required number of subplots
+    plt.figure(figsize=(20, 5 * num_rows))
     
     for i, col in enumerate(cols):
-        plt.subplot(num_cols, 1, i + 1)
+        plt.subplot(num_rows, num_cols, i + 1)
         for cluster in np.unique(labels):
             cluster_data = df[df['Cluster'] == cluster][col].dropna()
             sns.kdeplot(cluster_data, fill=True, label=f'Cluster {cluster}')
@@ -223,29 +189,6 @@ def plot_variable_distributions(X_train, labels, run_path, cols):
     plt.tight_layout()
     plt.savefig(os.path.join(plots_folder, 'all_distributions.png'))
     plt.close()
-
-
-# def plot_variable_distributions(X_train, labels, run_path, cols):
-#     # Get the variables and labels
-#     df = pd.DataFrame(X_train, columns=cols)
-#     df['Cluster'] = labels
-    
-#     # Create a subfolder for the plots
-#     plots_folder = os.path.join(run_path, 'variable_distributions')
-#     os.makedirs(plots_folder, exist_ok=True)
-    
-#     # Plot distributions of the variables with respect to each cluster
-#     for col in cols:
-#         plt.figure(figsize=(10, 6))
-#         for cluster in np.unique(labels):
-#             cluster_data = df[df['Cluster'] == cluster].dropna()
-#             plt.hist(cluster_data[col], bins=30, alpha=0.5, label=f'Cluster {cluster}')
-#         plt.title(f'Distribution of {col} by Cluster')
-#         plt.xlabel(col)
-#         plt.ylabel('Frequency')
-#         plt.legend()
-#         plt.savefig(os.path.join(plots_folder, f'{col}_distribution.png'))
-#         plt.close()
 
 def main():
     input_path = os.environ.get('MLPATH')
@@ -284,13 +227,13 @@ def main():
     save_model(output_path, run_name, spectral_model_rbf, scaler, pca, labels_rbf, X_principal)
     
     print('starting visualization')
-    plot_variable_distributions(X_train, labels_rbf, run_path, col_names)
+    plot_variable_distributions(X_train, labels_rbf, run_path, data_cols)
 
 if __name__ == "__main__":
     main()
 
 
-# export MLPATH='/Users/gracecolverd/New_dataset/ml_scripts/v81city_clust.csv'
-# export OUTPUTPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_results/citycl'
+# export MLPATH='/Users/gracecolverd/New_dataset/ml_scripts/v33_city_clust.csv'
+# export OUTPUTPATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_results/cityfinalv2'
 # export NUM_CLUSTERS=5
 # python run_spectral_city.py
