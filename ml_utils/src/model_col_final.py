@@ -24,8 +24,7 @@ res = [
 
 ]
 
-uprn_cols = ['max_vol_per_uprn',
-'min_vol_per_uprn',
+uprn_cols = [
 'all_types_uprn_count_total',
 'all_res_uprn_count_total',]
 
