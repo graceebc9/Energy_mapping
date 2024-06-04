@@ -302,4 +302,6 @@ settings_dict = {
 16: ['COB + PC Geom', total_builds_new + postcode_geoms ],
 17: ['COB + UR', total_builds_new  + rural_urban],
 18: ['All vars', all_vars], 
+19: ['COB, Region, PC, Temp', total_builds_new + region_cols  +postcode_geoms +temp_cols ],
+
 }
