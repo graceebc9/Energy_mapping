@@ -6,8 +6,7 @@ from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 
 
-from ml_utils.src.model_col_settings import  settings_col_dict_census
-from ml_utils.src.model_col_final import settings_dict
+from ml_utils.src.model_col_final import settings_dict, settings_col_dict_census
 
 
 def check_directory_and_files(output_directory, required_files):
@@ -78,10 +77,10 @@ def main():
 
     if run_regionally == 'Yes':
         loc_type='local'
-        int_region = int(os.environ.get('REGION_INT'))
-        region = region_mapping[int_region]
-        df =df[df['region'] ==region]
-        train_subset_prop = 1 
+        # int_region = int(os.environ.get('REGION_INT'))
+        # region = region_mapping[int_region]
+        # df =df[df['region'] ==region]
+        # train_subset_prop = 1 
     else:
         loc_type= 'global'
         int_region = 'None'

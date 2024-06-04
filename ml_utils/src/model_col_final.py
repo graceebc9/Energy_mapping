@@ -259,34 +259,23 @@ all_census = economic_census + education_census  + occupation_census + ethnic_ce
 all_vars = total_builds_new + res + outb + type_cols + age_cols + temp_cols + postcode_geoms + region_cols + uprn_cols + all_census + rural_urban
 
 
-settings_col_dict_census={}
-# settings_col_dict_census = {
-#     0: ['Economic', economic_census],
-#     1: ['Education', education_census],
-#     2: ['Ethnicity', ethnic_census],
-#     3: ['Rural Urban', rural_urban],
-#     4: ['Household Size', household_size_census],
-#     5: ['Occupancy', occupancy_census],
-#     6: ['Household Comp', household_comp],
-#     7: ['Tenure', tenure_census],
-#     8: ['Central Heat', central_heat_census],
-#     9: ['Deprivation', deprivation],
-#     10: ['Occupation', occupation_census],
-#     11: ['Sex', sex_census],
-#     12: ['Avg Household Size', average_household_size],
-#     13: ['All Census', all_census],
-#     14: ['Total Builds + All Census', total_builds_new + all_census],
-#     15: ['Total Builds + Region + All Census', total_builds_new + region_cols + all_census],
-#     16: ['Total Builds + Type + Temp + All Census + PC Geom', total_builds_new + type_cols + temp_cols + all_census + postcode_geoms],
-#     17: ['Total Builds + Region + Temp + Res + Outbuild + Age + Type + UPRN + PC Geom + All Census + Best', 
-#          total_builds_new + region_cols + temp_cols + res + outb + age_cols + type_cols + uprn_cols + postcode_geoms + all_census + best_cols],
-#     18: ['Total Builds + Temp + All Census + PC Geom', total_builds_new + temp_cols + all_census + postcode_geoms],
-#     19: ['Total Builds + All Census', total_builds_new + all_census],
-#     20: ['Total Builds', total_builds_new],
-#     21: ['Total Builds + Temp + Res + Outbuild + Age + Type + UPRN + PC Geom + All Census + Best', 
-#         #  total_builds_new + temp_cols + res + outb + age_cols + type_cols + uprn_cols + postcode_geoms + all_census + best_co
-# }
 
+settings_col_dict_census = {
+    0: ['Economic', economic_census],
+    1: ['Education', education_census],
+    2: ['Ethnicity', ethnic_census],
+    3: ['Rural Urban', rural_urban],
+    4: ['Household Size', household_size_census],
+    5: ['Occupancy', occupancy_census],
+    6: ['Household Comp', household_comp],
+    7: ['Tenure', tenure_census],
+    8: ['Central Heat', central_heat_census],
+    9: ['Deprivation', deprivation],
+    10: ['Occupation', occupation_census],
+    11: ['Sex', sex_census],
+    12: ['Avg Household Size', average_household_size],
+    13: ['All Census', all_census],
+} 
 
 
 
