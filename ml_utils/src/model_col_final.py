@@ -259,6 +259,7 @@ all_census = economic_census + education_census  + occupation_census + ethnic_ce
 all_vars = total_builds_new + res + outb + type_cols + age_cols + temp_cols + postcode_geoms + region_cols + uprn_cols + all_census + rural_urban
 
 
+ndvi_cols = ['max_ndvi']
 
 settings_col_dict_census = {
     0: ['Economic', economic_census],
@@ -274,7 +275,7 @@ settings_col_dict_census = {
     10: ['Occupation', occupation_census],
     11: ['Sex', sex_census],
     12: ['Avg Household Size', average_household_size],
-    13: ['All Census', all_census],
+    # 13: ['All Census', all_census],
 } 
 
 
@@ -303,5 +304,9 @@ settings_dict = {
 17: ['COB + UR', total_builds_new  + rural_urban],
 18: ['All vars', all_vars], 
 19: ['COB, Region, PC, Temp', total_builds_new + region_cols  +postcode_geoms +temp_cols ],
-
+20: ['NDVI', ndvi_cols], 
+21: ['COB + NDVI' , total_builds_new + ndvi_cols]
+22: ['COB, NDVI, Temp, Urban Rural' , total_builds_new + ndvi_cols + temp_cols + rural_urban], 
+23: ['COB, NDVI, Temp, Urban Rural, Postcode Geoms' : total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms ], 
+24: ['COB, NDVI, Temp, Urban Rural, Postcode Geoms, Type' : total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms + type_cols ], 
 }
