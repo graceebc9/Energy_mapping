@@ -310,4 +310,5 @@ settings_dict = {
 23: ['COB, NDVI, Temp, Urban Rural, Postcode Geoms' , total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms ], 
 24: ['COB, NDVI, Temp, Urban Rural, Postcode Geoms, Type' ,  total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms + type_cols ], 
 25: ['COB, NDVI, Temp, Urban Rural, Postcode Geoms, Census' , total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms + all_census ], 
+26: ['COB, NDVI, Temp, Urban Rural, Census' , total_builds_new + ndvi_cols + temp_cols + rural_urban  + all_census ], 
 }
