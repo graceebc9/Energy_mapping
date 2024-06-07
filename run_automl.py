@@ -76,15 +76,8 @@ def main():
     
     df = pd.read_csv(data_path)
 
-    if run_regionally == 'Yes':
-        loc_type='local'
-        # int_region = int(os.environ.get('REGION_INT'))
-        # region = region_mapping[int_region]
-        # df =df[df['region'] ==region]
-        # train_subset_prop = 1 
-    else:
-        loc_type= 'global'
-        int_region = 'None'
+
+
 
     if run_census =='Yes':
         print('running with census data')
@@ -92,11 +85,25 @@ def main():
     else:
         setting_dir = settings_dict 
 
+
+    if run_regionally == 'Yes':
+        loc_type='local'
+        if region_id in ['SW', 'EM', 'EE', 'WA', 'SE', 'NW', 'YH', 'WM', 'LN', 'NE']:
+            train_data = df[df['region']!=region_id]
+            test_data = df[df['region']==region_id]
+        else:
+            raise Exception('Region not correct')
+    else:
+        loc_type= 'global'
+        region_id= None
+        train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
+    train_data = transform(TabularDataset(train_data), label, column_setting, setting_dir)
+        
     print(f'starting model run for {loc_type} target {label}, time lim {time_limit}, col setting {column_setting}, model preset {model_preset} and train subset {train_subset_prop}' )
 
 
     dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
-    output_directory = f"{output_path}/{dataset_name}__{loc_type}__{label}__{time_limit}__colset_{column_setting}__{model_preset}___tsp_{train_subset_prop}__{model_types}__{int_region}"
+    output_directory = f"{output_path}/{dataset_name}__{loc_type}__{label}__{time_limit}__colset_{column_setting}__{model_preset}___tsp_{train_subset_prop}__{model_types}__{region_id}"
     required_files = ['model_summary.txt']  # List of files you expect to exist
     
     
@@ -109,22 +116,13 @@ def main():
         os.makedirs(output_directory, exist_ok=True)
         print(f"Directory {output_directory} is ready for use.")
 
-    if run_regionally == 'Yes':
-        if region_id in ['SW', 'EM', 'EE', 'WA', 'SE', 'NW', 'YH', 'WM', 'LN', 'NE']:
-            train_data = df[df['region']!=region_id]
-            test_data = df[df['region']==region_id]
-        else:
-            raise Exception('Region not correct')
-    else:
-        train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
-    train_data = transform(TabularDataset(train_data), label, column_setting, setting_dir)
-        
     
     # Reduce the training dataset if needed
     if train_subset_prop != 1:
         train_subset, _ = train_test_split(train_data, test_size=1-train_subset_prop, random_state=42)
         # train_subset.to_csv(os.path.join(output_directory, 'train_subset.csv'), index=False)
     else:
+        
         train_subset = train_data   
     size_train = len(train_subset) 
     predictor = TabularPredictor(label, path=output_directory).fit(train_subset, 
@@ -165,6 +163,7 @@ if __name__ == '__main__':
 # export TRAIN_SUBSET_PROP=0.1
 # export TARGET='totalgas'
 # export COL_SETTING=1
-# export RUN_REGIONAL='No'
+# export RUN_REGIONAL='Yes'
 # export REGION_INT=1
 # export run_census="No"
+# export REGION_ID='NW'
