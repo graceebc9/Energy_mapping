@@ -60,6 +60,7 @@ def main():
     column_setting =int( os.environ.get('COL_SETTING'))
     run_regionally = os.environ.get('RUN_REGIONAL')
     run_census = os.environ.get('run_census')   
+    region_id = os.environ.get('REGION_ID')
 
     if target == 'totalelec':   
         label = 'total_elec'
@@ -96,7 +97,6 @@ def main():
 
     dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
     output_directory = f"{output_path}/{dataset_name}__{loc_type}__{label}__{time_limit}__colset_{column_setting}__{model_preset}___tsp_{train_subset_prop}__{model_types}__{int_region}"
-        
     required_files = ['model_summary.txt']  # List of files you expect to exist
     
     
@@ -109,8 +109,14 @@ def main():
         os.makedirs(output_directory, exist_ok=True)
         print(f"Directory {output_directory} is ready for use.")
 
-    
-    train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
+    if run_regionally == 'Yes':
+        if region_id in ['SW', 'EM', 'EE', 'WA', 'SE', 'NW', 'YH', 'WM', 'LN', 'NE']:
+            train_data = df[df['region']!=region_id]
+            test_data = df[df['region']==region_id]
+        else:
+            raise Exception('Region not correct')
+    else:
+        train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
     train_data = transform(TabularDataset(train_data), label, column_setting, setting_dir)
         
     
