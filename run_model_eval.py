@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 import matplotlib.pyplot as plt
-
+from autogluon.tabular.visualizer import PartialDependencePlotter
 import scipy.stats as stats
 from ml_utils.src.model_col_final import settings_dict, settings_col_dict_census
 
@@ -92,3 +92,34 @@ stats.probplot(residuals, dist="norm", plot=plt)
 plt.title('Q-Q Plot')
 plt.savefig(os.path.join(output_path, 'qq_plot.png'))
 plt.close()
+
+
+
+
+fp_path = os.getenv('FP_PATH')
+# Load feature importance
+feature_importance = pd.read_csv(fp_path, index_col=0)
+print(feature_importance)
+# Identify top important features
+top_features = feature_importance.index[:5]  # Adjust number of top features as needed
+
+
+
+# Generate Partial Dependence Plots for top features
+pdp = PartialDependencePlotter(predictor, dataset=test_data.drop(columns=[label]))
+
+for feature in top_features:
+    plt.figure(figsize=(10, 6))
+    pdp.plot_partial_dependence(feature)
+    plt.title(f'Partial Dependence Plot for {feature}')
+    plt.savefig(os.path.join(output_path, f'pdp_{feature}.png'))
+    plt.close()
+
+# export MODEL_PATH='/home/gb669/rds/hpc-work/energy_map/data/automl_models/model_plots/v2/final_V1_ml_data__global__total_gas__25000__colset_18__best_quality___tsp_1.0__all__None'
+# export TEST_PATH='/home/gb669/rds/hpc-work/energy_map/data/automl_models/model_plots/v2/final_V1_ml_data__global__total_gas__25000__colset_18__best_quality___tsp_1.0__all__None/test_data.csv'
+# export OUTPUT_PATH='/home/gb669/rds/hpc-work/energy_map/data/automl_models/model_plots/v2/final_V1_ml_data__global__total_gas__25000__colset_18__best_quality___tsp_1.0__all__None/model_eval'
+
+
+
+# export MODEL_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml/results/final_V1_ml_data__global__total_gas__500__colset_0__medium_quality___tsp_0.4__None__None'
+
