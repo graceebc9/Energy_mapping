@@ -7,46 +7,59 @@ from autogluon.tabular.visualizer import PartialDependencePlotter
 import scipy.stats as stats
 from ml_utils.src.model_col_final import settings_dict, settings_col_dict_census
 
-# Ensure paths are provided via environment variables
-path = os.getenv('MODEL_PATH')
-test_path = os.getenv('TEST_PATH')
-output_path = os.getenv('OUTPUT_PATH')
+def find_file_by_pattern(directory, pattern):
+    """Find a file in a directory that matches the given pattern."""
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if pattern in file:
+                return os.path.join(root, file)
+    return None
 
-if not path or not test_path or not output_path:
-    raise ValueError("Please set the MODEL_PATH, TEST_PATH, and OUTPUT_PATH environment variables.")
-
-# Ensure the output path exists
-os.makedirs(output_path, exist_ok=True)
-
-# Load the predictor
-predictor = TabularPredictor.load(path)
-
-# Load the test data
-test = pd.read_csv(test_path)
-
-def transform(df, label, col_setting, settting_dict ):
-    cols = settting_dict[col_setting][1]
+def transform(df, label, col_setting, setting_dict):
+    cols = setting_dict[col_setting][1]
     working_cols = cols + [label]
     df = df[working_cols]
     df = df[~df[label].isna()]
     return df
 
+# Read environment variables
+model_dir = os.getenv('MODEL_DIR')
+output_path = os.getenv('OUTPUT_PATH')
+fp_path = os.getenv('FP_PATH')
 
+if not model_dir or not output_path or not fp_path:
+    raise ValueError("Please set the MODEL_DIR, OUTPUT_PATH, and FP_PATH environment variables.")
 
+# Ensure the output path exists
+os.makedirs(output_path, exist_ok=True)
 
+# Find the model and test data paths
+model_path = find_file_by_pattern(model_dir, 'model')
+test_path = find_file_by_pattern(model_dir, 'test_data.csv')
 
+if not model_path or not test_path:
+    raise ValueError("Could not find model or test data files in the specified directory.")
+
+# Load the predictor
+predictor = TabularPredictor.load(model_path)
+
+# Load the test data
+test = pd.read_csv(test_path)
+
+# Transform the data
 label = 'total_gas'
 column_setting = 18
 setting_dir = settings_dict
 test_data = transform(TabularDataset(test), label, column_setting, setting_dir)
 
+# Predict and evaluate
 y_pred = predictor.predict(test_data.drop(columns=[label]))
 y_true = test_data[label]
 
 results = predictor.evaluate_predictions(y_true=y_true, y_pred=y_pred, auxiliary_metrics=True)
 print(results)
 
-# Assuming y_pred and y_true are your predicted and actual values
+# Generate and save plots
 residuals = y_true - y_pred
 
 # Residual Plot
@@ -93,17 +106,11 @@ plt.title('Q-Q Plot')
 plt.savefig(os.path.join(output_path, 'qq_plot.png'))
 plt.close()
 
-
-
-
-fp_path = os.getenv('FP_PATH')
 # Load feature importance
 feature_importance = pd.read_csv(fp_path, index_col=0)
 print(feature_importance)
 # Identify top important features
 top_features = feature_importance.index[:5]  # Adjust number of top features as needed
-
-
 
 # Generate Partial Dependence Plots for top features
 pdp = PartialDependencePlotter(predictor, dataset=test_data.drop(columns=[label]))
@@ -115,11 +122,8 @@ for feature in top_features:
     plt.savefig(os.path.join(output_path, f'pdp_{feature}.png'))
     plt.close()
 
-# export MODEL_PATH='/home/gb669/rds/hpc-work/energy_map/data/automl_models/model_plots/v2/final_V1_ml_data__global__total_gas__25000__colset_18__best_quality___tsp_1.0__all__None'
-# export TEST_PATH='/home/gb669/rds/hpc-work/energy_map/data/automl_models/model_plots/v2/final_V1_ml_data__global__total_gas__25000__colset_18__best_quality___tsp_1.0__all__None/test_data.csv'
-# export OUTPUT_PATH='/home/gb669/rds/hpc-work/energy_map/data/automl_models/model_plots/v2/final_V1_ml_data__global__total_gas__25000__colset_18__best_quality___tsp_1.0__all__None/model_eval'
-
-
-
-# export MODEL_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml/results/final_V1_ml_data__global__total_gas__500__colset_0__medium_quality___tsp_0.4__None__None'
+# Example environment variable exports:
+# export MODEL_DIR='/path/to/your/model/and/test/data/directory'
+# export OUTPUT_PATH='/path/to/output/directory'
+# export FP_PATH='/path/to/feature_importance.csv'
 
