@@ -7,14 +7,6 @@ from autogluon.tabular.visualizer import PartialDependencePlotter
 import scipy.stats as stats
 from ml_utils.src.model_col_final import settings_dict, settings_col_dict_census
 
-def find_file_by_pattern(directory, pattern):
-    """Find a file in a directory that matches the given pattern."""
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if pattern in file:
-                return os.path.join(root, file)
-    return None
-
 def transform(df, label, col_setting, setting_dict):
     cols = setting_dict[col_setting][1]
     working_cols = cols + [label]
@@ -23,22 +15,20 @@ def transform(df, label, col_setting, setting_dict):
     return df
 
 # Read environment variables
-model_dir = os.getenv('MODEL_DIR')
-output_path = os.getenv('OUTPUT_PATH')
-fp_path = os.getenv('FP_PATH')
+model_path = os.getenv('MODEL_PATH')
 
-if not model_dir or not output_path or not fp_path:
-    raise ValueError("Please set the MODEL_DIR, OUTPUT_PATH, and FP_PATH environment variables.")
+fp_path = os.path.join(model_path, 'feature_importance.csv')
+output_path = os.path.join(model_path, 'model_evals')
 
 # Ensure the output path exists
 os.makedirs(output_path, exist_ok=True)
 
-# Find the model and test data paths
-model_path = find_file_by_pattern(model_dir, 'model')
-test_path = find_file_by_pattern(model_dir, 'test_data.csv')
+# Construct the paths for test data and model evaluations
+test_path = os.path.join(model_path, 'test_data.csv')
 
-if not model_path or not test_path:
-    raise ValueError("Could not find model or test data files in the specified directory.")
+
+if not os.path.exists(test_path):
+    raise ValueError(f"Test data file not found at {test_path}")
 
 # Load the predictor
 predictor = TabularPredictor.load(model_path)
@@ -121,6 +111,11 @@ for feature in top_features:
     plt.title(f'Partial Dependence Plot for {feature}')
     plt.savefig(os.path.join(output_path, f'pdp_{feature}.png'))
     plt.close()
+
+# Example environment variable exports:
+# export MODEL_PATH='/path/to/your/model/directory'
+# export OUTPUT_PATH='/path/to/output/directory'
+# export FP_PATH='/path/to/feature_importance.csv'
 
 # Example environment variable exports:
 # export MODEL_DIR='/path/to/your/model/and/test/data/directory'
