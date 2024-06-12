@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 import matplotlib.pyplot as plt
-import seaborn as sns
+
 import scipy.stats as stats
 from ml_utils.src.model_col_final import settings_dict, settings_col_dict_census
 
@@ -49,16 +49,17 @@ print(results)
 # Assuming y_pred and y_true are your predicted and actual values
 residuals = y_true - y_pred
 
-# Create and save the residual plot
+# Residual Plot
 plt.figure(figsize=(10, 6))
-sns.residplot(x=y_pred, y=residuals, lowess=True, color="g")
+plt.scatter(y_pred, residuals, alpha=0.7, color="g")
+plt.axhline(y=0, color='r', linestyle='--')
 plt.xlabel('Predicted Values')
 plt.ylabel('Residuals')
 plt.title('Residual Plot')
 plt.savefig(os.path.join(output_path, 'residual_plot.png'))
 plt.close()
 
-# Create and save the Predicted vs Actual plot
+# Predicted vs Actual Plot
 plt.figure(figsize=(10, 6))
 plt.scatter(y_true, y_pred, edgecolor='k', alpha=0.7, s=70)
 plt.plot([y_true.min(), y_true.max()], [y_true.min(), y_true.max()], 'r--', lw=2)
@@ -68,31 +69,26 @@ plt.title('Predicted vs Actual')
 plt.savefig(os.path.join(output_path, 'predicted_vs_actual.png'))
 plt.close()
 
-# Create and save the distribution plot of residuals
+# Distribution of Residuals
 plt.figure(figsize=(10, 6))
-sns.histplot(residuals, kde=True, color="b")
+plt.hist(residuals, bins=30, color="b", edgecolor='k', alpha=0.7)
 plt.xlabel('Residuals')
 plt.title('Distribution of Residuals')
 plt.savefig(os.path.join(output_path, 'distribution_of_residuals.png'))
 plt.close()
 
-# Create and save the error histogram
+# Error Histogram
 plt.figure(figsize=(10, 6))
-plt.hist(residuals, bins=30, edgecolor='k')
+plt.hist(residuals, bins=30, edgecolor='k', alpha=0.7)
 plt.xlabel('Error')
 plt.ylabel('Frequency')
 plt.title('Error Histogram')
 plt.savefig(os.path.join(output_path, 'error_histogram.png'))
 plt.close()
 
-# Create and save the Q-Q plot
+# Q-Q Plot
 plt.figure(figsize=(10, 6))
 stats.probplot(residuals, dist="norm", plot=plt)
 plt.title('Q-Q Plot')
 plt.savefig(os.path.join(output_path, 'qq_plot.png'))
 plt.close()
-
-
-# export MODEL_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml/results/final_V1_ml_data__global__total_gas__500__colset_0__medium_quality___tsp_0.4__None__None'
-# export TEST_PATH='/Users/gracecolverd/Downloads/test_data.csv'
-# export output_path='/Volumes/T9/Data_downloads/new-data-outputs/ml/results/vis'
