@@ -35,8 +35,6 @@ outb = [
 'outb_res_heated_vol_fc_total',
 'outb_res_heated_vol_h_total',]
 
-
-
 type_cols = [
 '2 storeys terraces with t rear extension_pct',
 '3-4 storey and smaller flats_pct',
@@ -56,6 +54,7 @@ type_cols = [
 'Very tall point block flats_pct',
 'all_unknown_pct',
 ]
+
 age_cols = [
 '1919-1944_pct',
 '1945-1959_pct',
@@ -75,11 +74,13 @@ temp_cols = ['HDD',
 'CDD_winter',
 ] 
 
-postcode_geoms = ['postcode_area',
+postcode_geoms = [
+'postcode_area',
 'postcode_density',
 'log_pc_area',]
 
-region_cols =[  'region',
+region_cols =[ 
+'region',
 'oa11cd',
 'lsoa11cd',
 'msoa11cd',
@@ -115,6 +116,7 @@ economic_census = [
 'economic_activity_perc_Economically inactive: Long-term sick or disabled',
 'economic_activity_perc_Economically inactive: Other',
 ]
+
 education_census = [  'highest_qual_perc_Does not apply',
 'highest_qual_perc_No qualifications',
 'highest_qual_perc_Level 1 and entry level qualifications: 1 to 4 GCSEs grade A* to C, Any GCSEs at other grades, O levels or CSEs (any grades), 1 AS level, NVQ level 1, Foundation GNVQ, Basic or Essential Skills',
@@ -227,7 +229,8 @@ tenure_census = [
 ]
 
 sex_census = [ 'sex_perc_Female',
-'sex_perc_Male']
+'sex_perc_Male'
+]
 
 average_household_size = [ 'Average Household Size']
 
@@ -313,4 +316,5 @@ settings_dict = {
 26: ['COB, NDVI, Temp, Urban/Rural, Census' , total_builds_new + ndvi_cols + temp_cols + rural_urban  + all_census ], 
 27: ['COB, NDVI, Temp, Census' , total_builds_new + ndvi_cols + temp_cols  + all_census ], 
 28: ['COB, NDVI, Temp, Census, PC Geoms' , total_builds_new + ndvi_cols + temp_cols  + all_census + postcode_geoms ], 
+29: ['COB, Temp, Census', total_builds_new + temp_cols + all_census ],
 }

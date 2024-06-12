@@ -77,8 +77,8 @@ def load_clusters(n, city , folder, typ):
     if typ == 'old':
         path = f'/Volumes/T9/Data_downloads/new-data-outputs/ml_results/{folder}/{city}_spectral_clustering_{n}/labels.csv'
     else:
-        path = f'/Volumes/T9/Data_downloads/new-data-outputs/ml_results/cityfinalv2/{city}_city_clust_clusters_{n}/{city}_spectral_clustering_{n}/labels.csv'
-    res = pd.read_csv(f'/Users/gracecolverd/New_dataset/ml_scripts/{city}_city_clust.csv' )
+        path = f'/Volumes/T9/Data_downloads/new-data-outputs/ml_results/{folder}/{city}_city_clust_clusters_{n}/{city}_spectral_clustering_{n}/labels.csv'
+    res = pd.read_csv(f'/Users/gracecolverd/New_dataset/ml_scripts/{folder}/{city}_city_clust.csv' )
     labels = pd.read_csv(path)
     if len(res)!= len(labels):
         print('err')
