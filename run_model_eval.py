@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularDataset, TabularPredictor
 import matplotlib.pyplot as plt
-from autogluon.tabular.visualizer import PartialDependencePlotter
+
 import scipy.stats as stats
 from ml_utils.src.model_col_final import settings_dict, settings_col_dict_census
 
@@ -101,18 +101,16 @@ plt.close()
 # Load feature importance
 feature_importance = pd.read_csv(fp_path, index_col=0)
 print(feature_importance)
-# Identify top important features
-top_features = feature_importance.index[:5]  # Adjust number of top features as needed
 
 # Generate Partial Dependence Plots for top features
-pdp = PartialDependencePlotter(predictor, dataset=test_data.drop(columns=[label]))
+plt.figure(figsize=(10, 6))
+feature_importance.iloc[0:5, :].plot(x='Variable', y='importance', kind='bar')
+plt.title('Feature Importance')
+plt.ylabel('Importance')
+plt.xticks(rotation=45,ha='right' )
+plt.savefig(os.path.join(output_path, 'feat_imp.png'))
+plt.close()
 
-for feature in top_features:
-    plt.figure(figsize=(10, 6))
-    pdp.plot_partial_dependence(feature)
-    plt.title(f'Partial Dependence Plot for {feature}')
-    plt.savefig(os.path.join(output_path, f'pdp_{feature}.png'))
-    plt.close()
 
 # Example environment variable exports:
 # export MODEL_PATH='/path/to/your/model/directory'
