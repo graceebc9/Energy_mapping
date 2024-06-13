@@ -228,6 +228,8 @@ tenure_census = [
 'tenure_perc_L15: Full-time students',
 ]
 
+real_tenure = [] 
+
 sex_census = [ 'sex_perc_Female',
 'sex_perc_Male'
 ]
@@ -260,7 +262,7 @@ deprivation = [ 'deprivation_perc_Does not apply',
 
 all_census = economic_census + education_census  + occupation_census + ethnic_census  + household_size_census + occupancy_census + household_comp + tenure_census + deprivation + sex_census + average_household_size + central_heat_census
 all_vars = total_builds_new + res + outb + type_cols + age_cols + temp_cols + postcode_geoms + region_cols + uprn_cols + all_census + rural_urban
-
+# minimal_all_vars =  total_builds_new + ['all_res_heated_vol_h_total' ] 
 
 ndvi_cols = ['max_ndvi']
 
@@ -293,31 +295,33 @@ settings_dict = {
 3: ['Typology', type_cols],
 4: ['Age', age_cols],
 5: ['Temperature', temp_cols],
-6: ['PC Geoms', postcode_geoms],
+6: ['Local Morph.', postcode_geoms],
 7: ['Region', region_cols],
 8: ['Count of UPRNs', uprn_cols],
-9: ['All census', all_census ] ,
+9: ['Socio-Demogs', all_census ] ,
 10: ['Urban/Rural',  rural_urban],
 11 : ['COB, Res BS', res  + total_builds_new],
 12: ['COB, Type', total_builds_new + type_cols ],
 13: ['COB, Region', total_builds_new + region_cols ], 
 14: ['COB, Age', total_builds_new + age_cols ],
 15: ['COB, Temp', total_builds_new + temp_cols ],
-16: ['COB, PC Geoms', total_builds_new + postcode_geoms ],
+16: ['COB, Local Morph.', total_builds_new + postcode_geoms ],
 17: ['COB, Urban/Rural', total_builds_new  + rural_urban],
 18: ['All vars', all_vars], 
 19: ['COB, Region, PC Geom, Temp', total_builds_new + region_cols  +postcode_geoms +temp_cols ],
 20: ['NDVI', ndvi_cols], 
 21: ['COB, NDVI' , total_builds_new + ndvi_cols],
 22: ['COB, NDVI, Temp, Urban/Rural' , total_builds_new + ndvi_cols + temp_cols + rural_urban], 
-23: ['COB, NDVI, Temp, Urban/Rural, PC Geoms' , total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms ], 
-24: ['COB, NDVI, Temp, Urban/Rural, PC Geoms, Type' ,  total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms + type_cols ], 
-25: ['COB, NDVI, Temp, Urban/Rural, PC Geoms, Census' , total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms + all_census ], 
-26: ['COB, NDVI, Temp, Urban/Rural, Census' , total_builds_new + ndvi_cols + temp_cols + rural_urban  + all_census ], 
-27: ['COB, NDVI, \nTemp, Census' , total_builds_new + ndvi_cols + temp_cols  + all_census ], 
-28: ['COB, NDVI, Temp, \nCensus, PC Ge oms' , total_builds_new + ndvi_cols + temp_cols  + all_census + postcode_geoms ], 
-29: ['COB, Temp,\n Census', total_builds_new + temp_cols + all_census ],
-30: ['COB, Temp, \nCensus, PC Geoms' , total_builds_new + temp_cols  + all_census + postcode_geoms ], 
+23: ['COB, NDVI, Temp, Urban/Rural, Local Morph.' , total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms ], 
+24: ['COB, NDVI, Temp, Urban/Rural, Local Morph., Type' ,  total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms + type_cols ], 
+25: ['COB, NDVI, Temp, Urban/Rural, Local Morph., Socio-Demogs' , total_builds_new + ndvi_cols + temp_cols + rural_urban + postcode_geoms + all_census ], 
+26: ['COB, NDVI, Temp, Urban/Rural, Socio-Demogs' , total_builds_new + ndvi_cols + temp_cols + rural_urban  + all_census ], 
+27: ['COB, NDVI, Temp,\n Socio-Demogs' , total_builds_new + ndvi_cols + temp_cols  + all_census ], 
+28: ['COB, NDVI, Local Morph.\n Temp, Socio-Demogs' , total_builds_new + ndvi_cols + temp_cols  + all_census + postcode_geoms ], 
+29: ['COB, Temp,\n Socio-Demogs', total_builds_new + temp_cols + all_census ],
+30: ['COB, Temp, \n Socio-Demogs, Local Morph.' , total_builds_new + temp_cols  + all_census + postcode_geoms ], 
 31: ['COB, Temp,\n NDVI', total_builds_new + temp_cols + ndvi_cols ],
-32: ['COB, Temp, \n NDVI, PC Geoms' , total_builds_new + temp_cols  + ndvi_cols + postcode_geoms ], 
+32: ['COB, Temp, \n NDVI, Local Morph.' , total_builds_new + temp_cols  + ndvi_cols + postcode_geoms ], 
+33: ['Temp, \n NDVI, Local Morph.' ,   temp_cols  + ndvi_cols + postcode_geoms ], 
+34: ['Temp, Socio-Demogs \n NDVI, Local Morph.' ,  all_census +  temp_cols  + ndvi_cols + postcode_geoms ], 
 }
