@@ -319,5 +319,5 @@ settings_dict = {
 29: ['COB, Temp,\n Census', total_builds_new + temp_cols + all_census ],
 30: ['COB, Temp, \nCensus, PC Geoms' , total_builds_new + temp_cols  + all_census + postcode_geoms ], 
 31: ['COB, Temp,\n NDVI', total_builds_new + temp_cols + ndvi_cols ],
-30: ['COB, Temp, \NDVI, PC Geoms' , total_builds_new + temp_cols  + ndvi_cols + postcode_geoms ], 
+32: ['COB, Temp, \NDVI, PC Geoms' , total_builds_new + temp_cols  + ndvi_cols + postcode_geoms ], 
 }
