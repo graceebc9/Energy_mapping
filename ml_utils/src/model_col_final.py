@@ -324,4 +324,6 @@ settings_dict = {
 32: ['COB, Temp, \n NDVI, Local Morph.' , total_builds_new + temp_cols  + ndvi_cols + postcode_geoms ], 
 33: ['Temp, \n NDVI, Local Morph.' ,   temp_cols  + ndvi_cols + postcode_geoms ], 
 34: ['Temp, Socio-Demogs \n NDVI, Local Morph.' ,  all_census +  temp_cols  + ndvi_cols + postcode_geoms ], 
+35: ['Temp', 'Local Morph', temp_cols + postcode_geoms ] , 
+36: ['Temp, Socio-Demogs, \n  Local Morph.' ,  all_census +  temp_cols + postcode_geoms ], 
 }
