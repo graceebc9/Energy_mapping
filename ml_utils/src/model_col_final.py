@@ -329,5 +329,5 @@ settings_dict = {
 35: ['Temp', 'Local Morph', temp_cols + postcode_geoms ] , 
 36: ['Temp, Socio-Demogs, \n  Local Morph.' ,  all_census +  temp_cols + postcode_geoms ], 
 37: ['Temp + PC area', pc_area + temp_cols] , 
-37: ['PC area', pc_area ] ,
+38: ['PC area', pc_area ] ,
 }  
