@@ -79,6 +79,8 @@ postcode_geoms = [
 'postcode_density',
 'log_pc_area',]
 
+pc_area  = ['postcode_area']
+
 region_cols =[ 
 'region',
 'oa11cd',
@@ -326,4 +328,6 @@ settings_dict = {
 34: ['Temp, Socio-Demogs \n NDVI, Local Morph.' ,  all_census +  temp_cols  + ndvi_cols + postcode_geoms ], 
 35: ['Temp', 'Local Morph', temp_cols + postcode_geoms ] , 
 36: ['Temp, Socio-Demogs, \n  Local Morph.' ,  all_census +  temp_cols + postcode_geoms ], 
-}
+37: ['Temp + PC area', pc_area + temp_cols] , 
+37: ['PC area', pc_area ] ,
+}  
