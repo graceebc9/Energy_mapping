@@ -1,4 +1,5 @@
-total_builds_new = ['all_types_total_buildings', 'log_all_types_total_buildings',]
+total_builds_new = ['all_types_total_buildings', ] 
+                    #  'log_all_types_total_buildings',]
 
 res = [ 
 'comm_alltypes_count',
@@ -77,7 +78,8 @@ temp_cols = ['HDD',
 postcode_geoms = [
 'postcode_area',
 'postcode_density',
-'log_pc_area',]
+# 'log_pc_area',
+]
 
 pc_area  = ['postcode_area']
 
