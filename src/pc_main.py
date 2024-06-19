@@ -69,6 +69,5 @@ def run_age_process(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, l
     run_age_calc(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file, overlap )
 
 
-
 def run_type_process(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file, gas_path=None, elec_path=None, overlap=None, batch_dir=None, path_to_pcshp=None):
     run_type_calc(batch_ids, onsud_data, INPUT_GPK, batch_size, batch_label, log_file )

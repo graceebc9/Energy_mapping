@@ -97,8 +97,6 @@ def post_proc_new(df):
     if not df[df['tot']!=df['all_types_total_buildings'].fillna(0)][['tot', 'all_types_total_buildings']].empty:
         print('Error - count of buildings not adding up')
         raise Exception('Error  - count of builds not adding up')
-        
-
     df['percent_residential'] = df['all_res_total_buildings'] / df['all_types_total_buildings']
     df['max_heated_vol'] = np.maximum(df['clean_res_heated_vol_fc_total'], df['clean_res_heated_vol_h_total'])
     df['min_heated_vol']= np.minimum(df['clean_res_heated_vol_fc_total'], df['clean_res_heated_vol_h_total'])

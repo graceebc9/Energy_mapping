@@ -91,6 +91,7 @@ def call_type_checks(df):
 
 def validate_and_calculate_percentages_age(df):
     age_types = df.columns.difference(['postcode', 'len_res', 'region'])
+    print(age_types)
     df['len_res'] = df['len_res'].fillna(0)
     df['sum_buildings'] = df[age_types].fillna(0).sum(axis=1)
 
@@ -170,8 +171,8 @@ def post_proc_new_fuel(df):
     df['perc_all_res_basement'] = df['clean_res_base_floor_total'] / df['all_types_total_buildings']
     df['perc_all_res_listed'] = df['all_res_listed_bool_total'] / df['all_types_total_buildings']
 
-    df['max_vol_per_uprn'] = df['max_heated_vol'] / df['clean_res_uprn_count_total']
-    df['min_vol_per_uprn'] = df['min_heated_vol'] / df['clean_res_uprn_count_total']
+    df['max_vol_per_uprn'] = df['max_heated_vol'] / df['all_res_uprn_count_total']
+    df['min_vol_per_uprn'] = df['min_heated_vol'] / df['all_res_uprn_count_total']
     df['diff_gas_meters_uprns_res'] = (np.abs(df['num_meters_gas'] - df['all_res_uprn_count_total']) / 
                                        df['num_meters_gas']) * 100
 
