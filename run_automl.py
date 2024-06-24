@@ -77,6 +77,8 @@ def main():
 
     
     df = pd.read_csv(data_path)
+    dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
+    
     if run_gas_filter == 'Yes':
         gas_threshold = int(gas_threshold)
         df = df[df['diff_gas_meters_uprns_res'] < gas_threshold] 
@@ -105,7 +107,7 @@ def main():
     print(f'starting model run for {loc_type} target {label}, time lim {time_limit}, col setting {column_setting}, model preset {model_preset} and train subset {train_subset_prop}' )
 
 
-    dataset_name = os.path.basename(data_path).split('.')[0].split('_tr')[0]
+    
     output_directory = f"{output_path}/{dataset_name}__{loc_type}__{label}__{time_limit}__colset_{column_setting}__{model_preset}___tsp_{train_subset_prop}__{model_types}__{region_id}"
     required_files = ['model_summary.txt']  # List of files you expect to exist
     
@@ -169,3 +171,5 @@ if __name__ == '__main__':
 # export RUN_REGIONAL='Yes'
 # export run_census="No"
 # export REGION_ID='NW'
+# export RUN_GAS_FILTER='Yes'
+# export GAS_THRESHOLD=5
