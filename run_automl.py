@@ -62,7 +62,7 @@ def main():
     run_census = os.environ.get('run_census')   
     region_id = os.environ.get('REGION_ID')
     run_gas_filter = os.environ.get('RUN_GAS_FILTER')
-    gas_threshold = float(os.environ.get('GAS_THRESHOLD'))
+    gas_threshold = os.environ.get('GAS_THRESHOLD')
     
     if target == 'totalelec':   
         label = 'total_elec'
@@ -78,6 +78,7 @@ def main():
     
     df = pd.read_csv(data_path)
     if run_gas_filter == 'Yes':
+        gas_threshold = int(gas_threshold)
         df = df[df['diff_gas_meters_uprns_res'] < gas_threshold] 
         dataset_name = dataset_name + '_' + str(gas_threshold)
 
@@ -165,7 +166,6 @@ if __name__ == '__main__':
 # export TRAIN_SUBSET_PROP=0.4
 # export TARGET='totalgas'
 # export COL_SETTING=0
-# export RUN_REGIONAL='No'
-# # export REGION_INT=1
+# export RUN_REGIONAL='Yes'
 # export run_census="No"
 # export REGION_ID='NW'
