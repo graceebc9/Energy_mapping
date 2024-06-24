@@ -63,7 +63,7 @@ def main():
     region_id = os.environ.get('REGION_ID')
     run_gas_filter = os.environ.get('RUN_GAS_FILTER')
     gas_threshold = float(os.environ.get('GAS_THRESHOLD'))
-
+    
     if target == 'totalelec':   
         label = 'total_elec'
     elif target == 'totalgas':
@@ -78,9 +78,8 @@ def main():
     
     df = pd.read_csv(data_path)
     if run_gas_filter == 'Yes':
-        df = df[df['diff_gas_meters_uprns_res'] < gas_threshold]
-    
-
+        df = df[df['diff_gas_meters_uprns_res'] < gas_threshold] 
+        model_preset = f'gasthresh_{gas_threshold}' 
 
     if run_census =='Yes':
         print('running with census data')
