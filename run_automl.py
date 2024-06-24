@@ -79,7 +79,7 @@ def main():
     df = pd.read_csv(data_path)
     if run_gas_filter == 'Yes':
         df = df[df['diff_gas_meters_uprns_res'] < gas_threshold] 
-        model_preset = f'gasthresh_{gas_threshold}' 
+        dataset_name = dataset_name + '_' + str(gas_threshold)
 
     if run_census =='Yes':
         print('running with census data')
