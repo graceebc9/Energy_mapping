@@ -61,6 +61,8 @@ def main():
     run_regionally = os.environ.get('RUN_REGIONAL')
     run_census = os.environ.get('run_census')   
     region_id = os.environ.get('REGION_ID')
+    run_gas_filter = os.environ.get('RUN_GAS_FILTER')
+    gas_threshold = float(os.environ.get('GAS_THRESHOLD'))
 
     if target == 'totalelec':   
         label = 'total_elec'
@@ -75,14 +77,15 @@ def main():
 
     
     df = pd.read_csv(data_path)
-
-
+    if run_gas_filter == 'Yes':
+        df = df[df['diff_gas_meters_uprns_res'] < gas_threshold]
+    
 
 
     if run_census =='Yes':
         print('running with census data')
         setting_dir = settings_col_dict_census
-    else:
+    else: 
         setting_dir = settings_dict 
 
 
@@ -156,14 +159,14 @@ if __name__ == '__main__':
 
 
 
-# export DATA_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_input/V4.2_ndvi_inc_geoms.csv'
+# export DATA_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml_input/final_V1_ml_data.csv'
 # export OUTPUT_PATH='/Volumes/T9/Data_downloads/new-data-outputs/ml/results'
 # export MODEL_PRESET='medium_quality'
-# export TIME_LIM=500
-# export TRAIN_SUBSET_PROP=0.1
+# export TIME_LIM=5000
+# export TRAIN_SUBSET_PROP=0.4
 # export TARGET='totalgas'
-# export COL_SETTING=1
-# export RUN_REGIONAL='Yes'
-# export REGION_INT=1
+# export COL_SETTING=0
+# export RUN_REGIONAL='No'
+# # export REGION_INT=1
 # export run_census="No"
 # export REGION_ID='NW'
