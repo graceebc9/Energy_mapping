@@ -73,18 +73,18 @@ def load_clusters(n, city , folder, typ):
 
 
 
-def load_clusters(n, city , folder, typ):
-    if typ == 'old':
-        path = f'/Volumes/T9/Data_downloads/new-data-outputs/ml_results/{folder}/{city}_spectral_clustering_{n}/labels.csv'
-    else:
-        path = f'/Volumes/T9/Data_downloads/new-data-outputs/ml_results/{folder}/{city}_city_clust_clusters_{n}/{city}_spectral_clustering_{n}/labels.csv'
-    res = pd.read_csv(f'/Users/gracecolverd/New_dataset/ml_scripts/{folder}/{city}_city_clust.csv' )
-    labels = pd.read_csv(path)
-    if len(res)!= len(labels):
-        print('err')
-        # raise Exception(mismatch in data)
-    city_cluster = pd.concat([res, labels], axis=1)
-    return city_cluster 
+# def load_clusters(n, city , folder, typ):
+#     if typ == 'old':
+#         path = f'/Volumes/T9/Data_downloads/new-data-outputs/ml_results/{folder}/{city}_spectral_clustering_{n}/labels.csv'
+#     else:
+#         path = f'/Volumes/T9/Data_downloads/new-data-outputs/ml_results/{folder}/{city}_city_clust_clusters_{n}/{city}_spectral_clustering_{n}/labels.csv'
+#     res = pd.read_csv(f'/Users/gracecolverd/New_dataset/ml_scripts/{folder}/{city}_city_clust.csv' )
+#     labels = pd.read_csv(path)
+#     if len(res)!= len(labels):
+#         print('err')
+#         # raise Exception(mismatch in data)
+#     city_cluster = pd.concat([res, labels], axis=1)
+#     return city_cluster 
 
 
 def load_bsdata(data):
