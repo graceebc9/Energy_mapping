@@ -12,8 +12,8 @@ BUILD_PERC_VAL = 0.85
 BASEMENT_HEIGHT = 2.4
 BASEMENT_PERCENTAGE_OF_PREMISE_AREA = 1
 DEFAULT_FLOOR_HEIGHT = 2.3
-MAX_THRESHOLD_FLOOR_HEIGHT = 5.3
-MIN_THRESH_FL_HEIGHT = 2.2
+# MAX_THRESHOLD_FLOOR_HEIGHT = 5.3
+# MIN_THRESH_FL_HEIGHT = 2.2
 
 # ============================================================
 # Data Loading Functions
@@ -88,7 +88,7 @@ def update_outbuildings(test):
 
 
 
-def update_avgfloor_count_outliers(df):
+def update_avgfloor_count_outliers(df, MIN_THRESH_FL_HEIGHT = 2.3, MAX_THRESHOLD_FLOOR_HEIGHT=5.3):
     df['min_side'] = df['geometry'].apply(min_side)
     df['threex_minside'] = [x * 3 for x in df['min_side']]
     df['validated_height'] = np.where(df['height_numeric'] >= df['threex_minside'],   np.nan,  df['height_numeric'])
@@ -118,6 +118,8 @@ def fill_local_averages(df):
 def fill_glob_avs(df, fc = None  ):
     if fc is None:
         fc = load_avg_floor_count() 
+    print('len df ', len(df))
+    print('len fc ', len(fc))
     df = df.merge(fc, left_on=['map_simple_use', 'premise_age_bucketed',  'height_filled_bucket'], right_on = [ 'map_simple_use', 'premise_age_bucketed', 'height_bucket'], how='left')
     if df.empty:
         raise Exception ('Error merging with global averages')
@@ -131,7 +133,7 @@ def create_heated_vol(df):
     """
     df['heated_vol_fc'] = df['premise_area'] * df['fc_filled']
     df['heated_vol_h'] = df['premise_area'] * df['global_average_floorcount']
-
+    
     return df 
 
 def create_basement_metrics(df):
@@ -144,7 +146,7 @@ def create_basement_metrics(df):
     df['basement_heated_vol_max'] = df['base_floor'] *  df['premise_area'] * BASEMENT_HEIGHT * BASEMENT_PERCENTAGE_OF_PREMISE_AREA 
     return df 
 
-def pre_process_buildings(df, fc):
+def pre_process_buildings(df, fc,  MIN_THRESH_FL_HEIGHT = 2.3, MAX_THRESH_FL_HEIGHT= 5.3):
     """ can only be applied   to a group where you want the local average within the group
     - bcuekts age (turns all pre into pre 1919
     - updat listed into numeric / encoded
@@ -167,7 +169,7 @@ def pre_process_buildings(df, fc):
     df['av_fl_height'] = df['height_numeric'] / df['floor_count_numeric']
     df=update_listed_type(df)
     df=update_outbuildings(df)
-    df=update_avgfloor_count_outliers(df)
+    df=update_avgfloor_count_outliers(df, MIN_THRESH_FL_HEIGHT, MAX_THRESH_FL_HEIGHT)
     # check before doing local average filles 
     
     df=fill_local_averages(df)
@@ -238,11 +240,11 @@ def test_building_metrics(df):
 #      'listed_bool', 'min_side', 'threex_minside', 'validated_height', 'validated_fc', 'fc_filled', 'height_filled',
 #       'height_filled_bucket', 'global_average_floorcount', 'updated', 'heated_prem_area_fc', 'heated_prem_area_h', 'base_floor', 'basement_heated_vol_max']
 
-def pre_process_building_data(build):
+def pre_process_building_data(build,  MIN_THRESH_FL_HEIGHT = 2.3, MAX_THRESH_FL_HEIGHT= 5.3):
     fc = load_avg_floor_count() 
     """Calculate and validate building metrics from verisk data."""
     print("Pre-processing building data...")
-    processed_df = pre_process_buildings(build, fc)
+    processed_df = pre_process_buildings(build, fc , MIN_THRESH_FL_HEIGHT, MAX_THRESH_FL_HEIGHT)
     print('Cleaning data')
     clean_df = produce_clean_building_data(processed_df)
     
