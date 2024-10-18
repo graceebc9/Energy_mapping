@@ -10,6 +10,8 @@ from SALib.analyze import sobol
 from autogluon.tabular import TabularPredictor
 import seaborn as sns 
 
+from src.ml_utils.problem_definitions import problems
+
 # Configuration
 col_setting = int(os.getenv('COL_SETTING'))
 folder = os.getenv('MODEL_FOLDER')
@@ -26,169 +28,27 @@ N = int(os.getenv('N', 1024))
 grouped = os.getenv('GROUPED', 'False').lower() == 'true'
 
 
-if col_setting == 45:
-    problem = {
-        'num_vars': 13,
-        'names': [
-            'all_res_heated_vol_h_total',
-            'clean_res_total_buildings',
-            'Domestic outbuilding_pct',
-            'Standard size detached_pct',
-            'Standard size semi detached_pct',
-            'Pre 1919_pct',
-            'Unknown_age_pct',
-            'HDD',
-            'CDD',
-            'postcode_density',
-            'log_pc_area',
-            'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
-            'central_heating_perc_Mains gas only'
-        ],
-        'bounds': [
-            [0, 7600],  # all_res_heated_vol_h_total
-            [0, 50],    # clean_res_total_buildings
-            [0, 52],    # Domestic outbuilding_pct
-            [0, 100],   # Standard size detached_pct
-            [0, 100],   # Standard size semi detached_pct
-            [0, 100],   # Pre 1919_pct
-            [0, 20],    # Unknown_age_pct
-            [30, 80],   # HDD
-            [0, 8],     # CDD
-            [0, 0.5],   # postcode_density
-            [5, 12],    # log_pc_area
-            [0, 1],     # ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British
-            [0, 1]      # central_heating_perc_Mains gas only
-        ]
-    }
-elif col_setting ==44:
-    if grouped == False: 
-        problem = {
-        'num_vars': 26,
-        'names': [
-            'all_res_heated_vol_h_total',
-            'clean_res_total_buildings',
-            'clean_res_heated_vol_h_total',
-            'Domestic outbuilding_pct',
-            'Standard size detached_pct',
-            'Standard size semi detached_pct',
-            'Small low terraces_pct',
-            '2 storeys terraces with t rear extension_pct',
-            'Pre 1919_pct',
-            'Unknown_age_pct',
-            '1960-1979_pct',
-            '1919-1944_pct',
-            'Post 1999_pct',
-            'HDD',
-            'CDD',
-            'HDD_summer',
-            'HDD_winter',
-            'postcode_area',
-            'postcode_density',
-            'log_pc_area',
-            'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
-            'central_heating_perc_Mains gas only',
-            'household_siz_perc_perc_1 person in household',
-            'Average Household Size',
-            'clean_res_premise_area_total',
-            'all_res_base_floor_total'
-        ],
-        'bounds': [
-            [0, 7600],  # all_res_heated_vol_h_total (assumed range, adjust as needed)
-            [0, 50],  # clean_res_total_buildings (assumed range, adjust as needed)
-            [0, 7400],  # clean_res_heated_vol_h_total (assumed range, adjust as needed)
-            [0, 52],    # Domestic outbuilding_pct
-            [0, 100],    # Standard size detached_pct
-            [0, 100],    # Standard size semi detached_pct
-            [0, 100],    # Small low terraces_pct
-            [0, 100],    # 2 storeys terraces with t rear extension_pct
-            [0, 100],    # Pre 1919_pct
-            [0, 20],    # Unknown_age_pct
-            [0, 100],    # 1960-1979_pct
-            [0, 100],    # 1919-1944_pct
-            [0, 100],    # Post 1999_pct
-            [30, 80], # HDD (Heating Degree Days, assumed range)
-            [0, 8], # CDD (Cooling Degree Days, assumed range)
-            [3, 15], # HDD_summer (assumed range)
-            [30, 60], # HDD_winter (assumed range)
-            [1, 26000], # postcode_area (assumed range in km^2)
-            [0, 0.5], # postcode_density (assumed range in people/km^2)
-            [5, 12],   # log_pc_area (assumed range for log of postcode area)
-            [0, 1],    # ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British
-            [0, 1],    # central_heating_perc_Mains gas only
-            [0, 1],    # household_siz_perc_perc_1 person in household
-            [1, 5],     # Average Household Size (assumed range)
-            [0,2000],
-            [0,1000]
-            
-        ]
-         }
+
+
+def get_problem(col_setting, grouped=False):
+    if col_setting not in problems:
+        raise ValueError(f"Error: No problem defined for col setting {col_setting}")
+    
+    if col_setting == 44:
+        return problems[44]['grouped' if grouped else 'ungrouped']
     else:
-        problem = {
-            'num_vars': 26,
-            'groups': ['group_1', 'group_1','group_1', 'group_2', 'group_3', 'group_4', 'group_5',  'group_6', 'group_7', 'group_8', 'group_9', 
-            'group_10', 'group_11', 'group_12', 'group_13',  'group_12', 'group_12' , 'group_14', 'group_15', 'group_14', 'group_15' , 
-            'group_16', 'group_17', 'group_18', 'group_1', 'group_1'],
-            'names': [
-                'all_res_heated_vol_h_total',
-                'clean_res_total_buildings',
-                'clean_res_heated_vol_h_total',
-                'Domestic outbuilding_pct',
-                'Standard size detached_pct',
-                'Standard size semi detached_pct',
-                'Small low terraces_pct',
-                '2 storeys terraces with t rear extension_pct',
-                'Pre 1919_pct',
-                'Unknown_age_pct',
-                '1960-1979_pct',
-                '1919-1944_pct',
-                'Post 1999_pct',
-                'HDD',
-                'CDD',
-                'HDD_summer',
-                'HDD_winter',
-                'postcode_area',
-                'postcode_density',
-                'log_pc_area',
-                'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
-                'central_heating_perc_Mains gas only',
-                'household_siz_perc_perc_1 person in household',
-                'Average Household Size',
-                'clean_res_premise_area_total',
-                'all_res_base_floor_total'
-                
-            ],
-            'bounds': [
-                [0, 7600],  # all_res_heated_vol_h_total (assumed range, adjust as needed)
-                [0, 50],  # clean_res_total_buildings (assumed range, adjust as needed)
-                [0, 7400],  # clean_res_heated_vol_h_total (assumed range, adjust as needed)
-                [0, 52],    # Domestic outbuilding_pct
-                [0, 100],    # Standard size detached_pct
-                [0, 100],    # Standard size semi detached_pct
-                [0, 100],    # Small low terraces_pct
-                [0, 100],    # 2 storeys terraces with t rear extension_pct
-                [0, 100],    # Pre 1919_pct
-                [0, 20],    # Unknown_age_pct
-                [0, 100],    # 1960-1979_pct
-                [0, 100],    # 1919-1944_pct
-                [0, 100],    # Post 1999_pct
-                [30, 80], # HDD (Heating Degree Days, assumed range)
-                [0, 8], # CDD (Cooling Degree Days, assumed range)
-                [3, 15], # HDD_summer (assumed range)
-                [30, 60], # HDD_winter (assumed range)
-                [1, 26000], # postcode_area (assumed range in km^2)
-                [0, 0.5], # postcode_density (assumed range in people/km^2)
-                [5, 12],   # log_pc_area (assumed range for log of postcode area)
-                [0, 1],    # ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British
-                [0, 1],    # central_heating_perc_Mains gas only
-                [0, 1],    # household_siz_perc_perc_1 person in household
-                [1, 5],     # Average Household Size (assumed range)
-                [0,2000],
-                [0,1000]
-                
-            ]
-        }
-else:
-    print('error no problem defined for col setting')
+        return problems[col_setting]
+
+# Usage in your main script
+col_setting = 44  # or 45, depending on your needs
+grouped = False  # or True, if you want the grouped version for col_setting 44
+
+problem = get_problem(col_setting, grouped)
+
+# Now you can use the 'problem' dictionary as before
+print(problem['num_vars'])
+print(problem['names'])
+print(problem['bounds'])
 
 # Load the predictor
 print('Loading predictor')
