@@ -15,15 +15,15 @@ from src.postcode_utils import load_onsud_data, load_ids_from_file
 from src.fuel_calc import find_data_pc_joint, pre_process_building_data, calculate_postcode_attr_with_null_case, check_duplicate_primary_key, gen_nulls
  
 # Constants
-BATCH_PATH = '/Volumes/T9/2024_Data_downloads/new-data-outputs/batches (1)/NW/batch_0.txt'
-BATCH_NAME = 'NW_batch_0'
-DATA_DIR = '/Users/gracecolverd/New_dataset/test'
-PC_SHP_PATH = '/Volumes/T9/2024_Data_downloads/codepoint_polygons_edina/Download_all_postcodes_2378998/codepoint-poly_5267291'
-BUILDING_PATH = '/Volumes/T9/2024_Data_downloads/Versik_building_data/2024_03_22_updated_data/UKBuildings_Edition_15_new_format_upn.gpkg'
-BASE_PATH = '/Volumes/T9/2024_Data_downloads/new-data-outputs/2024-10_sensitviity_analysis'
+BATCH_PATH = '/home/gb669/rds/hpc-work/energy_map/data/batches_10k/WM/batch_0.txt'
+BATCH_NAME = 'WM_batch_1'
+PC_SHP_PATH = os.getenv('PC_SHP_PATH')
+BUILDING_PATH = os.getenv('BUILDING_PATH')
+
+BASE_PATH = '/home/gb669/rds/hpc-work/energy_map/data/sensitivty_analysis'
 ONSUD_DATA = 'DEC_2022'
-PC_COUNT = 1000
-n_morris=100
+PC_COUNT =int(os.getenv('PC_COUNT'))
+n_morris=int(os.getenv('N_MORRIS'))
 overlap = False 
 
 # Problem definition
