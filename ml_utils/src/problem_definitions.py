@@ -1,6 +1,50 @@
 # problem_definitions.py
 
 problems = {
+    47: {
+        
+        'num_vars': 18,
+         'names': [
+                'all_res_heated_vol_h_total', 
+                'clean_res_total_buildings', 
+                'clean_res_heated_vol_h_total',
+                'Domestic outbuilding_pct', 
+                'Standard size detached_pct', 
+                'Standard size semi detached_pct',
+                'Pre 1919_pct', 
+                'Unknown_age_pct', 
+                '1960-1979_pct', 
+                'HDD', 
+                'CDD', 
+                'HDD_winter', 
+                'postcode_area', 
+                'postcode_density', 
+                'log_pc_area', 
+                'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
+                'central_heating_perc_Mains gas only',
+                'Average Household Size'
+             ], 
+        'bounds': [
+                    [0, 7600], 
+                    [0, 50], 
+                    [0, 7400],
+                    [0, 52],
+                    [0, 100], 
+                    [0, 100],
+                    [0, 100], 
+                    [0, 20],
+                    [0, 100], 
+                    [30, 80],
+                    [0, 8],
+                    [30, 60],
+                    [1, 26000], 
+                    [0, 0.5], 
+                    [5, 12], 
+                    [0, 1], 
+                    [0, 1], 
+                    [1, 5]]
+                   }
+    }
     45: {
         'num_vars': 13,
         'names': [
@@ -160,3 +204,9 @@ problems = {
 }
 
 
+
+new_problem = {
+    'num_vars': len(feat_cols_3),
+    'names': feat_cols_3,
+    'bounds': [problem['bounds'][problem['names'].index(name)] for name in feat_cols_3]
+}
