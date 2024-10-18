@@ -180,6 +180,7 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     """
     pc = pc.strip() 
 
+
     if overlap ==True: 
         print('starting overlap pc')
         onsud_data = custom_load_onsud(pc, batch_dir)
@@ -191,7 +192,7 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     uprn_match= find_data_pc_joint(pc, onsud_data, input_gpk=INPUT_GPK)
     dc_full = {'postcode': pc  }
     print('dc ful started')
-    if uprn_match is None :
+    if uprn_match is None  or len(uprn_match)==0:
         print('Empty uprn match')
         dc =  gen_nulls()
         print(len(dc) ) 
@@ -217,6 +218,5 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     
     print('Len dc full ', len(dc_full))
     return dc_full
-
 
 
