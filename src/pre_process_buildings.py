@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import os 
@@ -118,8 +117,7 @@ def fill_local_averages(df):
 def fill_glob_avs(df, fc = None  ):
     if fc is None:
         fc = load_avg_floor_count() 
-    print('len df ', len(df))
-    print('len fc ', len(fc))
+ 
     df = df.merge(fc, left_on=['map_simple_use', 'premise_age_bucketed',  'height_filled_bucket'], right_on = [ 'map_simple_use', 'premise_age_bucketed', 'height_bucket'], how='left')
     if df.empty:
         raise Exception ('Error merging with global averages')
@@ -188,7 +186,7 @@ def pre_process_buildings(df, fc,  MIN_THRESH_FL_HEIGHT = 2.3, MAX_THRESH_FL_HEI
 def produce_clean_building_data(df):
     """Filter and test building data."""
     # print("Filtering non-commercial derelict premises...")
-    print('len df ', len(df))
+ 
     if len(df)==0:
         print('No data to process')
         return None 
@@ -243,9 +241,9 @@ def test_building_metrics(df):
 def pre_process_building_data(build,  MIN_THRESH_FL_HEIGHT = 2.3, MAX_THRESH_FL_HEIGHT= 5.3):
     fc = load_avg_floor_count() 
     """Calculate and validate building metrics from verisk data."""
-    print("Pre-processing building data...")
+   
     processed_df = pre_process_buildings(build, fc , MIN_THRESH_FL_HEIGHT, MAX_THRESH_FL_HEIGHT)
-    print('Cleaning data')
+    
     clean_df = produce_clean_building_data(processed_df)
     
     return clean_df
