@@ -180,7 +180,6 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     """
     pc = pc.strip() 
 
-
     if overlap ==True: 
         print('starting overlap pc')
         onsud_data = custom_load_onsud(pc, batch_dir)
@@ -188,20 +187,18 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
         onsud_data = find_postcode_for_ONSUD_file(onsud_data, path_to_pcshp )
         print('pc found')
     
-    print('finding uprn')
+ 
     uprn_match= find_data_pc_joint(pc, onsud_data, input_gpk=INPUT_GPK)
     dc_full = {'postcode': pc  }
-    print('dc ful started')
-    if uprn_match is None  or len(uprn_match)==0:
+ 
+    if uprn_match is None :
         print('Empty uprn match')
         dc =  gen_nulls()
         print(len(dc) ) 
     else:
-        print('starting data pre process')
-        # print('len of uprn match is ', len(uprn_match))
-        # print(uprn_match)
+ 
         df  = pre_process_building_data(uprn_match)    
-        print('pre process complete')
+ 
         if len(df)!=len(uprn_match):
             raise Exception('Error in pre process - some cols dropped? ')
         dc = calculate_postcode_attr_with_null_case(df)
@@ -218,5 +215,6 @@ def process_postcode_fuel(pc, onsud_data, gas_df, elec_df, INPUT_GPK, overlap = 
     
     print('Len dc full ', len(dc_full))
     return dc_full
+
 
 
