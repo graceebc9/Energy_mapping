@@ -67,7 +67,7 @@ def find_data_pc_joint(pc, onsdata, input_gpk, overlap=False):
     Find buildings based on UPRN match to the postcodes and Spatial join 
     input: joint data product from onsud loadaer (pcshp and onsud data) 
     """
-    print(onsdata)
+    
     data, pcshp  = onsdata 
     pcshp = pcshp[pcshp['POSTCODE']==pc]
 
@@ -166,7 +166,7 @@ def find_postcode_for_ONSUD_file(onsud_file, path_to_pc_shp_folder):
     check_merge_files(pc_df, onsud_file, 'POSTCODE', 'PCDS') 
 
     data = onsud_file.merge(pc_df, left_on='PCDS', right_on='POSTCODE', how='inner')
-    print(len(data))
+    
     print('Len of missing rows ', len(data[data['PC_AREA'].isna()] ) ) 
     
     if len(data[data['PC_AREA'].isna()] ) > 0.1*len(data):
