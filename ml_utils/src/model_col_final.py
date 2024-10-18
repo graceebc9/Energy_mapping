@@ -78,7 +78,7 @@ temp_cols = ['HDD',
 postcode_geoms = [
 'postcode_area',
 'postcode_density',
-# 'log_pc_area',
+'log_pc_area',
 ]
 
 pc_area  = ['postcode_area']
@@ -91,6 +91,26 @@ region_cols =[
 'ladcd' ] 
 
 
+domain_invariant_inc_age = ['postcode_area',
+'postcode_density',
+'1919-1944_pct',
+'1945-1959_pct',
+'1960-1979_pct',
+'1980-1989_pct',
+'1990-1999_pct',
+'None_age_pct',
+'Post 1999_pct',
+'Pre 1919_pct',
+'Unknown_age_pct',
+'all_res_total_buildings',
+'all_res_premise_area_total',
+'all_res_heated_vol_h_total', 
+] 
+domain_invariant = ['postcode_area',
+'postcode_density',
+'all_res_premise_area_total',
+'all_res_heated_vol_h_total'
+]
 
 
 rural_urban = [
@@ -289,8 +309,104 @@ settings_col_dict_census = {
 } 
 
 
+feat_cols= ['all_res_heated_vol_h_total',
+ 'clean_res_total_buildings',
+ 'clean_res_heated_vol_h_total',
+ 'clean_res_premise_area_total',
+ 'all_res_base_floor_total',
+ 'Domestic outbuilding_pct',
+ 'Standard size detached_pct',
+ 'Standard size semi detached_pct',
+ 'Small low terraces_pct',
+ '2 storeys terraces with t rear extension_pct',
+ 'Pre 1919_pct',
+ 'Unknown_age_pct',
+ '1960-1979_pct',
+ '1919-1944_pct',
+ 'Post 1999_pct',
+ 'HDD',
+ 'CDD',
+ 'HDD_summer',
+ 'HDD_winter',
+ 'postcode_area',
+ 'postcode_density',
+ 'log_pc_area',
+ 'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
+ 'central_heating_perc_Mains gas only',
+ 'household_siz_perc_perc_1 person in household',
+ 'Average Household Size']
+
+feat_cols_nocorr= ['all_res_heated_vol_h_total',
+ 'clean_res_total_buildings',
+ 'Domestic outbuilding_pct',
+ 'Standard size detached_pct',
+ 'Standard size semi detached_pct',
+ 'Pre 1919_pct',
+ 'Unknown_age_pct',
+ 'HDD',
+ 'CDD',
+ 'postcode_density',
+ 'log_pc_area',
+ 'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
+ 'central_heating_perc_Mains gas only' ] 
+
+feat_cols_2 = ['all_res_heated_vol_h_total',
+ 'clean_res_total_buildings',
+ 'clean_res_heated_vol_h_total',
+ 'clean_res_premise_area_total',
+ 'Domestic outbuilding_pct',
+ 'Standard size detached_pct',
+ 'Standard size semi detached_pct',
+ 'Small low terraces_pct',
+ '2 storeys terraces with t rear extension_pct',
+ 'Pre 1919_pct',
+ 'Unknown_age_pct',
+ '1960-1979_pct',
+ '1919-1944_pct',
+ 'Post 1999_pct',
+ 'HDD',
+ 'CDD',
+ 'HDD_summer',
+ 'HDD_winter',
+ 'postcode_area',
+ 'postcode_density',
+ 'log_pc_area',
+ 'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
+ 'central_heating_perc_Mains gas only',
+ 'household_siz_perc_perc_1 person in household',
+ 'Average Household Size',
+ 'oa11cd',
+'lsoa11cd',
+'msoa11cd'
+]
 
 
+
+feat_cols_3 = ['all_res_heated_vol_h_total',
+ 'clean_res_total_buildings',
+ 'clean_res_heated_vol_h_total',
+
+ 'Domestic outbuilding_pct',
+ 'Standard size detached_pct',
+ 'Standard size semi detached_pct',
+ 
+ 
+ 'Pre 1919_pct',
+ 'Unknown_age_pct',
+ '1960-1979_pct',
+ 
+ 'HDD',
+ 'CDD',
+ 'HDD_winter',
+ 
+ 'postcode_area',
+ 'postcode_density',
+ 'log_pc_area',
+
+ 'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
+ 'central_heating_perc_Mains gas only',
+ 'Average Household Size',
+]
 
 
 settings_dict = {
@@ -334,4 +450,12 @@ settings_dict = {
 37: ['Temp + PC area', pc_area + temp_cols] , 
 38: ['PC area', pc_area ] ,
 39: ['All Vars excl. Census', all_vars_excl_census] ,
+40: ['Temp, NDVI', temp_cols+ ndvi_cols], 
+41: ['Temp, NDVI + Urban/Rural', temp_cols+ ndvi_cols+ rural_urban], 
+42: ['Domain Invariant (inc Age)' , domain_invariant_inc_age],
+43: ['Domain Invariant' , domain_invariant],
+44: ['Feature Imp Cols', feat_cols],
+45: ['Feature Imp Cols No Corr', feat_cols_nocorr], 
+46: ['Feature Imp Cols 2', feat_cols_2],
+47: ['Feature Imp Cols 3', feat_cols_3],
 }  

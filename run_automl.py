@@ -26,7 +26,7 @@ def check_directory_and_files(output_directory, required_files):
         return False
 
     # Check for the presence of all required files in the directory
-    missing_files = [file for file in required_files if not os.path.isfile(os.path.join(output_directory, file))]
+    missing_files = [file for firegle in required_files if not os.path.isfile(os.path.join(output_directory, file))]
     if missing_files:
         print(f"Missing files in {output_directory}: {', '.join(missing_files)}")
         return False
@@ -61,6 +61,7 @@ def main():
     run_regionally = os.environ.get('RUN_REGIONAL')
     run_census = os.environ.get('run_census')   
     region_id = os.environ.get('REGION_ID')
+    print('Region: ', region_id) 
     run_gas_filter = os.environ.get('RUN_GAS_FILTER')
     gas_threshold = os.environ.get('GAS_THRESHOLD')
     
@@ -151,8 +152,8 @@ def main():
     res = predictor.leaderboard(test_data)
     res.to_csv(os.path.join(output_directory, 'leaderboard_results.csv'))
 
-    pred = predictor.feature_importance(test_data)
-    pred.to_csv(os.path.join(output_directory, 'feature_importance.csv'))
+    #pred = predictor.feature_importance(test_data)
+    #pred.to_csv(os.path.join(output_directory, 'feature_importance.csv'))
 
 
 
