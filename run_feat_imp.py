@@ -18,7 +18,10 @@ def transform(df, label, col_setting, setting_dict):
 # model_path = os.getenv('MODEL_PATH')
 col_setting = os.getenv('COL_SETTING')
 label = 'total_gas'
-model_path= f'/home/gb669/rds/hpc-work/energy_map/data/automl_models/results_final/final_V1_ml_data__global__total_gas__25000__colset_{col_setting}__best_quality___tsp_1.0__all__None'
+folder = 'results_cl_v2'
+dataset_name = 'clean_v1_round2_secondfilter'
+
+model_path= f'/home/gb669/rds/hpc-work/energy_map/data/automl_models/{folder}/{dataset_name}__global__total_gas__25000__colset_{col_setting}__best_quality___tsp_1.0__all__None'
 
 fp_path = os.path.join(model_path, 'feature_importance.csv')
 output_path = os.path.join(model_path, 'model_evals')
