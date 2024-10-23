@@ -39,6 +39,53 @@ base_params = {
     'all_res_base_floor_total': [0, 1000]
 }
 
+# Define problem bounds for SALib
+problem_47 = {
+    'num_vars': 18,
+    'names': [
+        'all_res_heated_vol_h_total',
+        'clean_res_total_buildings',
+        'clean_res_heated_vol_h_total',
+        'Domestic_outbuilding_pct',
+        'Standard_size_detached_pct',
+        'Standard_size_semi_detached_pct',
+        'Pre_1919_pct',
+        'Unknown_age_pct',
+        'age_1960_1979_pct',
+        'HDD',
+        'CDD',
+        'HDD_winter',
+        'postcode_area',
+        'postcode_density',
+        'log_pc_area',
+        'ethnic_group_perc_White',
+        'central_heating_perc_Mains_gas',
+        'Average_Household_Size'
+    ],
+    'bounds': [
+        [738.73, 6824.35],      # all_res_heated_vol_h_total
+        [2.0, 43.0],            # clean_res_total_buildings
+        [720.18, 6634.51],      # clean_res_heated_vol_h_total
+        [0.0, 100.0],           # Domestic_outbuilding_pct
+        [0.0, 100.0],           # Standard_size_detached_pct
+        [0.0, 100.0],           # Standard_size_semi_detached_pct
+        [0.0, 100.0],           # Pre_1919_pct
+        [0.0, 100.0],           # Unknown_age_pct
+        [0.0, 100.0],           # age_1960_1979_pct
+        [46.26, 65.35],         # HDD
+        [0.0, 5.41],            # CDD
+        [39.67, 52.35],         # HDD_winter
+        [1835.16, 35699.59],    # postcode_area
+        [0.045, 0.33],          # postcode_density
+        [7.51, 10.48],          # log_pc_area
+        [0.0, 1.0],             # ethnic_group_perc_White
+        [0.0, 1.0],             # central_heating_perc_Mains_gas
+        [1.84, 3.03]            # Average_Household_Size
+    ]
+}
+
+
+
 def generate_problem(col_setting):
     name, cols = settings_dict[col_setting]
     

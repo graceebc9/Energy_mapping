@@ -409,6 +409,35 @@ feat_cols_3 = ['all_res_heated_vol_h_total',
 ]
 
 
+
+
+
+feat_cols_4 = ['all_res_heated_vol_h_total',
+ 'clean_res_total_buildings',
+ 'clean_res_heated_vol_h_total',
+
+ 'Domestic outbuilding_pct',
+ 'Standard size detached_pct',
+ 'Standard size semi detached_pct',
+ 
+ 
+ 'Pre 1919_pct',
+ 'Unknown_age_pct',
+ '1960-1979_pct',
+ 
+ 'HDD',
+ 'CDD',
+ 'HDD_winter',
+ 
+ 'postcode_density',
+ 'log_pc_area',
+
+ 'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
+ 'central_heating_perc_Mains gas only',
+ 'Average Household Size',
+]
+
+
 settings_dict = {
 0: ['COB' , total_builds_new ] , 
 1: ['Residential BS', res],
@@ -458,4 +487,5 @@ settings_dict = {
 45: ['Feature Imp Cols No Corr', feat_cols_nocorr], 
 46: ['Feature Imp Cols 2', feat_cols_2],
 47: ['Feature Imp Cols 3', feat_cols_3],
+48: ['Feature Imp Cols 4', feat_cols_4],
 }  

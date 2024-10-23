@@ -88,11 +88,11 @@ def load_clusters(n, city , folder, typ):
 
 
 def load_bsdata(data):
-    lk = pd.read_csv('/Volumes/T9/Data_downloads/lookups/pcs_to_oa_mapping_census2021/PCD_OA21_LSOA21_MSOA21_LAD_AUG23_UK_LU.csv', encoding='latin1')
-    oa_lsoa = pd.read_csv('/Volumes/T9/Data_downloads/lookups/OAs_to_LSOAs_to_MSOAs_to_LEP_to_LAD_(May_2022)_Lookup_in_England.csv')
+    lk = pd.read_csv('/Volumes/T9/2024_Data_downloads/lookups/pcs_to_oa_mapping_census2021/PCD_OA21_LSOA21_MSOA21_LAD_AUG23_UK_LU.csv', encoding='latin1')
+    oa_lsoa = pd.read_csv('/Volumes/T9/2024_Data_downloads/lookups/OAs_to_LSOAs_to_MSOAs_to_LEP_to_LAD_(May_2022)_Lookup_in_England.csv')
 
-    lsoa2011_lsoa_2012 = pd.read_csv('/Volumes/T9/Data_downloads/lookups/lsoa2011-2021/LSOA_(2011)_to_LSOA_(2021)_to_Local_Authority_District_(2022)_Best_Fit_Lookup_for_EW_(V2).csv')
-    lsoa_city = pd.read_csv('/Volumes/T9/Data_downloads/lookups/lsoa_city_2011/Lower_Layer_Super_Output_Area_(2011)_to_Major_Towns_and_Cities_(December_2015)_Lookup_in_England_and_Wales.csv')
+    lsoa2011_lsoa_2012 = pd.read_csv('/Volumes/T9/2024_Data_downloads/lookups/lsoa2011-2021/LSOA_(2011)_to_LSOA_(2021)_to_Local_Authority_District_(2022)_Best_Fit_Lookup_for_EW_(V2).csv')
+    lsoa_city = pd.read_csv('/Volumes/T9/2024_Data_downloads/lookups/lsoa_city_2011/Lower_Layer_Super_Output_Area_(2011)_to_Major_Towns_and_Cities_(December_2015)_Lookup_in_England_and_Wales.csv')
     ls21_city = lsoa_city.merge(lsoa2011_lsoa_2012, on=['LSOA11CD'])[['LSOA11CD', 'LSOA21CD', 'TCITY15CD' , 'TCITY15NM']].copy() 
 
     data.drop(columns=['Unnamed: 0.1', 'Unnamed: 0'], inplace=True )
