@@ -10,7 +10,7 @@ from SALib.analyze import sobol
 from autogluon.tabular import TabularPredictor
 import seaborn as sns 
 
-from src.ml_utils.problem_definitions import problems
+from src.ml_utils.problem_definitions import problems, problem_47
 
 # Configuration
 col_setting = int(os.getenv('COL_SETTING'))
@@ -31,11 +31,14 @@ grouped = os.getenv('GROUPED', 'False').lower() == 'true'
 
 
 def get_problem(col_setting, grouped=False):
+    if col_setting ==47:
+        return problem_47
     if col_setting not in problems:
         raise ValueError(f"Error: No problem defined for col setting {col_setting}")
     
     if col_setting == 44:
         return problems[44]['grouped' if grouped else 'ungrouped']
+    
     else:
         return problems[col_setting]
 
@@ -211,6 +214,7 @@ if __name__ == "__main__":
 
     print(f'Starting Sobol analysis with N={N}')
     sobol_results = run_sobol_analysis(N)
+    print(sobol_results)
 
     print('Saving Sobol results')
     s1_data, st_data = save_results_to_csv_sobol(sobol_results, result_folder, problem)
