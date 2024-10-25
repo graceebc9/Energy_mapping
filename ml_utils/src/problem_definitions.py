@@ -1,4 +1,6 @@
-# problem_definitions.py
+
+
+    # problem_definitions.py
 from .model_col_final import settings_dict
 
 # Base dictionary of all possible parameters and their bounds
@@ -39,52 +41,156 @@ base_params = {
     'all_res_base_floor_total': [0, 1000]
 }
 
-# Define problem bounds for SALib
 problem_47 = {
     'num_vars': 18,
     'names': [
         'all_res_heated_vol_h_total',
         'clean_res_total_buildings',
         'clean_res_heated_vol_h_total',
-        'Domestic_outbuilding_pct',
-        'Standard_size_detached_pct',
-        'Standard_size_semi_detached_pct',
-        'Pre_1919_pct',
+        'Domestic outbuilding_pct',
+        'Standard size detached_pct',
+         'Standard size semi detached_pct',
+        'Pre 1919_pct',
         'Unknown_age_pct',
-        'age_1960_1979_pct',
+        '1960-1979_pct',
         'HDD',
         'CDD',
         'HDD_winter',
         'postcode_area',
         'postcode_density',
         'log_pc_area',
-        'ethnic_group_perc_White',
-        'central_heating_perc_Mains_gas',
-        'Average_Household_Size'
+        'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British',
+         'central_heating_perc_Mains gas only',
+         'Average Household Size'
     ],
     'bounds': [
-        [738.73, 6824.35],      # all_res_heated_vol_h_total
-        [2.0, 43.0],            # clean_res_total_buildings
-        [720.18, 6634.51],      # clean_res_heated_vol_h_total
-        [0.0, 100.0],           # Domestic_outbuilding_pct
-        [0.0, 100.0],           # Standard_size_detached_pct
-        [0.0, 100.0],           # Standard_size_semi_detached_pct
-        [0.0, 100.0],           # Pre_1919_pct
-        [0.0, 100.0],           # Unknown_age_pct
-        [0.0, 100.0],           # age_1960_1979_pct
-        [46.26, 65.35],         # HDD
-        [0.0, 5.41],            # CDD
-        [39.67, 52.35],         # HDD_winter
-        [1835.16, 35699.59],    # postcode_area
-        [0.045, 0.33],          # postcode_density
-        [7.51, 10.48],          # log_pc_area
-        [0.0, 1.0],             # ethnic_group_perc_White
-        [0.0, 1.0],             # central_heating_perc_Mains_gas
-        [1.84, 3.03]            # Average_Household_Size
+        [738.73, 6824.35],
+        [2.0, 43.0],
+        [720.18, 6634.51],
+        [0.0, 100.0],
+        [0.0, 100.0],
+        [0.0, 100.0],
+        [0.0, 100.0],
+        [0.0, 100.0],
+        [0.0, 100.0],
+        [46.26, 65.35],
+        [0.0, 5.41],
+        [39.67, 52.35],
+        [1835.16, 35699.59],
+        [0.045, 0.33],
+        [7, 11],
+        [0.0, 1.0],
+        [0.0, 1.0],
+        [1, 5]
+    ],
+    'groups': [
+        'G1',     # all_res_heated_vol_h_total (corr: 0.996 with clean_res_heated_vol_h_total)
+        'G2',     # clean_res_total_buildings (independent)
+        'G1',     # clean_res_heated_vol_h_total
+        'G3',     # Domestic_outbuilding_pct (independent)
+        'G4',     # Standard_size_detached_pct (independent)
+        'G5',     # Standard_size_semi_detached_pct (independent)
+        'G6',     # Pre_1919_pct (independent)
+        'G7',     # Unknown_age_pct (independent)
+        'G8',     # age_1960_1979_pct (independent)
+        'G9',     # HDD (corr: 0.979 with HDD_winter)
+        'G10',    # CDD (independent)
+        'G9',     # HDD_winter
+        'G11',    # postcode_area (moderate correlations only)
+        'G12',    # postcode_density (moderate correlations only)
+        'G11',    # log_pc_area (moderate correlations only)
+        'G14',    # ethnic_group_perc_White (independent)
+        'G15',    # central_heating_perc_Mains_gas (independent)
+        'G16'     # Average_Household_Size (independent)
     ]
 }
 
 
+
+group_mapping = {
+   # Grouped variables (corr > 0.9)
+   'G1': 'Building Floor Area (G)',
+   'G9': 'HDD (G)',  # corr: 0.979
+    'G11': 'Postcode Area (G)',
+   
+   # Individual variables
+   'G2': 'Count of Buildings (Domestic)',
+   'G3': 'Pct Domestic outbuilding ',
+   'G4': 'Pct Standard size detached ',
+   'G5': 'Pct Standard size semi detached',
+   'G6': 'Pct Pre 1919',
+   'G7': 'Pct Unknown age',
+   'G8': 'Pct 1960-1979',
+   'G10': 'CDD',
+   'G12': 'Postcode density',
+   'G14': 'Pct White',
+   'G15': 'Pct Gas Central Heating',
+   'G16': 'Average Household Size'
+}
+
+
+def check_and_enforce_heating_volume_constraint(x, problem_def):
+    """
+    Check and enforce the constraint that clean_res_heated_vol_h_total should equal
+    all_res_heated_vol_h_total * (1 - Domestic_outbuilding_pct/100)
+    
+    Args:
+        x: List of values corresponding to the variables in problem_def
+        problem_def: Dictionary containing problem definition
+        
+    Returns:
+        bool: Whether the constraint is satisfied
+        float: The difference between actual and expected values
+        float: The expected value of clean_res_heated_vol_h_total
+    """
+    # Get indices of relevant variables
+    names = problem_def['names']
+    all_res_idx = names.index('all_res_heated_vol_h_total')
+    clean_res_idx = names.index('clean_res_heated_vol_h_total')
+    outbuilding_idx = names.index('Domestic outbuilding_pct')
+    
+    # Calculate expected clean_res_heated_vol_h_total
+    all_res_vol = x[all_res_idx]
+    outbuilding_pct = x[outbuilding_idx]
+    expected_clean_res = all_res_vol * (1 - outbuilding_pct/100)
+    
+    # Get actual value
+    actual_clean_res = x[clean_res_idx]
+    
+    # Calculate difference
+    difference = abs(actual_clean_res - expected_clean_res)
+    
+    # Check if constraint is satisfied (using small tolerance due to floating point arithmetic)
+    is_satisfied = difference < 1e-10
+    
+    return is_satisfied, difference, expected_clean_res
+
+def enforce_heating_volume_constraint(x, problem_def):
+    """
+    Enforce the constraint by updating clean_res_heated_vol_h_total
+    
+    Args:
+        x: List of values corresponding to the variables in problem_def
+        problem_def: Dictionary containing problem definition
+        
+    Returns:
+        List: Updated values with constraint enforced
+    """
+    # Create a copy of the input list
+    x_new = x.copy()
+    
+    # Get indices of relevant variables
+    names = problem_def['names']
+    all_res_idx = names.index('all_res_heated_vol_h_total')
+    clean_res_idx = names.index('clean_res_heated_vol_h_total')
+    outbuilding_idx = names.index('Domestic outbuilding_pct')
+    
+    # Calculate and set the correct value
+    all_res_vol = x[all_res_idx]
+    outbuilding_pct = x[outbuilding_idx]
+    x_new[clean_res_idx] = all_res_vol * (1 - outbuilding_pct/100)
+    
+    return x_new
 
 def generate_problem(col_setting):
     name, cols = settings_dict[col_setting]
@@ -143,5 +249,7 @@ def get_problem(col_setting, grouped=False):
 
     if col_setting == 44 and grouped:
         return problems[44]['grouped']
+    
+    if col_setting ==47:
+        return problem_47
     return problems[col_setting]
-
