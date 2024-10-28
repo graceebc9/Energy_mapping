@@ -82,6 +82,7 @@ def run_sobol_analysis(N):
 
     # Enforce the constraint
     param_values = enforce_heating_volume_constraint(param_values, problem_47)
+    param_values = enforce_pc_area(param_values, problem_47)
     
     Y = model_function(param_values)
     if np.any(np.isnan(Y)) or np.any(np.isinf(Y)):

@@ -165,6 +165,27 @@ def check_and_enforce_heating_volume_constraint(x, problem_def):
     
     return is_satisfied, difference, expected_clean_res
 
+def enforce_pc_area(x, problem_def):
+    """
+    Enforce the constraint by updating clean_res_heated_vol_h_total
+  
+    """
+    # Create a copy of the input list
+    x_new = x.copy()
+    
+    # Get indices of relevant variables
+    names = problem_def['names']
+    all_res_idx = names.index('postcode_area')
+    clean_res_idx = names.index('log_pc_area')
+    
+    
+    # Calculate and set the correct value
+    all_res_vol = x[all_res_idx]
+    
+    x_new[clean_res_idx] = [np.log(x) for x in all_res_vol]
+    print('new log pc',x_new[clean_res_idx] )
+    return x_new
+
 def enforce_heating_volume_constraint(x, problem_def):
     """
     Enforce the constraint by updating clean_res_heated_vol_h_total
@@ -188,7 +209,7 @@ def enforce_heating_volume_constraint(x, problem_def):
     # Calculate and set the correct value
     all_res_vol = x[all_res_idx]
     outbuilding_pct = x[outbuilding_idx]
-    x_new[clean_res_idx] = all_res_vol * (1 - outbuilding_pct/100)
+    x_new[clean_res_idx] = all_res_vol * (100 - outbuilding_pct/100)
     
     return x_new
 
