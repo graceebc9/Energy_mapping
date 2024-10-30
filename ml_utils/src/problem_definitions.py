@@ -329,6 +329,8 @@ def enforce_heating_volume_constraint(x, problem_def):
         raise ValueError('Fraction should be between 0 and 1')
     x_new[clean_res_idx] = all_res_vol * fraction 
     
+    if x_new[clean_res_idx].all() < 0:
+        raise ValueError('clean_res_heated_vol_h_total should be positive')
     return x_new
 
 def generate_problem(col_setting):
