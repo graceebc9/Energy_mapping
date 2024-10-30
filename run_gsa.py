@@ -10,7 +10,7 @@ from SALib.analyze import sobol
 from autogluon.tabular import TabularPredictor
 import seaborn as sns 
 
-from ml_utils.src.problem_definitions import get_problem, group_mapping, check_and_enforce_heating_volume_constraint, enforce_heating_volume_constraint, enforce_pc_area
+from ml_utils.src.problem_definitions import get_problem, group_mapping_47, group_mapping_44, check_and_enforce_heating_volume_constraint, enforce_heating_volume_constraint, enforce_pc_area
 
 # Configuration
 col_setting = int(os.getenv('COL_SETTING'))
@@ -180,7 +180,7 @@ def plot_sobol_heatmap(results, output_path, problem):
     print(f"Sobol S2 heatmap saved in {output_path}")
 
 
-def plot_sobol_indices(s1_data, st_data, output_path, problem):
+def plot_sobol_indices(s1_data, st_data, output_path, problem, group_mapping):
     # Function to shorten parameter names
     def shorten_param_name(name):
         replacements = {
@@ -275,8 +275,14 @@ if __name__ == "__main__":
     
     print('Plotting Sobol results')
      #plot_sobol_results(sobol_results, result_folder)
+
+    if col_setting ==47:
+        group_map = group_mapping_47
+    elif col_setting ==44:
+        group_map = group_mapping_44
+
     plot_sobol_heatmap(sobol_results, result_folder, problem)
-    plot_sobol_indices(s1_data, st_data, result_folder, problem)
+    plot_sobol_indices(s1_data, st_data, result_folder, problem, group_map)
     
     # Save problem configuration
     with open(os.path.join(result_folder, 'problem_config.json'), 'w') as f:

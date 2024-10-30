@@ -195,8 +195,33 @@ problem_44 = {
     ]
 }
 
+group_mapping_44 = {
+    'G1': 'building_volume',          # Combines heated volumes and premise area
+    'G2': 'total_buildings',          # Number of buildings
+    'G3': 'outbuilding_pct',         # Domestic outbuilding percentage
+    'G4': 'detached_pct',            # Standard size detached
+    'G5': 'semi_detached_pct',       # Standard size semi detached
+    'G6': 'small_terrace_pct',       # Small low terraces
+    'G7': 'large_terrace_pct',       # 2 storeys terraces with rear extension
+    'G8': 'pre_1919_pct',            # Pre 1919 buildings
+    'G9': 'unknown_age_pct',         # Unknown age buildings
+    'G10': 'age_1960_1979_pct',      # Buildings from 1960-1979
+    'G11': 'age_1919_1944_pct',      # Buildings from 1919-1944
+    'G12': 'post_1999_pct',          # Post 1999 buildings
+    'G13': 'heating_degree_days',     # Combines HDD, HDD summer and winter
+    'G14': 'cooling_degree_days',     # CDD
+    'G15': 'postcode_metrics',        # Combines postcode area and log area
+    'G16': 'postcode_density',        # Postcode density
+    'G17': 'white_british_pct',       # White British percentage
+    'G18': 'mains_gas_heating_pct',   # Mains gas central heating
+    'G19': 'single_person_hh_pct',    # Single person households
+    'G20': 'avg_household_size'       # Average household size
+}
 
-group_mapping = {
+
+
+
+group_mapping_47 = {
    # Grouped variables (corr > 0.9)
    'G1': 'Building Floor Area (G)',
    'G9': 'HDD (G)',  # corr: 0.979
