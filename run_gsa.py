@@ -10,26 +10,32 @@ from SALib.analyze import sobol
 from autogluon.tabular import TabularPredictor
 import seaborn as sns 
 
-from ml_utils.src.problem_definitions import get_problem, group_mapping
+from ml_utils.src.problem_definitions import get_problem, group_mapping, check_and_enforce_heating_volume_constraint, enforce_heating_volume_constraint, enforce_pc_area
 
 # Configuration
 col_setting = int(os.getenv('COL_SETTING'))
 folder = os.getenv('MODEL_FOLDER')
 dataset_name = 'clean_v1_round2_secondfilter'
 if folder is None:
-    folder = 'results_cl_v2'
+    if col_setting==47:
+        folder='results_47'
+    else:
+        folder='results_cl_v2'
     
 region = os.getenv('REGION')
-model_path= f'/home/gb669/rds/hpc-work/energy_map/data/automl_models/{folder}/{dataset_name}__local__total_gas__25000__colset_{col_setting}__best_quality___tsp_1.0__all__{region}'
+label = os.getenv('LABEL')
+if label is None:
+    label = 'total_gas'
+model_path= f'/home/gb669/rds/hpc-work/energy_map/data/automl_models/{folder}/{dataset_name}__local_{label}__25000__colset_{col_setting}__best_quality___tsp_1.0__all__{region}'
 
 if region ==False or region is None:
-    model_path= f'/home/gb669/rds/hpc-work/energy_map/data/automl_models/{folder}/{dataset_name}__global__total_gas__25000__colset_{col_setting}__best_quality___tsp_1.0__all__None'
+    model_path= f'/home/gb669/rds/hpc-work/energy_map/data/automl_models/{folder}/{dataset_name}__global__{label}__25000__colset_{col_setting}__best_quality___tsp_1.0__all__None'
 else:
-    model_path= f'/home/gb669/rds/hpc-work/energy_map/data/automl_models/{folder}/{dataset_name}__local__total_gas__25000__colset_{col_setting}__best_quality___tsp_1.0__all__{region}'
+    model_path= f'/home/gb669/rds/hpc-work/energy_map/data/automl_models/{folder}/{dataset_name}__local__{label}__25000__colset_{col_setting}__best_quality___tsp_1.0__all__{region}'
 print(model_path)
 
 # New output path structure
-BASE_OUTPUT_PATH = '/home/gb669/rds/hpc-work/energy_map/data/sobol_results/second_ranges'
+BASE_OUTPUT_PATH = f'/home/gb669/rds/hpc-work/energy_map/data/sobol_results/second_ranges/{label}'
 os.makedirs(BASE_OUTPUT_PATH, exist_ok=True)
 
 # Number of samples for Sobol analysis
@@ -75,14 +81,15 @@ def run_sobol_analysis(N):
     param_values = saltelli.sample(problem, N)
     print(param_values)
     # Check if constraint is satisfied
-    is_satisfied, difference, expected = check_and_enforce_heating_volume_constraint(param_values, problem_47)
+    is_satisfied, difference, expected = check_and_enforce_heating_volume_constraint(param_values, problem)
     print(f"Constraint satisfied: {is_satisfied}")
     print(f"Difference: {difference}")
     print(f"Expected clean_res_heated_vol_h_total: {expected}")
 
     # Enforce the constraint
-    param_values = enforce_heating_volume_constraint(param_values, problem_47)
-    param_values = enforce_pc_area(param_values, problem_47)
+    param_values = enforce_heating_volume_constraint(param_values, problem)
+    param_values = enforce_pc_area(param_values, problem)
+    
     
     Y = model_function(param_values)
     if np.any(np.isnan(Y)) or np.any(np.isinf(Y)):
