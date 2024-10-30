@@ -214,8 +214,8 @@ group_mapping_44 = {
     'G17': 'white_british_pct',       # White British percentage
     'G18': 'mains_gas_heating_pct',   # Mains gas central heating
     'G19': 'single_person_hh_pct',    # Single person households
-    'G20': 'avg_household_size'       # Average household size
-    'G21': 'Heated building volume'       # Average household size
+    'G20': 'avg_household_size' ,      # Average household size
+    'G21': 'Heated building volume'  ,     # Average household size
 }
 
 
