@@ -68,6 +68,7 @@ predictor = TabularPredictor.load(model_path, require_version_match=True)
 
 def model_function(X):
     df = pd.DataFrame(X, columns=problem['names'])
+    df['all_res_base_floor_total'] = 0.0
     try:
         predictions = predictor.predict(df).values
         if np.any(np.isnan(predictions)) or np.any(np.isinf(predictions)):

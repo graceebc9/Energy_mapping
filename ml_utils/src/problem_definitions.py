@@ -113,7 +113,7 @@ problem_44 = {
         'clean_res_total_buildings',           # Same as 47 
         'clean_res_heated_vol_h_total',        # Same as 47
         'clean_res_premise_area_total',        # New
-        'all_res_base_floor_total',            # New
+        
         'Domestic outbuilding_pct',            # Same as 47
         'Standard size detached_pct',          # Same as 47
         'Standard size semi detached_pct',     # Same as 47
@@ -141,7 +141,7 @@ problem_44 = {
         [2.0, 43.0],            # Copied from 47
         [720.18, 6634.51],      # Copied from 47
        [337.30, 3161.90],           
-        [0.00, 0.00],          
+          
         [0.0, 100.0],           # Copied from 47
         [0.0, 100.0],           # Copied from 47
         [0.0, 100.0],           # Copied from 47
@@ -169,7 +169,7 @@ problem_44 = {
         'G2',     # clean_res_total_buildings
         'G1',     # clean_res_heated_vol_h_total
         'G1',     # clean_res_premise_area_total (likely correlated with heated vol)
-        'G1',     # all_res_base_floor_total (likely correlated with heated vol)
+        # 'G1',     # all_res_base_floor_total (likely correlated with heated vol)
         'G3',     # Domestic_outbuilding_pct
         'G4',     # Standard_size_detached_pct
         'G5',     # Standard_size_semi_detached_pct
