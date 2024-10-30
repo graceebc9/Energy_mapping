@@ -168,9 +168,8 @@ problem_44 = {
     'groups': [
         'G1',     # all_res_heated_vol_h_total (corr with clean_res_heated_vol_h_total)
         'G2',     # clean_res_total_buildings
-        'G1',     # clean_res_heated_vol_h_total
+        'G21',     # clean_res_heated_vol_h_total
         'G1',     # clean_res_premise_area_total (likely correlated with heated vol)
-        
         'G3',     # Domestic_outbuilding_pct
         'G4',     # Standard_size_detached_pct
         'G5',     # Standard_size_semi_detached_pct
@@ -216,6 +215,7 @@ group_mapping_44 = {
     'G18': 'mains_gas_heating_pct',   # Mains gas central heating
     'G19': 'single_person_hh_pct',    # Single person households
     'G20': 'avg_household_size'       # Average household size
+    'G21': 'Heated building volume'       # Average household size
 }
 
 
