@@ -106,6 +106,94 @@ problem_47 = {
 }
 
 
+problem_44 = {
+    'num_vars': 26,
+    'names': [
+        'all_res_heated_vol_h_total',          # Same as 47
+        'clean_res_total_buildings',           # Same as 47 
+        'clean_res_heated_vol_h_total',        # Same as 47
+        'clean_res_premise_area_total',        # New
+        'all_res_base_floor_total',            # New
+        'Domestic outbuilding_pct',            # Same as 47
+        'Standard size detached_pct',          # Same as 47
+        'Standard size semi detached_pct',     # Same as 47
+        'Small low terraces_pct',              # New
+        '2 storeys terraces with t rear extension_pct', # New
+        'Pre 1919_pct',                        # Same as 47
+        'Unknown_age_pct',                     # Same as 47
+        '1960-1979_pct',                       # Same as 47
+        '1919-1944_pct',                       # New
+        'Post 1999_pct',                       # New
+        'HDD',                                 # Same as 47
+        'CDD',                                 # Same as 47
+        'HDD_summer',                          # New
+        'HDD_winter',                          # Same as 47
+        'postcode_area',                       # Same as 47
+        'postcode_density',                    # Same as 47
+        'log_pc_area',                         # Same as 47
+        'ethnic_group_perc_White: English, Welsh, Scottish, Northern Irish or British', # Same as 47
+        'central_heating_perc_Mains gas only', # Same as 47
+        'household_siz_perc_perc_1 person in household', # New
+        'Average Household Size'               # Same as 47
+    ],
+    'bounds': [
+        [738.73, 6824.35],      # Copied from 47
+        [2.0, 43.0],            # Copied from 47
+        [720.18, 6634.51],      # Copied from 47
+       [337.30, 3161.90],           
+        [0.00, 0.00],          
+        [0.0, 100.0],           # Copied from 47
+        [0.0, 100.0],           # Copied from 47
+        [0.0, 100.0],           # Copied from 47
+        [0.0, 100.0],           # New percentage
+        [0.0, 100.0],           # New percentage
+        [0.0, 100.0],           # Copied from 47
+        [0.0, 100.0],           # Copied from 47
+        [0.0, 100.0],           # Copied from 47
+        [0.0, 100.0],           # New percentage
+        [0.0, 100.0],           # New percentage
+        [46.26, 65.35],         # Copied from 47
+        [0.0, 5.41],            # Copied from 47
+       [6.05, 13.24] ,          
+        [39.67, 52.35],         # Copied from 47
+        [1835.16, 35699.59],    # Copied from 47
+        [0.045, 0.33],          # Copied from 47
+        [7, 11],                # Copied from 47
+        [0.0, 1.0],             # Copied from 47
+        [0.0, 1.0],             # Copied from 47
+        [0.0, 1.0],             # New percentage as proportion
+        [1, 5]                  # Copied from 47
+    ],
+    'groups': [
+        'G1',     # all_res_heated_vol_h_total (corr with clean_res_heated_vol_h_total)
+        'G2',     # clean_res_total_buildings
+        'G1',     # clean_res_heated_vol_h_total
+        'G1',     # clean_res_premise_area_total (likely correlated with heated vol)
+        'G1',     # all_res_base_floor_total (likely correlated with heated vol)
+        'G3',     # Domestic_outbuilding_pct
+        'G4',     # Standard_size_detached_pct
+        'G5',     # Standard_size_semi_detached_pct
+        'G6',     # Small_low_terraces_pct
+        'G7',     # 2_storeys_terraces_pct
+        'G8',     # Pre_1919_pct
+        'G9',     # Unknown_age_pct
+        'G10',    # age_1960_1979_pct
+        'G11',    # age_1919_1944_pct
+        'G12',    # Post_1999_pct
+        'G13',    # HDD (corr with HDD_winter)
+        'G14',    # CDD
+        'G13',    # HDD_summer (likely correlated with other HDD)
+        'G13',    # HDD_winter
+        'G15',    # postcode_area
+        'G16',    # postcode_density
+        'G15',    # log_pc_area
+        'G17',    # ethnic_group_perc_White
+        'G18',    # central_heating_perc_Mains_gas
+        'G19',    # household_siz_perc_1_person
+        'G20'  
+    ]
+}
+
 
 group_mapping = {
    # Grouped variables (corr > 0.9)
