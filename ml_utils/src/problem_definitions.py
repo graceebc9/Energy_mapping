@@ -336,28 +336,28 @@ def generate_problem(col_setting):
 # Function to get problem definition
 def get_problem(col_setting, grouped=False):
 
-    problems = {}
+    # problems = {}
     
-    problems[col_setting] = generate_problem(col_setting)
+    # problems[col_setting] = generate_problem(col_setting)
 
-    # Special case for problem 44 with grouped version
-    if 44 in problems:
-        problem_44_ungrouped = problems[44]
-        problem_44_grouped = {
-            'num_vars': problem_44_ungrouped['num_vars'],
-            'groups': ['group_1', 'group_1', 'group_1', 'group_2', 'group_3', 'group_4', 'group_5', 'group_6', 'group_7', 'group_8', 'group_9', 
-                    'group_10', 'group_11', 'group_12', 'group_13', 'group_12', 'group_12', 'group_14', 'group_15', 'group_14', 'group_15', 
-                    'group_16', 'group_17', 'group_18', 'group_1', 'group_1'],
-            'names': problem_44_ungrouped['names'],
-            'bounds': problem_44_ungrouped['bounds']
-        }
-        problems[44] = {
-            'ungrouped': problem_44_ungrouped,
-            'grouped': problem_44_grouped
-        }
+    # # Special case for problem 44 with grouped version
+    # if 44 in problems:
+    #     problem_44_ungrouped = problems[44]
+    #     problem_44_grouped = {
+    #         'num_vars': problem_44_ungrouped['num_vars'],
+    #         'groups': ['group_1', 'group_1', 'group_1', 'group_2', 'group_3', 'group_4', 'group_5', 'group_6', 'group_7', 'group_8', 'group_9', 
+    #                 'group_10', 'group_11', 'group_12', 'group_13', 'group_12', 'group_12', 'group_14', 'group_15', 'group_14', 'group_15', 
+    #                 'group_16', 'group_17', 'group_18', 'group_1', 'group_1'],
+    #         'names': problem_44_ungrouped['names'],
+    #         'bounds': problem_44_ungrouped['bounds']
+    #     }
+    #     problems[44] = {
+    #         'ungrouped': problem_44_ungrouped,
+    #         'grouped': problem_44_grouped
+    #     }
 
     if col_setting == 44 and grouped:
-        return problems[44]['grouped']
+        return problem_44
     
     if col_setting ==47:
         return problem_47
