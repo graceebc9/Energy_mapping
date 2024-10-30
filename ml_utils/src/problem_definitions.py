@@ -107,7 +107,7 @@ problem_47 = {
 
 
 problem_44 = {
-    'num_vars': 26,
+    'num_vars': 25,
     'names': [
         'all_res_heated_vol_h_total',          # Same as 47
         'clean_res_total_buildings',           # Same as 47 
@@ -169,7 +169,7 @@ problem_44 = {
         'G2',     # clean_res_total_buildings
         'G1',     # clean_res_heated_vol_h_total
         'G1',     # clean_res_premise_area_total (likely correlated with heated vol)
-        # 'G1',     # all_res_base_floor_total (likely correlated with heated vol)
+        
         'G3',     # Domestic_outbuilding_pct
         'G4',     # Standard_size_detached_pct
         'G5',     # Standard_size_semi_detached_pct
