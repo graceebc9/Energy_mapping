@@ -210,7 +210,7 @@ group_mapping_44 = {
     'G12': 'post_1999_pct',          # Post 1999 buildings
     'G13': 'heating_degree_days',     # Combines HDD, HDD summer and winter
     'G14': 'cooling_degree_days',     # CDD
-    'G15': 'postcode_metrics',        # Combines postcode area and log area
+    'G15': 'postcode_area',        # Combines postcode area and log area
     'G16': 'postcode_density',        # Postcode density
     'G17': 'white_british_pct',       # White British percentage
     'G18': 'mains_gas_heating_pct',   # Mains gas central heating
