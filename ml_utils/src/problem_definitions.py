@@ -323,6 +323,7 @@ def enforce_heating_volume_constraint(x, problem_def):
     # Calculate and set the correct value
     all_res_vol = x[all_res_idx]
     outbuilding_pct = x[outbuilding_idx]
+    print(outbuilding_pct)
     x_new[clean_res_idx] = all_res_vol * ((100 - outbuilding_pct)/100)
     
     return x_new
