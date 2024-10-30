@@ -143,7 +143,7 @@ problem_44 = {
         [720.18, 6634.51],      # Copied from 47
        [337.30, 3161.90],           
           
-        [0.0, 100.0],           # Copied from 47
+        [0.0, 50.0],           # Copied from 47
         [0.0, 100.0],           # Copied from 47
         [0.0, 100.0],           # Copied from 47
         [0.0, 100.0],           # New percentage
