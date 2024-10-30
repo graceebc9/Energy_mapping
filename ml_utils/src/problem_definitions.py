@@ -325,7 +325,7 @@ def enforce_heating_volume_constraint(x, problem_def):
     outbuilding_pct = x[outbuilding_idx]
     print(outbuilding_pct)
     fraction = (1 - outbuilding_pct / 100 )
-    if fraction < 0 or fraction > 1 : 
+    if fraction.all() < 0 or fraction.all() > 1 : 
         raise ValueError('Fraction should be between 0 and 1')
     x_new[clean_res_idx] = all_res_vol * fraction 
     
