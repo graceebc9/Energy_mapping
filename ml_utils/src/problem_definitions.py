@@ -2,6 +2,7 @@
 
     # problem_definitions.py
 from .model_col_final import settings_dict
+import numpy as np 
 
 # Base dictionary of all possible parameters and their bounds
 base_params = {
