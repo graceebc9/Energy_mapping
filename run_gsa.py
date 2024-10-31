@@ -166,7 +166,7 @@ def plot_sobol_heatmap(results, output_path, problem, group_mapping):
     if 'groups' in problem:
         # For grouped analysis
         labels = list(dict.fromkeys(problem['groups']))
-        labels = [group_mapping(x) for x in labels]
+        labels = [group_mapping[x] for x in labels]
     else:
         # For non-grouped analysis
         labels = problem['names']
