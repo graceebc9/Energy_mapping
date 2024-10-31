@@ -160,12 +160,13 @@ def plot_sobol_results(results, output_path):
     plt.close()
     print(f"Sobol plot saved in {output_path}")
 
-def plot_sobol_heatmap(results, output_path, problem):
+def plot_sobol_heatmap(results, output_path, problem, group_mapping):
     S2_matrix = results['S2']
     
     if 'groups' in problem:
         # For grouped analysis
         labels = list(dict.fromkeys(problem['groups']))
+        labels = [group_mapping(x) for x in labels]
     else:
         # For non-grouped analysis
         labels = problem['names']
@@ -281,7 +282,7 @@ if __name__ == "__main__":
     elif col_setting ==44:
         group_map = group_mapping_44
 
-    plot_sobol_heatmap(sobol_results, result_folder, problem)
+    plot_sobol_heatmap(sobol_results, result_folder, problem, group_map)
     plot_sobol_indices(s1_data, st_data, result_folder, problem, group_map)
     
     # Save problem configuration
