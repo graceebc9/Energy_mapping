@@ -511,10 +511,10 @@ settings_dict = {
 42: ['Domain Invariant (inc Age)' , domain_invariant_inc_age],
 43: ['Domain Invariant' , domain_invariant],
 44: ['Feature Imp Cols', feat_cols],
-# 45: ['Feature Imp Cols No Corr', feat_cols_nocorr], 
-# 46: ['Feature Imp Cols 2', feat_cols_2],
-# 47: ['Feature Imp Cols 3', feat_cols_3],
-# 48: ['Feature Imp Cols 4', feat_cols_4],
-# 49: ['final FI',  feat_cols_5]
-50: ['FI + region' : feat_cols + ['oa11cd']] , 
+45: ['Feature Imp Cols No Corr', feat_cols_nocorr], 
+46: ['Feature Imp Cols 2', feat_cols_2],
+47: ['Feature Imp Cols 3', feat_cols_3],
+48: ['Feature Imp Cols 4', feat_cols_4],
+49: ['final FI',  feat_cols_5],
+50: ['50 FI + region' , feat_cols + ['oa11cd']] , 
 }  

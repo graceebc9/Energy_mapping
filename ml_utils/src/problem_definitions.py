@@ -195,26 +195,26 @@ problem_44 = {
 }
 
 group_mapping_44 = {
-    'G1': 'building_volume',          # Combines heated volumes and premise area
-    'G2': 'total_buildings',          # Number of buildings
-    'G3': 'outbuilding_pct',         # Domestic outbuilding percentage
-    'G4': 'detached_pct',            # Standard size detached
-    'G5': 'semi_detached_pct',       # Standard size semi detached
-    'G6': 'small_terrace_pct',       # Small low terraces
-    'G7': 'large_terrace_pct',       # 2 storeys terraces with rear extension
-    'G8': 'pre_1919_pct',            # Pre 1919 buildings
-    'G9': 'unknown_age_pct',         # Unknown age buildings
-    'G10': 'age_1960_1979_pct',      # Buildings from 1960-1979
-    'G11': 'age_1919_1944_pct',      # Buildings from 1919-1944
-    'G12': 'post_1999_pct',          # Post 1999 buildings
-    'G13': 'heating_degree_days',     # Combines HDD, HDD summer and winter
-    'G14': 'cooling_degree_days',     # CDD
-    'G15': 'postcode_area',        # Combines postcode area and log area
-    'G16': 'postcode_density',        # Postcode density
-    'G17': 'white_british_pct',       # White British percentage
-    'G18': 'mains_gas_heating_pct',   # Mains gas central heating
-    'G19': 'single_person_hh_pct',    # Single person households
-    'G20': 'avg_household_size' ,      # Average household size
+    'G1': 'Building Floor Area',          # Combines heated volumes and premise area
+    'G2': 'Count of buildings',          # Number of buildings
+    'G3': 'Pct Domestic outbuilding',         # Domestic outbuilding percentage
+    'G4': 'Pct Standard size detached',            # Standard size detached
+    'G5': 'Pct Standard size semi detached',       # Standard size semi detached
+    'G6': 'Pct Small low Terraces',       # Small low terraces
+    'G7': 'Pct 2 storeys terraces ',       # 2 storeys terraces with rear extension
+    'G8': 'Pct Pre 1919',           # Pre 1919 buildings
+    'G9': 'Pct Unknown age',        # Unknown age buildings
+    'G10': 'Pct 1960-1979',     # Buildings from 1960-1979
+    'G11': 'Pct 1919-1944',      # Buildings from 1919-1944
+    'G12': 'Pct Post-1999',          # Post 1999 buildings
+    'G13': 'HDD',     # Combines HDD, HDD summer and winter
+    'G14': 'CDD',     # CDD
+    'G15': 'Postcode Area',        # Combines postcode area and log area
+    'G16': 'Postcode Density',        # Postcode density
+    'G17': 'Pct White British',       # White British percentage
+    'G18': 'Pct Gas Central Heating',   # Mains gas central heating
+    'G19': 'Pct Single person hh',    # Single person households
+    'G20': 'Average Household Size' ,     # Average household size
     'G21': 'Heated building volume'  ,     # Average household size
 }
 
